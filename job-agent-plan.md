@@ -886,26 +886,233 @@ skills.sh 설치가 기대하는 동작:
 - 최종 결과물은 사용자가 직접 검토하고 제출하는 것을 기본 전제로 한다.
 - 자동 입력 기능이 있더라도 사용자의 명시적 승인 없이는 최종 제출하지 않는다.
 
-## 10. 다음 계획에서 정할 것
+## 10. 구현 확정 사항
 
-- 사용할 구현 언어와 프레임워크
-- CLI 우선인지 웹 UI 우선인지
-- `resume.md`의 최종 스키마
-- 신입/경력 질문 목록
-- 자기소개서 프롬프트 템플릿
-- optional 인재상 페이지 수집 방식
-- 지원 현황 관리 데이터 구조
-- 자동 지원 패키지 폴더 구조
-- 이메일 draft와 브라우저 반자동 입력 중 우선 구현 범위
-- 최종 제출 승인 UX와 오제출 방지 정책
-- skills.sh가 탐지할 정확한 source repository 구조
-- 공개 전환 시점: 현재 private repo를 public으로 바꿀지, 별도 public skills repo를 만들지
-- Skill 이름: `resume-intake`, `cover-letter-writer` 등 개별 Skill명 확정
-- `npx skills add kyoungbinkim/give-me-job@skill` 설치 검증 절차
-- `.skill-lock.json`을 사용자 프로젝트에 커밋하도록 권장할지 여부
-- Codex plugin manifest와 marketplace 구조는 후순위로 유지할지 여부
-- Claude Code subagent frontmatter 표준
-- OpenCode agent frontmatter와 `opencode.json` 생성 범위
-- 플랫폼별 권한 기본값
-- 공통 prompt를 플랫폼별 파일로 생성하는 빌드 방식
-- 샘플 데이터와 테스트 케이스
+다음 항목은 MVP 구현을 위해 우선 확정한다. 이후 사용하면서 바꿀 수는 있지만, 첫 구현자는 아래 결정을 기본값으로 삼는다.
+
+| 항목 | 결정 |
+| --- | --- |
+| 1차 제품 | `skills.sh` 호환 Skill 저장소 |
+| 설치 방식 | `npx skills add kyoungbinkim/give-me-job` |
+| 자체 CLI | 후순위. MVP에서는 만들지 않는다 |
+| 웹 UI | 후순위. Skill 동작이 안정화된 뒤 검토한다 |
+| 구현 언어 | Skill 본문은 Markdown, 검증/보조 스크립트는 Node.js ESM |
+| 데이터 저장 | 사용자 산출물은 Markdown, 테스트 fixtures는 Markdown/JSON 혼합 |
+| 사용자 데이터 생성 | Skill 설치 시 자동 생성하지 않는다 |
+| 최종 제출 | 자동 제출 금지. 제출 전 패키지와 체크리스트까지만 MVP 범위 |
+| 인재상 입력 | optional. URL 또는 붙여넣기 텍스트 모두 허용 |
+| 자기소개서 근거 | 모든 핵심 주장은 `resume.md` 근거가 있어야 한다 |
+| 공개 범위 | skills.sh 검증 전까지 private 유지, 배포 검증 시 public 전환 또는 별도 public repo 결정 |
+| Codex plugin | MVP 제외. skills.sh 배포 후 검토 |
+| Claude/OpenCode adapter | MVP에서는 skills.sh 설치 결과를 우선 검증하고, 필요 시 후속 adapter로 추가 |
+
+MVP Skill 이름은 다음 6개로 고정한다.
+
+- `resume-intake`
+- `jd-analyzer`
+- `company-values-analyzer`
+- `cover-letter-writer`
+- `hr-reviewer`
+- `application-packager`
+
+## 11. 바로 실행 가능한 구현 계획
+
+### 11.1 1차 커밋: Skill 저장소 골격
+
+목표는 skills.sh가 탐지할 수 있는 최소 구조를 만드는 것이다.
+
+생성할 구조:
+
+```txt
+skills/
+├── resume-intake/
+│   ├── SKILL.md
+│   ├── references/
+│   │   └── resume-schema.md
+│   └── examples/
+│       ├── new-grad-resume.md
+│       └── experienced-resume.md
+├── jd-analyzer/
+│   ├── SKILL.md
+│   └── examples/
+│       └── jd-analysis.md
+├── company-values-analyzer/
+│   ├── SKILL.md
+│   └── examples/
+│       └── company-values.md
+├── cover-letter-writer/
+│   ├── SKILL.md
+│   ├── references/
+│   │   ├── cover-letter-rules.md
+│   │   └── question-types.md
+│   └── examples/
+│       └── cover-letter-with-evidence.md
+├── hr-reviewer/
+│   ├── SKILL.md
+│   └── examples/
+│       └── hr-review.md
+└── application-packager/
+    ├── SKILL.md
+    ├── references/
+    │   └── package-structure.md
+    └── examples/
+        └── application-package.md
+```
+
+구현 규칙:
+
+- 각 `SKILL.md` frontmatter는 `name`, `description`만 둔다.
+- `description`에는 언제 이 Skill을 써야 하는지 명확히 쓴다.
+- `SKILL.md` 본문은 500줄 이하로 유지한다.
+- 긴 스키마, 문항 유형, 예시는 `references/` 또는 `examples/`로 분리한다.
+- Skill 안에는 `README.md`, `INSTALL.md`, `CHANGELOG.md` 같은 보조 문서를 만들지 않는다.
+- 모든 Skill은 `resume.md` 근거 원칙을 반복하지 않고, 필요한 경우 관련 reference를 읽도록 안내한다.
+
+완료 기준:
+
+- 6개 Skill 폴더가 모두 존재한다.
+- 모든 `SKILL.md`에 유효한 YAML frontmatter가 있다.
+- 각 Skill은 입력, 출력, 절차, 실패 시 fallback을 포함한다.
+- 예시 파일은 실제 에이전트가 따라 할 수 있는 최소 샘플을 담는다.
+
+### 11.2 2차 커밋: 공통 템플릿과 검증 도구
+
+목표는 Skill이 만드는 산출물의 형식을 고정하고, 문서 품질을 자동으로 점검하는 것이다.
+
+생성할 구조:
+
+```txt
+templates/
+├── resume-template.md
+├── jd-analysis-template.md
+├── company-values-template.md
+├── cover-letter-template.md
+├── evidence-map-template.md
+├── hr-review-template.md
+└── application-package-template.md
+tools/
+└── validate-skills.mjs
+tests/
+├── fixtures/
+│   ├── resume-new-grad.md
+│   ├── resume-experienced.md
+│   ├── jd-backend.md
+│   └── company-values.md
+└── golden/
+    ├── cover-letter-new-grad.md
+    └── cover-letter-experienced.md
+```
+
+`validate-skills.mjs` 검증 항목:
+
+- `skills/*/SKILL.md` 존재 여부
+- YAML frontmatter의 `name`, `description` 존재 여부
+- 폴더명과 `name` 일치 여부
+- 금지 보조 문서 존재 여부
+- `description` 최소 길이와 trigger 표현 포함 여부
+- `resume.md` 근거 원칙이 `cover-letter-writer`, `hr-reviewer`, `application-packager`에 포함됐는지 여부
+
+완료 기준:
+
+- `node tools/validate-skills.mjs`가 통과한다.
+- 템플릿은 실제 사용자 산출물로 바로 복사해 쓸 수 있다.
+- fixtures는 신입/경력 두 케이스를 모두 포함한다.
+
+### 11.3 3차 커밋: 핵심 Skill 본문 작성
+
+우선순위는 다음 순서로 둔다.
+
+1. `resume-intake`: `resume.md`를 만드는 시작점이다.
+2. `cover-letter-writer`: 프로젝트의 핵심 가치다.
+3. `hr-reviewer`: 허위/과장/근거 부족을 줄이는 안전장치다.
+4. `jd-analyzer`: 자기소개서와 이력서 맞춤화의 입력 품질을 올린다.
+5. `company-values-analyzer`: optional 인재상 입력을 처리한다.
+6. `application-packager`: 제출 준비와 지원 이력 관리를 담당한다.
+
+각 Skill의 최소 입출력:
+
+| Skill | 입력 | 출력 |
+| --- | --- | --- |
+| `resume-intake` | 자유 입력 경험, 신입/경력 여부 | 구조화된 `resume.md` 초안과 추가 질문 |
+| `jd-analyzer` | JD URL 또는 텍스트 | `JD Analysis`와 gap 후보 |
+| `company-values-analyzer` | optional 인재상 URL 또는 텍스트 | 핵심가치 요약과 연결 가능한 경험 후보 |
+| `cover-letter-writer` | 문항, JD, `resume.md`, optional 인재상 | 자기소개서 초안, evidence map, 추가 질문 |
+| `hr-reviewer` | 자기소개서/이력서 초안, `resume.md`, JD | HR 리뷰와 수정 제안 |
+| `application-packager` | 공고, 최종 자기소개서, 제출 조건 | 회사별 지원 패키지와 체크리스트 |
+
+완료 기준:
+
+- 각 Skill만 읽어도 에이전트가 독립적으로 작업을 수행할 수 있다.
+- `cover-letter-writer`는 `resume.md`에 없는 성과를 만들지 말라는 규칙을 명시한다.
+- `application-packager`는 최종 제출 버튼을 누르지 않는 정책을 명시한다.
+- 모든 출력은 Markdown으로 저장 가능한 구조를 가진다.
+
+### 11.4 4차 커밋: skills.sh 설치 검증
+
+검증은 repo가 public이거나 GitHub 인증이 된 상태에서 수행한다. 현재 private repo에서는 설치 검증이 실패할 수 있으므로, 이 단계에서 공개 repo 전략을 결정한다.
+
+검증 명령:
+
+```bash
+npx skills add kyoungbinkim/give-me-job --list
+npx skills add kyoungbinkim/give-me-job@resume-intake
+npx skills add kyoungbinkim/give-me-job@cover-letter-writer
+npx skills add kyoungbinkim/give-me-job --agent codex claude-code opencode
+npx skills list
+npx skills check
+npx skills generate-lock
+```
+
+검증 기준:
+
+- Skill 목록이 의도한 6개로 나온다.
+- 단일 Skill 설치가 된다.
+- 프로젝트 설치 후 `.agents/skills/<skill>` 경로가 생성된다.
+- Codex, Claude Code, OpenCode 대상 설치 경로가 문서와 일치하는지 확인한다.
+- `.skill-lock.json` 생성 여부와 커밋 가능 여부를 확인한다.
+- 설치 과정에서 `resume.md`, `applications/`, `jobs/`, `companies/`가 자동 생성되지 않는다.
+
+### 11.5 5차 커밋: 실제 사용 시나리오 테스트
+
+테스트 시나리오는 사람이 읽는 golden test 중심으로 둔다. LLM 출력은 완전 동일 비교가 어렵기 때문에, 구조와 안전 원칙을 중심으로 검증한다.
+
+필수 시나리오:
+
+- 신입 지원자가 프로젝트 경험으로 자기소개서 초안을 만든다.
+- 경력 지원자가 기존 성과로 직무 적합 자기소개서 초안을 만든다.
+- 인재상 페이지가 없을 때도 JD와 `resume.md`만으로 작성한다.
+- 인재상 텍스트가 있을 때 핵심가치를 억지로 베끼지 않고 경험과 연결한다.
+- `resume.md`에 없는 성과 수치가 필요한 경우 문장을 만들지 않고 추가 질문을 생성한다.
+- 다른 회사명 잔존, 글자 수 초과, 근거 없는 주장, 과장 표현을 HR 리뷰가 잡아낸다.
+- 지원 패키지는 최종 제출이 아니라 제출 전 체크리스트까지만 만든다.
+
+완료 기준:
+
+- fixtures 기반으로 최소 2개 자기소개서 예시가 생성된다.
+- 각 자기소개서에는 어떤 `resume.md` 경험을 썼는지 evidence map이 있다.
+- HR 리뷰가 최소 1개 이상의 약점과 수정 제안을 반환한다.
+- 자동 제출 금지 정책이 Skill 출력에 반영된다.
+
+## 12. 첫 구현 작업 순서
+
+바로 다음 작업은 아래 순서로 진행한다.
+
+1. `skills/` 하위 6개 Skill 폴더를 만든다.
+2. 각 Skill의 `SKILL.md` frontmatter와 최소 본문을 작성한다.
+3. `resume-schema.md`, `cover-letter-rules.md`, `question-types.md`, `package-structure.md` reference를 작성한다.
+4. 신입/경력 fixtures와 golden 예시를 만든다.
+5. `templates/`에 사용자 산출물 템플릿을 만든다.
+6. `tools/validate-skills.mjs`를 만들고 로컬 검증을 통과시킨다.
+7. README에 설치 목표와 현재 private repo 한계를 명확히 적는다.
+8. 커밋 후 push한다.
+
+첫 구현에서 하지 않을 것:
+
+- 웹 UI 생성
+- 자체 `npx give-me-job` CLI 생성
+- Codex plugin manifest 생성
+- Claude Code subagent 전용 파일 생성
+- OpenCode agent 전용 파일 생성
+- 채용 사이트 자동 제출
+- 브라우저 자동 입력
+- DB 또는 서버 구축
