@@ -10,7 +10,32 @@
 - 신입과 경력의 평가 기준 차이를 반영해 다른 질문과 작성 전략을 적용한다.
 - 기업의 인재상, JD, 채용 페이지를 가져와 자기소개서와 이력서를 맞춤화한다.
 - 허위 경력, 과장 표현, 근거 없는 문장을 줄이고 HR 관점에서 설득력을 높인다.
-- 최초 버전은 로컬 Markdown 파일 기반으로 단순하게 만들고, 이후 웹 수집, RAG, 지원 현황 관리로 확장한다.
+- 최초 버전은 Codex CLI, Claude Code, OpenCode에서 동작하는 로컬 에이전트 패키지로 만들고, 이후 `npx` 설치, 웹 수집, RAG, 지원 현황 관리로 확장한다.
+
+### 1.1 제품 형태
+
+이 프로젝트의 1차 제품은 웹앱이 아니라 코딩 에이전트 런타임에 설치되는 취업 도우미 에이전트 패키지다.
+
+대상 실행 환경:
+
+- Codex CLI: Codex skill/plugin/subagent 형태로 사용한다.
+- Claude Code: Claude Code subagent 형태로 사용한다.
+- OpenCode: OpenCode agent/subagent 형태로 사용한다.
+- 공통 CLI: `npx give-me-job` 명령으로 초기화, 템플릿 생성, 플랫폼별 설정 파일 설치를 제공한다.
+
+중요한 설계 방향:
+
+- 취업 도메인 로직은 플랫폼에 종속되지 않는 공통 Markdown/TypeScript 코어로 둔다.
+- Codex, Claude Code, OpenCode별 파일 위치와 frontmatter/config 형식만 어댑터로 분리한다.
+- `resume.md`, JD, optional 인재상 페이지, 지원 패키지 생성 규칙은 모든 런타임에서 동일하게 유지한다.
+- 웹 UI는 후순위다. 먼저 터미널/에이전트 환경에서 신뢰성 있는 워크플로우를 만든다.
+
+참고한 에이전트 플랫폼 문서:
+
+- OpenAI Codex customization: Codex는 `AGENTS.md`, Skills, MCP, Subagents, Plugins를 조합해 프로젝트 맞춤 동작을 구성한다. Skills는 반복 워크플로우와 도메인 전문성을 담고, Plugins는 배포 단위로 쓰는 방향이 적합하다. https://developers.openai.com/codex/concepts/customization
+- OpenAI Codex plugin build: Codex plugin은 `.codex-plugin/plugin.json` manifest가 필요하며, skills, hooks, MCP 설정, marketplace를 포함할 수 있다. https://developers.openai.com/codex/plugins/build
+- OpenCode agents: OpenCode는 `opencode.json` 또는 Markdown 파일로 agent를 정의하고, global 위치는 `~/.config/opencode/agents/`, 프로젝트 위치는 `.opencode/agents/`를 사용한다. agent별 model, tools, permissions, mode를 설정할 수 있다. https://opencode.ai/docs/ko/agents/
+- Claude Code subagents: Claude Code subagent는 YAML frontmatter와 Markdown 시스템 프롬프트로 구성되며, `name`, `description`은 필수이고 tools, model, permissionMode, skills, mcpServers, hooks 등을 지정할 수 있다. https://code.claude.com/docs/ko/sub-agents
 
 ## 2. 핵심 사용자 구분
 
@@ -286,7 +311,7 @@
 | --- | --- | --- |
 | Level 0 | 자기소개서와 이력서 문장 초안만 생성 | MVP 필수 |
 | Level 1 | 회사별 지원 패키지 생성: 자기소개서, 이력서 요약, 제출 체크리스트 | MVP 권장 |
-| Level 2 | 채용 사이트 입력값을 미리 채운 draft 생성, 사용자가 브라우저에서 확인 | Phase 3 이후 검토 |
+| Level 2 | 채용 사이트 입력값을 미리 채운 draft 생성, 사용자가 브라우저에서 확인 | Phase 6 이후 검토 |
 | Level 3 | 사용자가 매 지원 건마다 승인하면 브라우저 자동 입력 후 제출 직전까지 진행 | 제한적으로 가능 |
 | Level 4 | 승인 없이 여러 회사에 자동 제출 | 제외 권장 |
 
@@ -439,9 +464,109 @@ applications/
 
 이 에이전트는 작성 에이전트가 아니라 운영 에이전트로 본다. 품질이 낮은 초안을 많이 제출하는 것보다, 검증된 지원 패키지를 안전하게 관리하는 것이 우선이다.
 
+### 4.7 Platform Adapter Layer
+
+Codex CLI, Claude Code, OpenCode에서 같은 취업 워크플로우를 실행할 수 있도록 플랫폼별 wrapper를 제공한다.
+
+공통 원칙:
+
+- 핵심 지시문은 `prompts/`와 `references/`에 한 번만 관리한다.
+- 플랫폼별 파일은 공통 지시문을 참조하거나 복사해서 생성한다.
+- 플랫폼마다 tool permission과 subagent 호출 방식이 다르므로 권한 정책은 별도 매핑한다.
+- 자동 제출, 브라우저 입력, 이메일 draft 같은 외부 전송 가능 기능은 기본적으로 ask/deny 모드로 설치한다.
+
+#### Codex CLI Adapter
+
+Codex는 skill/plugin 중심으로 설계한다.
+
+구성 요소:
+
+- `AGENTS.md`: repo 수준의 기본 행동 규칙, 개인정보/허위기재 금지, `resume.md` 우선 규칙
+- `.agents/skills/give-me-job/SKILL.md`: 취업 도우미 워크플로우 skill
+- `.codex-plugin/plugin.json`: 배포용 Codex plugin manifest
+- `.agents/plugins/marketplace.json`: 로컬 또는 repo-scoped marketplace 테스트용
+- optional MCP 설정: 웹 수집, Gmail draft, GitHub 저장소 접근 등 외부 도구 연결이 필요할 때만 사용
+
+Codex에서 우선 제공할 skill:
+
+- `resume-intake`: `resume.md` 생성과 경험 구조화
+- `jd-analyzer`: JD/채용공고 분석
+- `company-values-analyzer`: optional 인재상 페이지 분석
+- `cover-letter-writer`: `resume.md` 근거 기반 자기소개서 작성
+- `hr-reviewer`: HR 관점 검토
+- `application-packager`: 회사별 지원 패키지 생성
+
+#### Claude Code Adapter
+
+Claude Code는 subagent 중심으로 설계한다.
+
+구성 요소:
+
+- `.claude/agents/job-resume-intake.md`
+- `.claude/agents/job-company-researcher.md`
+- `.claude/agents/job-cover-letter-writer.md`
+- `.claude/agents/job-hr-reviewer.md`
+- `.claude/agents/job-application-packager.md`
+
+각 subagent는 YAML frontmatter와 Markdown 시스템 프롬프트로 구성한다.
+
+권장 frontmatter:
+
+```md
+---
+name: job-cover-letter-writer
+description: Write Korean job application cover letters using resume.md, JD, and optional company values page. Use when the user asks to draft or revise a self-introduction letter.
+tools: Read, Grep, Glob, Write, Edit
+model: inherit
+permissionMode: default
+---
+```
+
+주의:
+
+- `resume.md`와 지원 패키지 파일 수정은 허용한다.
+- 브라우저 자동 입력, 이메일 발송, 최종 제출은 subagent 단독 권한으로 처리하지 않는다.
+- 자동 제출 관련 subagent는 `permissionMode`를 보수적으로 두고, 필요 시 별도 승인 절차를 둔다.
+
+#### OpenCode Adapter
+
+OpenCode는 Markdown agent와 `opencode.json` 설정을 함께 지원한다.
+
+구성 요소:
+
+- `.opencode/agents/job-resume-intake.md`
+- `.opencode/agents/job-company-researcher.md`
+- `.opencode/agents/job-cover-letter-writer.md`
+- `.opencode/agents/job-hr-reviewer.md`
+- `.opencode/agents/job-application-packager.md`
+- optional `opencode.json` agent registry
+
+권장 Markdown agent frontmatter:
+
+```md
+---
+description: Write and review Korean job application materials using resume.md as the source of truth.
+mode: subagent
+tools:
+  write: true
+  edit: true
+  bash: false
+permission:
+  edit: ask
+  bash:
+    "*": ask
+---
+```
+
+주의:
+
+- OpenCode는 agent별 tools와 permission을 설정할 수 있으므로, research/review agent는 읽기 중심으로 둔다.
+- application-packager는 파일 생성이 필요하므로 edit/write를 허용하되, 외부 전송 명령은 ask로 둔다.
+- 내부 helper agent는 필요하면 `hidden: true`로 숨긴다.
+
 ## 5. 데이터와 파일 구조
 
-권장 파일 구조:
+사용자 워크스페이스 권장 구조:
 
 ```txt
 .
@@ -470,17 +595,90 @@ applications/
     └── cover-letter-template.md
 ```
 
-MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLite 또는 JSON 기반 상태 파일을 추가한다.
+에이전트 패키지 저장소 권장 구조:
+
+```txt
+.
+├── package.json
+├── job-agent-plan.md
+├── bin/
+│   └── give-me-job.js
+├── src/
+│   ├── core/
+│   │   ├── resume-schema.ts
+│   │   ├── jd-analyzer.ts
+│   │   ├── evidence-map.ts
+│   │   ├── cover-letter-policy.ts
+│   │   └── application-packager.ts
+│   ├── installers/
+│   │   ├── codex.ts
+│   │   ├── claude.ts
+│   │   └── opencode.ts
+│   └── cli/
+│       ├── init.ts
+│       ├── doctor.ts
+│       └── scaffold.ts
+├── prompts/
+│   ├── resume-intake.md
+│   ├── jd-analyzer.md
+│   ├── company-values-analyzer.md
+│   ├── cover-letter-writer.md
+│   ├── hr-reviewer.md
+│   └── application-packager.md
+├── adapters/
+│   ├── codex/
+│   │   ├── AGENTS.md
+│   │   ├── .codex-plugin/plugin.json
+│   │   ├── .agents/plugins/marketplace.json
+│   │   └── .agents/skills/give-me-job/SKILL.md
+│   ├── claude/
+│   │   └── .claude/agents/
+│   └── opencode/
+│       ├── opencode.json
+│       └── .opencode/agents/
+├── templates/
+│   ├── resume-template.md
+│   ├── jd-analysis-template.md
+│   ├── evidence-map-template.md
+│   └── application-package-template.md
+└── tests/
+    ├── fixtures/
+    ├── unit/
+    └── golden/
+```
+
+MVP에서는 사용자 산출물은 Markdown만 사용한다. 패키지 내부 구현은 TypeScript/Node.js로 구성해 `npx` 설치와 실행을 쉽게 만든다. 이후 지원 이력이 많아지면 SQLite 또는 JSON 기반 상태 파일을 추가한다.
+
+`npx` 설치 목표:
+
+```bash
+npx give-me-job init
+npx give-me-job init --target codex
+npx give-me-job init --target claude
+npx give-me-job init --target opencode
+npx give-me-job init --target all
+npx give-me-job doctor
+```
+
+설치 명령이 할 일:
+
+- 현재 프로젝트에 `resume.md`와 템플릿을 생성한다.
+- 선택한 target에 맞는 agent/skill/subagent 파일을 설치한다.
+- 기존 파일이 있으면 덮어쓰지 않고 diff 또는 백업을 제공한다.
+- 외부 전송 기능은 기본 비활성화로 설치한다.
+- `doctor` 명령으로 Codex/Claude/OpenCode 설정 파일 존재 여부와 권한 정책을 점검한다.
 
 트레이드오프:
 
 - Markdown은 사람이 읽고 수정하기 쉽지만 검색과 통계에는 약하다.
 - DB는 자동화와 조회에 좋지만 초기 개발 비용이 커진다.
 - 취업 자료는 사용자가 직접 읽고 고치는 일이 많으므로 MVP는 Markdown이 적합하다.
+- TypeScript/Node.js 패키지는 `npx` 배포가 쉽지만, 각 런타임의 실제 설치 경로와 정책 변경에 민감하다.
+- 플랫폼별 파일을 모두 생성하면 호환성은 좋아지지만 유지보수 비용이 늘어난다.
 
 ## 6. 구현 단계
 
-### Phase 1. 로컬 Markdown MVP
+### Phase 1. 공통 Markdown/Prompt MVP
 
 목표:
 
@@ -490,6 +688,8 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 - 인재상 텍스트 분석
 - 자기소개서 초안 생성
 - HR 리뷰 출력
+- 공통 prompt 파일 작성
+- `resume.md` 근거 매핑 규칙 작성
 
 완료 기준:
 
@@ -497,8 +697,46 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 - `resume.md`에서 경험을 가져와 문항별 자기소개서를 작성할 수 있다.
 - 인재상 입력이 있으면 키워드가 자기소개서 문장에 자연스럽게 반영된다.
 - 인재상 입력이 없어도 JD와 `resume.md`만으로 자기소개서 초안을 작성할 수 있다.
+- Codex, Claude Code, OpenCode에 넣을 수 있는 공통 지시문이 준비된다.
 
-### Phase 2. URL 수집 및 근거 매핑
+### Phase 2. 플랫폼별 에이전트 어댑터
+
+목표:
+
+- Codex skill/plugin 파일 생성
+- Claude Code subagent 파일 생성
+- OpenCode agent 파일 생성
+- 각 플랫폼별 권한 정책 정의
+- 각 플랫폼에서 동일한 `resume.md` 근거 규칙을 사용하도록 정렬
+
+완료 기준:
+
+- Codex용 `.agents/skills/give-me-job/SKILL.md`가 동작한다.
+- Codex plugin용 `.codex-plugin/plugin.json`이 준비된다.
+- Claude Code용 `.claude/agents/*.md`가 준비된다.
+- OpenCode용 `.opencode/agents/*.md`와 optional `opencode.json`이 준비된다.
+- write/edit 권한이 필요한 agent와 read-only agent가 분리된다.
+
+### Phase 3. `npx` 설치 패키지
+
+목표:
+
+- npm package 구조 생성
+- `bin/give-me-job.js` CLI 구현
+- `init --target codex|claude|opencode|all` 구현
+- `doctor` 명령 구현
+- 기존 파일 충돌 감지와 백업 정책 구현
+- Windows/macOS/Linux 경로 처리
+
+완료 기준:
+
+- `npx give-me-job init --target codex`로 Codex 파일이 생성된다.
+- `npx give-me-job init --target claude`로 Claude Code subagent 파일이 생성된다.
+- `npx give-me-job init --target opencode`로 OpenCode agent 파일이 생성된다.
+- `npx give-me-job doctor`가 설치 상태와 누락 파일을 알려준다.
+- 설치 과정이 기존 사용자 파일을 무단 덮어쓰지 않는다.
+
+### Phase 4. URL 수집 및 근거 매핑
 
 목표:
 
@@ -514,7 +752,7 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 - 인재상 URL 또는 텍스트가 제공되면 인재상 요약 파일을 만들 수 있다.
 - 자기소개서 초안에 어떤 경험이 어떤 JD 요구사항 또는 기업 가치와 연결됐는지 표시할 수 있다.
 
-### Phase 3. 지원 현황 관리
+### Phase 5. 지원 현황 및 반자동 지원 패키지
 
 목표:
 
@@ -523,16 +761,6 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 - 제출 문서 버전 관리
 - 면접 예상 질문 생성
 - 탈락/합격 결과 회고 기록
-
-완료 기준:
-
-- 회사, 직무, 마감일, 진행 상태를 한눈에 볼 수 있다.
-- 제출한 자기소개서와 리뷰 결과를 다시 찾을 수 있다.
-
-### Phase 4. 반자동 지원 패키지 생성
-
-목표:
-
 - 회사별 지원 패키지 폴더 자동 생성
 - 자기소개서 최종본, 근거 매핑, 제출 체크리스트 생성
 - 이메일 지원 draft 생성
@@ -541,26 +769,11 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 
 완료 기준:
 
+- 회사, 직무, 마감일, 진행 상태를 Markdown 또는 JSON으로 조회할 수 있다.
+- 제출한 자기소개서와 리뷰 결과를 다시 찾을 수 있다.
 - 사용자가 하나의 지원 공고를 입력하면 제출 가능한 패키지가 생성된다.
 - 자기소개서의 모든 핵심 문장에 `resume.md` 근거가 연결된다.
 - 사용자가 제출 전 체크리스트를 보고 직접 제출할 수 있다.
-
-### Phase 5. 웹 UI 또는 대화형 앱
-
-목표:
-
-- 경험 입력 화면
-- JD 붙여넣기 또는 URL 입력 화면
-- optional 인재상 붙여넣기 또는 URL 입력 화면
-- 자기소개서 생성 및 비교 화면
-- HR 리뷰 화면
-- 지원 현황 대시보드
-- 회사별 지원 패키지 관리 화면
-
-완료 기준:
-
-- 비개발자도 브라우저에서 사용할 수 있다.
-- 생성 결과를 문항별로 수정하고 버전 저장할 수 있다.
 
 ### Phase 6. 제한적 브라우저 자동 입력
 
@@ -577,6 +790,20 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 - CAPTCHA, 추가 개인정보 요구, 약관상 자동화 금지 흐름에서는 자동화를 중단한다.
 - 사용자의 명시적 승인 없이 최종 제출하지 않는다.
 
+### Deferred. 웹 UI 또는 대화형 앱
+
+웹 UI는 초기 배포 목표가 아니다. `npx` 설치와 코딩 에이전트 런타임 호환성이 안정화된 뒤 검토한다.
+
+검토할 기능:
+
+- 경험 입력 화면
+- JD 붙여넣기 또는 URL 입력 화면
+- optional 인재상 붙여넣기 또는 URL 입력 화면
+- 자기소개서 생성 및 비교 화면
+- HR 리뷰 화면
+- 지원 현황 대시보드
+- 회사별 지원 패키지 관리 화면
+
 ## 7. 주요 트레이드오프
 
 | 주제 | 선택지 A | 선택지 B | 권장 방향 |
@@ -591,6 +818,12 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 | 자동화 수준 | 완전 자동 제출 | 반자동 패키지/입력 | MVP는 자동 작성과 제출 준비, 이후 제출 직전까지의 반자동 입력만 검토 |
 | 배포 채널 | 채용 플랫폼 자동 제출 | 이메일 draft/수동 제출 가이드 | 약관과 개인정보 리스크가 낮은 채널부터 구현 |
 | 자기소개서 근거 | 생성 모델 판단 | `resume.md` 근거 매핑 | `resume.md`에 없는 주장은 차단하거나 추가 질문 |
+| 제품 형태 | 웹앱 우선 | 에이전트 패키지 우선 | Codex/Claude/OpenCode에서 쓰는 agent package를 우선 구현 |
+| 플랫폼 지원 | 단일 플랫폼 최적화 | 공통 코어 + 어댑터 | 공통 prompt/core를 유지하고 플랫폼별 wrapper만 분리 |
+| 배포 방식 | 수동 복사 | `npx` installer | 초기는 수동 scaffold, 안정화 후 `npx give-me-job init` 제공 |
+| Codex 배포 | repo skill만 제공 | plugin/marketplace까지 제공 | MVP는 repo skill, 공유 단계부터 plugin과 marketplace |
+| 권한 정책 | 편의 중심 allow | 보수적 ask/deny | 파일 생성은 허용하되 외부 전송/제출은 ask 또는 deny |
+| 유지보수 | 플랫폼별 prompt 따로 관리 | 공통 prompt를 변환 | 중복 prompt는 drift가 커지므로 공통 소스에서 생성 |
 
 ## 8. 추가하면 좋은 기능
 
@@ -695,4 +928,10 @@ MVP에서는 Markdown만 사용한다. 이후 지원 이력이 많아지면 SQLi
 - 자동 지원 패키지 폴더 구조
 - 이메일 draft와 브라우저 반자동 입력 중 우선 구현 범위
 - 최종 제출 승인 UX와 오제출 방지 정책
+- npm package 이름과 CLI 명령 체계
+- Codex plugin manifest와 marketplace 구조
+- Claude Code subagent frontmatter 표준
+- OpenCode agent frontmatter와 `opencode.json` 생성 범위
+- 플랫폼별 권한 기본값
+- 공통 prompt를 플랫폼별 파일로 생성하는 빌드 방식
 - 샘플 데이터와 테스트 케이스
