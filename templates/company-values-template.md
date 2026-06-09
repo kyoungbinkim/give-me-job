@@ -1,0 +1,11 @@
+## Company Values Analysis
+- Source:
+- Company:
+- Talent Keywords:
+- Core Values:
+- Preferred Behaviors:
+- Tone To Use:
+- Tone To Avoid:
+- Resume Evidence Candidates:
+- Inferences:
+- Risks:

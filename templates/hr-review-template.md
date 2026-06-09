@@ -1,0 +1,11 @@
+## HR Review
+- Overall Score:
+- Strong Points:
+- Weak Points:
+- Risky Claims:
+- Missing Evidence:
+- JD Fit:
+- Company Fit:
+- Interview Defense Risk:
+- Recommended Revision:
+- Final Submission Checklist:

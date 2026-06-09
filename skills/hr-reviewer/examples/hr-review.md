@@ -1,0 +1,26 @@
+## HR Review
+- Overall Score: 82/100
+- Strong Points:
+  - Problem, action, and result are clear.
+  - The answer connects backend reliability to company work.
+  - Metrics from `resume.md` are used without exaggeration.
+- Weak Points:
+  - Production-level impact is not proven.
+  - The company-specific connection is still broad.
+- Risky Claims:
+  - "customer trust" is reasonable as a risk, but should not imply actual customer impact if this was only a team project.
+- Missing Evidence:
+  - exact transaction or database technique
+  - whether the service was deployed
+- JD Fit:
+  - Strong for API, RDBMS, testing, and collaboration.
+- Company Fit:
+  - Moderate. Values are reflected through reliability and ownership, not copied.
+- Interview Defense Risk:
+  - Medium. The candidate should be ready to explain transaction handling.
+- Recommended Revision:
+  - Add one concrete technical detail if the length limit allows.
+- Final Submission Checklist:
+  - Check company name.
+  - Check length limit.
+  - Confirm every metric exists in `resume.md`.

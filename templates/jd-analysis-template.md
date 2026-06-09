@@ -1,0 +1,12 @@
+## JD Analysis
+- Company:
+- Role:
+- Career Level:
+- Main Responsibilities:
+- Must-Have:
+- Nice-To-Have:
+- Hidden Evaluation Criteria:
+- Resume Keywords:
+- Cover Letter Angles:
+- Risk/Gaps:
+- Questions To Ask:

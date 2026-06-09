@@ -1,0 +1,29 @@
+## JD Analysis
+- Company: Sample Commerce
+- Role: Backend Developer
+- Career Level: New Grad or 1-3 years
+- Main Responsibilities:
+  - Develop and maintain commerce APIs
+  - Improve data consistency and service reliability
+  - Collaborate with product and frontend teams
+- Must-Have:
+  - Java or Kotlin backend development
+  - REST API design
+  - RDBMS understanding
+- Nice-To-Have:
+  - transaction handling experience
+  - monitoring or testing experience
+- Hidden Evaluation Criteria:
+  - Can explain backend decisions clearly
+  - Understands reliability beyond feature implementation
+  - Works well with non-backend teammates
+- Resume Keywords:
+  - API, transaction, database, reliability, testing, collaboration
+- Cover Letter Angles:
+  - reservation consistency issue solved through transaction rules
+  - API test cases added before demo
+- Risk/Gaps:
+  - production experience may be weak for new-grad candidates
+- Questions To Ask:
+  - Did the candidate deploy or monitor the service?
+  - What exact DB constraints or transaction settings were used?

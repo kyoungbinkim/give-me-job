@@ -1,0 +1,26 @@
+## Application Package
+- Company: Sample Commerce
+- Role: Backend Developer
+- Deadline: 2026-07-01
+- Package Path: applications/sample-commerce-backend-developer
+- Included Files:
+  - jd-analysis.md
+  - company-values.md
+  - resume-tailoring.md
+  - cover-letter-draft.md
+  - cover-letter-final.md
+  - submission-checklist.md
+  - evidence-map.md
+- Missing Inputs:
+  - final attachment file format
+  - exact cover letter length limit
+- Submission Checklist:
+  - company name is correct
+  - role name is correct
+  - no other company name remains
+  - all metrics are present in `resume.md`
+  - final text is approved by user
+  - required files are attached manually
+- Manual Submission Notes:
+  - Paste final answer into the recruitment page.
+  - Do not automate final submission.

@@ -1,0 +1,26 @@
+## Company Values Analysis
+- Source: pasted recruitment page text
+- Company: Sample Commerce
+- Talent Keywords:
+  - customer problem solving
+  - ownership
+  - fast learning
+  - collaboration
+- Core Values:
+  - improve repeated customer pain points
+  - communicate transparently across teams
+  - learn from operational data
+- Preferred Behaviors:
+  - define problems before implementing
+  - share status and blockers early
+  - turn repeated issues into system improvements
+- Tone To Use:
+  - practical, evidence-based, concise
+- Tone To Avoid:
+  - generic passion, copied values wording, exaggerated ownership
+- Resume Evidence Candidates:
+  - EXP-001: reservation consistency issue and API tests
+- Inferences:
+  - The company likely values reliability and customer-impact thinking.
+- Risks:
+  - Do not overstate direct customer impact if the experience was only a team project.
