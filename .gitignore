@@ -1,0 +1,25 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# Generated files
+*.tmp
+*.bak
+dist/
+build/
+coverage/
+node_modules/
+
+# Python
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
