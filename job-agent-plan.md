@@ -602,7 +602,8 @@ permission:
 ├── package.json
 ├── job-agent-plan.md
 ├── bin/
-│   └── give-me-job.js
+│   ├── give-me-job.js
+│   └── give-me-job-skills.js
 ├── src/
 │   ├── core/
 │   │   ├── resume-schema.ts
@@ -616,6 +617,7 @@ permission:
 │   │   └── opencode.ts
 │   └── cli/
 │       ├── init.ts
+│       ├── skills.ts
 │       ├── doctor.ts
 │       └── scaffold.ts
 ├── prompts/
@@ -657,6 +659,12 @@ npx give-me-job init --target codex
 npx give-me-job init --target claude
 npx give-me-job init --target opencode
 npx give-me-job init --target all
+npx give-me-job skills install
+npx give-me-job skills install --target codex
+npx give-me-job skills install --target all
+npx give-me-job skills list
+npx give-me-job skills update
+npx give-me-job-skills install --target codex
 npx give-me-job doctor
 ```
 
@@ -667,6 +675,23 @@ npx give-me-job doctor
 - 기존 파일이 있으면 덮어쓰지 않고 diff 또는 백업을 제공한다.
 - 외부 전송 기능은 기본 비활성화로 설치한다.
 - `doctor` 명령으로 Codex/Claude/OpenCode 설정 파일 존재 여부와 권한 정책을 점검한다.
+
+`skills install` 명령이 할 일:
+
+- 프로젝트 전체 scaffold 없이 skill 또는 agent 정의만 설치한다.
+- Codex target에서는 `.agents/skills/give-me-job/` 아래에 `SKILL.md`, references, scripts를 설치한다.
+- Claude target에서는 `.claude/agents/` 아래에 skill-equivalent subagent 파일을 설치한다.
+- OpenCode target에서는 `.opencode/agents/` 아래에 skill-equivalent agent 파일을 설치한다.
+- `resume.md`, `applications/`, `companies/`, `jobs/` 같은 사용자 데이터 파일은 생성하지 않는다.
+- 기존 skill/agent 파일이 있으면 overwrite, skip, diff 중 하나를 선택하게 한다.
+- `list`는 설치 가능한 skill 목록을 보여주고, `update`는 기존 설치본을 새 템플릿으로 갱신한다.
+
+명령 이름 정책:
+
+- 기본 명령은 `npx give-me-job skills install`로 둔다.
+- 짧은 별칭으로 `npx give-me-job-skills install`도 제공한다.
+- `npx skills`처럼 너무 일반적인 패키지 이름은 충돌 가능성이 크므로, npm 이름 사용 가능성과 혼동 리스크를 확인한 뒤 별도 검토한다.
+- 정말 `npx skills` 형태가 필요하면 npm package name을 `skills`로 확보해야 하며, 이 경우 프로젝트 정체성이 흐려질 수 있다.
 
 트레이드오프:
 
@@ -723,7 +748,10 @@ npx give-me-job doctor
 
 - npm package 구조 생성
 - `bin/give-me-job.js` CLI 구현
+- `bin/give-me-job-skills.js` skills-only CLI 구현
 - `init --target codex|claude|opencode|all` 구현
+- `skills install --target codex|claude|opencode|all` 구현
+- `skills list`, `skills update` 구현
 - `doctor` 명령 구현
 - 기존 파일 충돌 감지와 백업 정책 구현
 - Windows/macOS/Linux 경로 처리
@@ -733,6 +761,9 @@ npx give-me-job doctor
 - `npx give-me-job init --target codex`로 Codex 파일이 생성된다.
 - `npx give-me-job init --target claude`로 Claude Code subagent 파일이 생성된다.
 - `npx give-me-job init --target opencode`로 OpenCode agent 파일이 생성된다.
+- `npx give-me-job skills install --target codex`로 Codex skill만 설치된다.
+- `npx give-me-job-skills install --target codex` 별칭이 동일하게 동작한다.
+- skills-only 설치는 `resume.md`와 사용자 지원 데이터 폴더를 생성하지 않는다.
 - `npx give-me-job doctor`가 설치 상태와 누락 파일을 알려준다.
 - 설치 과정이 기존 사용자 파일을 무단 덮어쓰지 않는다.
 
@@ -821,6 +852,8 @@ npx give-me-job doctor
 | 제품 형태 | 웹앱 우선 | 에이전트 패키지 우선 | Codex/Claude/OpenCode에서 쓰는 agent package를 우선 구현 |
 | 플랫폼 지원 | 단일 플랫폼 최적화 | 공통 코어 + 어댑터 | 공통 prompt/core를 유지하고 플랫폼별 wrapper만 분리 |
 | 배포 방식 | 수동 복사 | `npx` installer | 초기는 수동 scaffold, 안정화 후 `npx give-me-job init` 제공 |
+| 설치 범위 | 전체 scaffold | skills-only 설치 | `init`과 `skills install`을 분리해 사용자가 원치 않는 파일 생성을 막음 |
+| CLI 이름 | `npx skills` | `npx give-me-job skills` | 일반명 `skills`는 충돌 위험이 커서 별칭으로만 신중히 검토 |
 | Codex 배포 | repo skill만 제공 | plugin/marketplace까지 제공 | MVP는 repo skill, 공유 단계부터 plugin과 marketplace |
 | 권한 정책 | 편의 중심 allow | 보수적 ask/deny | 파일 생성은 허용하되 외부 전송/제출은 ask 또는 deny |
 | 유지보수 | 플랫폼별 prompt 따로 관리 | 공통 prompt를 변환 | 중복 prompt는 drift가 커지므로 공통 소스에서 생성 |
@@ -929,6 +962,8 @@ npx give-me-job doctor
 - 이메일 draft와 브라우저 반자동 입력 중 우선 구현 범위
 - 최종 제출 승인 UX와 오제출 방지 정책
 - npm package 이름과 CLI 명령 체계
+- `give-me-job-skills` 별칭 패키지 또는 bin 제공 방식
+- `npx skills` 이름을 실제로 확보할지 여부
 - Codex plugin manifest와 marketplace 구조
 - Claude Code subagent frontmatter 표준
 - OpenCode agent frontmatter와 `opencode.json` 생성 범위
