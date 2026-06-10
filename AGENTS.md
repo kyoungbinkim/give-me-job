@@ -29,6 +29,7 @@ Before publishing or pushing release changes, run:
 node tools/validate-skills.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
 node tools/validate-application.mjs .tmp-release-check/demo-backend
+node tools/validate-job-sources.mjs
 ```
 
 Do not commit generated user application packages under `applications/`.

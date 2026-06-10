@@ -125,6 +125,9 @@ node tools/validate-application.mjs applications/kakao-backend
 
 See [docs/quickstart.md](docs/quickstart.md), [docs/safety.md](docs/safety.md), and [docs/release-checklist.md](docs/release-checklist.md).
 
+For the Korea-first competitive product roadmap, see [docs/competitive-v1-roadmap.md](docs/competitive-v1-roadmap.md).
+For Korean job-source setup, see [docs/integrations/job-sources.md](docs/integrations/job-sources.md).
+
 ## Skills
 
 - `resume-intake`: Creates and improves `resume.md` by turning raw career input into structured evidence.
@@ -161,6 +164,7 @@ node tools/validate-skills.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
 node tools/validate-application.mjs .tmp-release-check/demo-backend
 node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
+node tools/validate-job-sources.mjs
 ```
 
 The validator checks:
@@ -174,6 +178,7 @@ The validator checks:
 - banned auxiliary docs inside skill folders
 - core `resume.md` evidence rules in the relevant skills
 - release docs, package templates, and workflow helper scripts
+- Korean job-source adapters and fixtures
 
 ## Repository Structure
 
@@ -182,6 +187,8 @@ The validator checks:
 ├── AGENTS.md
 ├── agent.md
 ├── docs/
+│   ├── competitive-v1-roadmap.md
+│   ├── integrations/
 │   ├── quickstart.md
 │   ├── release-checklist.md
 │   └── safety.md
@@ -198,8 +205,11 @@ The validator checks:
 │   ├── fixtures/
 │   └── golden/
 ├── tools/
+│   ├── fetch-jobs.mjs
 │   ├── init-application.mjs
+│   ├── normalize-job.mjs
 │   ├── validate-application.mjs
+│   ├── validate-job-sources.mjs
 │   └── validate-skills.mjs
 └── job-agent-plan.md
 ```

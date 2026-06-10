@@ -20,6 +20,7 @@ node_modules/
 # Generated application packages
 /applications/
 /.tmp-release-check/
+/data/
 
 # Python
 __pycache__/

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <items>
+    <item>
+      <wantedAuthNo>KJDEMO001</wantedAuthNo>
+      <wantedInfoUrl>https://www.work24.go.kr/jobs/demo/KJDEMO001</wantedInfoUrl>
+      <company>데모공공</company>
+      <title>공공서비스 백엔드 개발자</title>
+      <jobCont>Java 기반 공공서비스 API 개발</jobCont>
+      <career>신입</career>
+      <education>대졸</education>
+      <region>세종</region>
+      <empTpNm>정규직</empTpNm>
+      <regDt>2026-06-10</regDt>
+      <closeDt>2026-06-30</closeDt>
+      <closeType>접수마감일</closeType>
+    </item>
+  </items>
+</response>

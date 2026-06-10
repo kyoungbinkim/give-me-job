@@ -125,6 +125,9 @@ node tools/validate-application.mjs applications/kakao-backend
 
 자세한 내용은 [quickstart](quickstart.md), [safety](safety.md), [release checklist](release-checklist.md)를 참고하세요.
 
+한국 시장에서 경쟁 가능한 v1 제품 로드맵은 [competitive-v1-roadmap](competitive-v1-roadmap.md)을 참고하세요.
+한국 공고 수집 연동 설정은 [integrations/job-sources](integrations/job-sources.md)를 참고하세요.
+
 ## Skills
 
 - `resume-intake`: 원시 경력/경험 입력을 구조화해 `resume.md`를 만들거나 개선합니다.
@@ -161,6 +164,7 @@ node tools/validate-skills.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
 node tools/validate-application.mjs .tmp-release-check/demo-backend
 node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
+node tools/validate-job-sources.mjs
 ```
 
 검증 항목:
@@ -174,6 +178,7 @@ node tools/validate-application.mjs examples/demo-new-grad-backend/applications/
 - Skill 폴더 내부 금지 보조 문서 여부
 - 관련 Skill의 핵심 `resume.md` 근거 규칙 포함 여부
 - 배포 문서, 패키지 템플릿, 워크플로우 보조 스크립트 존재 여부
+- 한국 공고 수집 어댑터와 fixture 존재 여부
 
 ## 저장소 구조
 
@@ -182,6 +187,8 @@ node tools/validate-application.mjs examples/demo-new-grad-backend/applications/
 ├── AGENTS.md
 ├── agent.md
 ├── docs/
+│   ├── competitive-v1-roadmap.md
+│   ├── integrations/
 │   ├── quickstart.md
 │   ├── release-checklist.md
 │   └── safety.md
@@ -198,8 +205,11 @@ node tools/validate-application.mjs examples/demo-new-grad-backend/applications/
 │   ├── fixtures/
 │   └── golden/
 ├── tools/
+│   ├── fetch-jobs.mjs
 │   ├── init-application.mjs
+│   ├── normalize-job.mjs
 │   ├── validate-application.mjs
+│   ├── validate-job-sources.mjs
 │   └── validate-skills.mjs
 └── job-agent-plan.md
 ```

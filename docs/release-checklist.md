@@ -20,6 +20,7 @@ Use this checklist before tagging a public release.
 
 - `node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force` creates a package.
 - `node tools/validate-application.mjs .tmp-release-check/demo-backend` passes.
+- `node tools/validate-job-sources.mjs` passes.
 - Generated user packages remain ignored by Git.
 - At least one checked-in demo package exists under `examples/`.
 

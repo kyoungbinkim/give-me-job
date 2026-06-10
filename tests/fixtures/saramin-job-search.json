@@ -1,0 +1,46 @@
+{
+  "job-search": {
+    "jobs": {
+      "job": [
+        {
+          "id": "48392011",
+          "url": "https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=48392011",
+          "active": 1,
+          "posting-timestamp": "1781082000",
+          "expiration-timestamp": "1781686800",
+          "close-type": "1",
+          "company": {
+            "name": "데모테크"
+          },
+          "position": {
+            "title": "백엔드 개발자 신입 채용",
+            "location": {
+              "name": "서울"
+            },
+            "job-type": {
+              "name": "정규직"
+            },
+            "industry": {
+              "name": "IT"
+            },
+            "job-mid-code": {
+              "name": "개발"
+            },
+            "job-code": {
+              "name": "백엔드"
+            },
+            "experience-level": {
+              "name": "신입",
+              "min": "0",
+              "max": "0"
+            },
+            "required-education-level": {
+              "name": "대졸(4년) 이상"
+            }
+          },
+          "keyword": "Java,Spring Boot,API,MySQL"
+        }
+      ]
+    }
+  }
+}

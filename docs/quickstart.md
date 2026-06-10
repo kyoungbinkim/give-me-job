@@ -52,3 +52,19 @@ Validation checks required files, evidence map presence, HR blockers, and manual
 ## 5. Submit Manually
 
 Review the final text and checklist yourself. This project does not click submit, send email, bypass CAPTCHA, log in, or transmit personal information.
+
+## Optional: Fetch Jobs
+
+Saramin live API:
+
+```bash
+node tools/fetch-jobs.mjs --source saramin --keywords "백엔드 Java" --deadline tomorrow --count 20
+```
+
+Fixture-based validation without API keys:
+
+```bash
+node tools/validate-job-sources.mjs
+```
+
+See [integrations/job-sources.md](integrations/job-sources.md).
