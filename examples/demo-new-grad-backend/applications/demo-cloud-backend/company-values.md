@@ -1,0 +1,17 @@
+## Company Values Analysis
+- Source: Not provided
+- Company: Demo Cloud
+- Talent Keywords:
+- Core Values:
+- Preferred Behaviors:
+- Tone To Use:
+  - Practical, evidence-based, clear about project scope.
+- Tone To Avoid:
+  - Overclaiming production impact from a local project.
+- Resume Evidence Candidates:
+  - E1. Order API Reliability Project
+  - E2. Query Performance Improvement
+- Inferences:
+  - No company-values source was provided. Use JD evidence only.
+- Risks:
+  - Do not invent Demo Cloud culture or values.

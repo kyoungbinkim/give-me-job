@@ -1,0 +1,54 @@
+# Quickstart
+
+This guide creates one local application package. It does not submit anything.
+
+## 1. Validate The Repository
+
+```bash
+node tools/validate-skills.mjs
+```
+
+## 2. Create A Package Folder
+
+```bash
+node tools/init-application.mjs --company kakao --role backend
+```
+
+This creates:
+
+```txt
+applications/kakao-backend/
+```
+
+The `applications/` directory is ignored by Git because it may contain personal application data.
+
+## 3. Run The Agent Workflow
+
+Ask your coding agent:
+
+```txt
+Read agent.md and prepare the full package in applications/kakao-backend using my resume.md and this JD.
+```
+
+The agent should fill:
+
+- `jd-analysis.md`
+- `company-values.md`
+- `cover-letter-draft.md`
+- `evidence-map.md`
+- `hr-review.md`
+- `cover-letter-final.md`
+- `submission-checklist.md`
+- `workflow.md`
+
+## 4. Validate The Package
+
+```bash
+node tools/validate-application.mjs applications/kakao-backend
+```
+
+Validation checks required files, evidence map presence, HR blockers, and manual submission reminders.
+
+## 5. Submit Manually
+
+Review the final text and checklist yourself. This project does not click submit, send email, bypass CAPTCHA, log in, or transmit personal information.

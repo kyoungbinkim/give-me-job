@@ -17,6 +17,10 @@ build/
 coverage/
 node_modules/
 
+# Generated application packages
+/applications/
+/.tmp-release-check/
+
 # Python
 __pycache__/
 .pytest_cache/

@@ -11,6 +11,8 @@ Use this skill to convert a hiring post into practical selection criteria.
 
 1. Accept a JD URL, pasted JD text, or mixed notes.
 2. Extract the basic facts:
+   - source URL or source type
+   - accessed date when browsing or checking a live posting
    - company
    - role
    - seniority
@@ -29,6 +31,8 @@ Use this structure:
 ```md
 ## JD Analysis
 - Company:
+- Source:
+- Accessed Date:
 - Role:
 - Career Level:
 - Main Responsibilities:
@@ -38,6 +42,7 @@ Use this structure:
 - Resume Keywords:
 - Cover Letter Angles:
 - Risk/Gaps:
+- Unknown Or Unverified Fields:
 - Questions To Ask:
 ```
 

@@ -1,0 +1,34 @@
+## JD Analysis
+- Company: Demo Cloud
+- Source: examples/demo-new-grad-backend/jd.md
+- Accessed Date: Local fixture
+- Role: Backend Engineer
+- Career Level: New Grad
+- Main Responsibilities:
+  - Build backend APIs.
+  - Improve reliability and test coverage.
+  - Work with database-backed services.
+- Must-Have:
+  - Java or Kotlin backend development experience.
+  - API design and database understanding.
+- Nice-To-Have:
+  - Reliability troubleshooting.
+  - Query performance improvement.
+- Hidden Evaluation Criteria:
+  - Can explain a concrete backend problem, tradeoff, action, and result.
+- Resume Keywords:
+  - Spring Boot
+  - API
+  - integration test
+  - transaction
+  - SQL
+- Cover Letter Angles:
+  - Reliability project using idempotency and retry tests.
+  - Query performance analysis with pagination and fetch strategy.
+- Risk/Gaps:
+  - Demo has local project evidence, not production work experience.
+- Unknown Or Unverified Fields:
+  - Deadline
+  - Required attachments
+- Questions To Ask:
+  - Are there exact character limits or required file formats?

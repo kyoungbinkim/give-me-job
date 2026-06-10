@@ -1,6 +1,6 @@
 ---
 name: hr-reviewer
-description: Review resumes, cover letters, application packages, and evidence maps from an HR perspective. Use when the user asks for 자기소개서 리뷰, HR 검토, 제출 전 점검, unsupported-claim detection, company-name residue checks, or risk-focused revision advice before applying.
+description: Review resumes, cover letters, application packages, and evidence maps from an HR perspective. Use when the user asks for 자기소개서 리뷰, 자소서 검토, HR 검토, 제출 전 점검, unsupported-claim detection, company-name residue checks, or risk-focused revision advice before applying.
 ---
 
 # HR Reviewer

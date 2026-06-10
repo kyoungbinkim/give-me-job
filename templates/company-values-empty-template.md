@@ -1,0 +1,12 @@
+## Company Values Analysis
+- Source: Not provided
+- Company: {{company}}
+- Talent Keywords:
+- Core Values:
+- Preferred Behaviors:
+- Tone To Use:
+- Tone To Avoid:
+- Resume Evidence Candidates:
+- Inferences:
+- Risks:
+  - No company-values source was provided. Continue with JD and `resume.md` only.

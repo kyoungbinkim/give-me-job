@@ -3,6 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const skillsDir = path.join(root, "skills");
+const agentFile = path.join(root, "agent.md");
+const agentsFile = path.join(root, "AGENTS.md");
 const expectedSkills = [
   "resume-intake",
   "jd-analyzer",
@@ -18,6 +20,19 @@ const bannedDocs = new Set([
   "QUICK_REFERENCE.md",
   "CHANGELOG.md",
 ]);
+const requiredReleaseFiles = [
+  "docs/quickstart.md",
+  "docs/safety.md",
+  "docs/release-checklist.md",
+  "templates/workflow-template.md",
+  "templates/company-values-empty-template.md",
+  "tools/init-application.mjs",
+  "tools/validate-application.mjs",
+  "examples/demo-new-grad-backend/applications/demo-cloud-backend/workflow.md",
+  "examples/demo-new-grad-backend/applications/demo-cloud-backend/evidence-map.md",
+  "examples/demo-new-grad-backend/applications/demo-cloud-backend/hr-review.md",
+  "examples/demo-new-grad-backend/applications/demo-cloud-backend/cover-letter-final.md",
+];
 
 const errors = [];
 
@@ -98,7 +113,59 @@ async function validateSkill(skillName) {
   }
 }
 
+async function validateAgent() {
+  if (!(await exists(agentsFile))) {
+    errors.push("missing root AGENTS.md repository instructions");
+  } else {
+    const text = await readFile(agentsFile, "utf8");
+    for (const snippet of ["agent.md", "skills/", "resume.md", "validate-skills.mjs"]) {
+      if (!text.includes(snippet)) {
+        errors.push(`AGENTS.md: missing repository instruction snippet: ${snippet}`);
+      }
+    }
+  }
+
+  if (!(await exists(agentFile))) {
+    errors.push("missing root agent.md orchestrator");
+    return;
+  }
+
+  const text = await readFile(agentFile, "utf8");
+  const normalizedText = text.toLowerCase();
+  const requiredSnippets = [
+    "resume.md",
+    "applications/<company-role>/",
+    "jd-analyzer",
+    "cover-letter-writer",
+    "hr-reviewer",
+    "application-packager",
+    "do not click submit",
+    "do not run this agent for final submission",
+  ];
+
+  for (const snippet of requiredSnippets) {
+    if (!normalizedText.includes(snippet.toLowerCase())) {
+      errors.push(`agent.md: missing required orchestration policy or step: ${snippet}`);
+    }
+  }
+
+  if (!/Stop Conditions/i.test(text)) {
+    errors.push("agent.md: missing stop conditions");
+  }
+  if (!/Workflow Log/i.test(text)) {
+    errors.push("agent.md: missing workflow log guidance");
+  }
+}
+
 async function main() {
+  await validateAgent();
+
+  for (const file of requiredReleaseFiles) {
+    if (!(await exists(path.join(root, file)))) {
+      errors.push(`missing release file: ${file}`);
+    }
+  }
+
   if (!(await exists(skillsDir))) {
     errors.push("missing skills/ directory");
   } else {

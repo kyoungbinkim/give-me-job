@@ -27,7 +27,7 @@ Write cover letters from evidence, not imagination. Every important claim must b
 2. Analyze the JD requirements or use an existing JD analysis.
 3. If company values are provided, use them as supporting context only.
 4. Select the strongest matching `resume.md` evidence IDs.
-5. When the user needs a stronger "필살기" or the experience feels vague, decompose the selected evidence with `references/3c4p-experience-framework.md`.
+5. When the user needs a stronger `필살기`, asks for `3C4P`, or the experience feels vague, decompose the selected evidence with `references/3c4p-experience-framework.md`.
 6. If evidence is missing, ask follow-up questions before drafting.
 7. Draft in a structure suitable for the user's career type:
    - new grad: motivation, relevant project, learning, contribution
@@ -58,6 +58,12 @@ Read `references/3c4p-experience-framework.md` when decomposing an experience in
 - JD Requirement:
 - Company Value:
 
+## Follow-Up Questions
+```
+
+Include `3C4P Notes` only when the user asks for 3C4P, asks for a stronger 필살기, or the selected experience needs decomposition before drafting:
+
+```md
 ## 3C4P Notes
 - Customer:
 - Company:
@@ -66,8 +72,6 @@ Read `references/3c4p-experience-framework.md` when decomposing an experience in
 - Place:
 - Price:
 - Promotion:
-
-## Follow-Up Questions
 ```
 
 ## Fallback

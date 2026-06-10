@@ -1,0 +1,24 @@
+## HR Review
+- Overall Score: 8/10
+- Strong Points:
+  - JD의 API 신뢰성, 테스트, 데이터베이스 이해와 직접 연결된다.
+  - 신입 지원자 수준에서 프로젝트 범위를 과장하지 않는다.
+- Weak Points:
+  - 회사 고유 맥락은 없으므로 실제 지원 시 인재상이나 제품 맥락을 보강하면 좋다.
+- Risky Claims:
+  - None
+- Missing Evidence:
+  - None for the demo question
+- JD Fit:
+  - Strong for backend reliability and API testing.
+- Company Fit:
+  - Limited because no company-values source was provided.
+- Interview Defense Risk:
+  - Low. E1 and E2 provide defendable project details.
+- Blocker: None
+- Recommended Revision:
+  - 실제 회사명과 공고 문항에 맞춰 마지막 기여 문장을 조정한다.
+- Final Submission Checklist:
+  - Confirm character limit.
+  - Confirm company name.
+  - Confirm required attachments.

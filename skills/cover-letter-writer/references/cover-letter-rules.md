@@ -26,6 +26,6 @@ The writing strategy follows these summarized sources:
 
 - STAFFS STORY Naver blog, 2024-07-30: emphasize company research, JD keywords, STAR structure, measurable results, differentiation, logical flow, and matching company needs to applicant experience.
 - Work24 cover letter guide: treat the cover letter as interview source material that shows role fit, company fit, motivation, and future contribution.
-- 3C4P cover letter interpretation from the user's notes: use Customer, Company, Competitor, Product, Place, Price, and Promotion to break down an experience into a persuasive "필살기" with measurable proof.
+- 3C4P cover letter interpretation from the user's notes: use Customer, Company, Competitor, Product, Place, Price, and Promotion to break down an experience into a persuasive 필살기 with measurable proof.
 
 Do not quote either source in generated cover letters.
