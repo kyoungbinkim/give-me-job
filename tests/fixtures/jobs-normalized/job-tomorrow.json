@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.2",
+  "source": "work24",
+  "sourceId": "TOMORROW-001",
+  "url": "https://example.com/jobs/tomorrow-001",
+  "company": "내일마감공공",
+  "title": "공공서비스 백엔드 개발자",
+  "role": "백엔드",
+  "careerLevel": "신입",
+  "experienceMin": 0,
+  "experienceMax": 1,
+  "education": "대졸",
+  "location": "세종",
+  "employmentType": "정규직",
+  "postingDate": "2026-06-01",
+  "deadline": "2026-06-11T23:59:59+09:00",
+  "closeType": "접수마감일",
+  "active": true,
+  "keywords": ["Java", "API", "공공서비스"],
+  "raw": {}
+}

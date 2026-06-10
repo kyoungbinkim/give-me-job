@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.2",
+  "source": "saramin",
+  "sourceId": "ROLLING-001",
+  "url": "https://example.com/jobs/rolling-001",
+  "company": "상시채용랩",
+  "title": "플랫폼 개발자 상시채용",
+  "role": "플랫폼",
+  "careerLevel": "경력",
+  "experienceMin": 3,
+  "experienceMax": null,
+  "education": "학력무관",
+  "location": "서울",
+  "employmentType": "정규직",
+  "postingDate": "2026-06-01",
+  "deadline": "",
+  "closeType": "상시",
+  "active": true,
+  "keywords": ["Kubernetes", "platform", "SRE"],
+  "raw": {}
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.2",
+  "source": "saramin",
+  "sourceId": "EXPIRED-001",
+  "url": "https://example.com/jobs/expired-001",
+  "company": "마감지난회사",
+  "title": "마감된 백엔드 공고",
+  "role": "백엔드",
+  "careerLevel": "신입",
+  "experienceMin": 0,
+  "experienceMax": 0,
+  "education": "대졸",
+  "location": "서울",
+  "employmentType": "정규직",
+  "postingDate": "2026-05-01",
+  "deadline": "2026-06-01",
+  "closeType": "접수마감일",
+  "active": false,
+  "keywords": ["Java"],
+  "raw": {}
+}

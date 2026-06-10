@@ -68,3 +68,17 @@ node tools/validate-job-sources.mjs
 ```
 
 See [integrations/job-sources.md](integrations/job-sources.md).
+
+## Optional: Prioritize Jobs
+
+```bash
+node tools/schedule-jobs.mjs --week --jobs data/jobs
+node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
+```
+
+Fixture validation:
+
+```bash
+node tools/validate-job-schedule.mjs
+node tools/validate-job-ranking.mjs
+```

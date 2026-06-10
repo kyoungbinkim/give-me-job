@@ -128,6 +128,13 @@ See [docs/quickstart.md](docs/quickstart.md), [docs/safety.md](docs/safety.md), 
 For the Korea-first competitive product roadmap, see [docs/competitive-v1-roadmap.md](docs/competitive-v1-roadmap.md).
 For Korean job-source setup, see [docs/integrations/job-sources.md](docs/integrations/job-sources.md).
 
+After fetching jobs, prioritize them with:
+
+```bash
+node tools/schedule-jobs.mjs --week --jobs data/jobs
+node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
+```
+
 ## Skills
 
 - `resume-intake`: Creates and improves `resume.md` by turning raw career input into structured evidence.
@@ -165,6 +172,8 @@ node tools/init-application.mjs --company demo --role backend --out .tmp-release
 node tools/validate-application.mjs .tmp-release-check/demo-backend
 node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
 node tools/validate-job-sources.mjs
+node tools/validate-job-schedule.mjs
+node tools/validate-job-ranking.mjs
 ```
 
 The validator checks:
@@ -179,6 +188,7 @@ The validator checks:
 - core `resume.md` evidence rules in the relevant skills
 - release docs, package templates, and workflow helper scripts
 - Korean job-source adapters and fixtures
+- job deadline scheduling and fit ranking tools
 
 ## Repository Structure
 
@@ -208,7 +218,11 @@ The validator checks:
 │   ├── fetch-jobs.mjs
 │   ├── init-application.mjs
 │   ├── normalize-job.mjs
+│   ├── rank-jobs.mjs
+│   ├── schedule-jobs.mjs
 │   ├── validate-application.mjs
+│   ├── validate-job-ranking.mjs
+│   ├── validate-job-schedule.mjs
 │   ├── validate-job-sources.mjs
 │   └── validate-skills.mjs
 └── job-agent-plan.md

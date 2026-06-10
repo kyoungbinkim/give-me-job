@@ -30,6 +30,8 @@ node tools/validate-skills.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
 node tools/validate-application.mjs .tmp-release-check/demo-backend
 node tools/validate-job-sources.mjs
+node tools/validate-job-schedule.mjs
+node tools/validate-job-ranking.mjs
 ```
 
 Do not commit generated user application packages under `applications/`.

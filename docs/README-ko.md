@@ -128,6 +128,13 @@ node tools/validate-application.mjs applications/kakao-backend
 한국 시장에서 경쟁 가능한 v1 제품 로드맵은 [competitive-v1-roadmap](competitive-v1-roadmap.md)을 참고하세요.
 한국 공고 수집 연동 설정은 [integrations/job-sources](integrations/job-sources.md)를 참고하세요.
 
+공고를 수집한 뒤에는 다음 명령으로 마감 일정과 지원 우선순위를 확인할 수 있습니다.
+
+```bash
+node tools/schedule-jobs.mjs --week --jobs data/jobs
+node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
+```
+
 ## Skills
 
 - `resume-intake`: 원시 경력/경험 입력을 구조화해 `resume.md`를 만들거나 개선합니다.
@@ -165,6 +172,8 @@ node tools/init-application.mjs --company demo --role backend --out .tmp-release
 node tools/validate-application.mjs .tmp-release-check/demo-backend
 node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
 node tools/validate-job-sources.mjs
+node tools/validate-job-schedule.mjs
+node tools/validate-job-ranking.mjs
 ```
 
 검증 항목:
@@ -179,6 +188,7 @@ node tools/validate-job-sources.mjs
 - 관련 Skill의 핵심 `resume.md` 근거 규칙 포함 여부
 - 배포 문서, 패키지 템플릿, 워크플로우 보조 스크립트 존재 여부
 - 한국 공고 수집 어댑터와 fixture 존재 여부
+- 공고 마감 일정과 적합도 랭킹 도구 존재 여부
 
 ## 저장소 구조
 
@@ -208,7 +218,11 @@ node tools/validate-job-sources.mjs
 │   ├── fetch-jobs.mjs
 │   ├── init-application.mjs
 │   ├── normalize-job.mjs
+│   ├── rank-jobs.mjs
+│   ├── schedule-jobs.mjs
 │   ├── validate-application.mjs
+│   ├── validate-job-ranking.mjs
+│   ├── validate-job-schedule.mjs
 │   ├── validate-job-sources.mjs
 │   └── validate-skills.mjs
 └── job-agent-plan.md

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.2",
+  "source": "saramin",
+  "sourceId": "TODAY-001",
+  "url": "https://example.com/jobs/today-001",
+  "company": "오늘마감테크",
+  "title": "Java 백엔드 신입 개발자",
+  "role": "백엔드",
+  "careerLevel": "신입",
+  "experienceMin": 0,
+  "experienceMax": 0,
+  "education": "대졸",
+  "location": "서울",
+  "employmentType": "정규직",
+  "postingDate": "2026-06-01",
+  "deadline": "2026-06-10",
+  "closeType": "접수마감일",
+  "active": true,
+  "keywords": ["Java", "Spring Boot", "API", "MySQL", "backend reliability"],
+  "raw": {}
+}

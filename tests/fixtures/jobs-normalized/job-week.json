@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.2",
+  "source": "jobkorea",
+  "sourceId": "WEEK-001",
+  "url": "https://example.com/jobs/week-001",
+  "company": "이번주커머스",
+  "title": "커머스 API 개발자",
+  "role": "백엔드",
+  "careerLevel": "신입/경력",
+  "experienceMin": 0,
+  "experienceMax": 3,
+  "education": "학력무관",
+  "location": "서울",
+  "employmentType": "정규직",
+  "postingDate": "2026-06-01",
+  "deadline": "2026-06-15",
+  "closeType": "접수마감일",
+  "active": true,
+  "keywords": ["Java", "Spring Boot", "commerce", "API", "data consistency"],
+  "raw": {}
+}

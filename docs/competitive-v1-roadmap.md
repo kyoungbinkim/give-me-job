@@ -127,6 +127,8 @@ Root `data/` should be ignored by Git by default because it may contain personal
 
 ### v0.2: Saramin Job Discovery
 
+Status: Implemented in `v0.2.0`.
+
 Goal: make job discovery real.
 
 - Add `tools/job-sources/saramin.mjs`.
@@ -146,18 +148,21 @@ Acceptance:
 
 ### v0.3: Deadline And Fit Ranking
 
+Status: Implemented.
+
 Goal: prioritize jobs worth applying to.
 
-- Add `tools/schedule-jobs.mjs` for today, tomorrow, and this-week deadlines.
-- Add `tools/rank-jobs.mjs` for JD-resume fit scoring.
-- Score by role match, tech stack, career level, education, location, evidence coverage, deadline urgency, and application risk.
-- Output `Job Fit` Markdown for agent use.
+- [x] Add `tools/schedule-jobs.mjs` for today, tomorrow, and this-week deadlines.
+- [x] Add `tools/rank-jobs.mjs` for JD-resume fit scoring.
+- [x] Score by role match, tech stack, career level, education, location, evidence coverage, deadline urgency, and application risk.
+- [x] Output `Job Fit` Markdown for agent use.
+- [x] Add fixture validation with `tools/validate-job-schedule.mjs` and `tools/validate-job-ranking.mjs`.
 
 Acceptance:
 
-- The tool can show today/tomorrow/weekly deadlines.
-- Fit score includes strong matches, weak matches, missing evidence, recommended resume evidence, and risk.
-- Weak-fit jobs can be explicitly marked as "do not apply yet".
+- [x] The tool can show today/tomorrow/weekly deadlines.
+- [x] Fit score includes strong matches, weak matches, missing evidence, recommended resume evidence, and risk.
+- [x] Weak-fit jobs can be explicitly marked as "Do not apply yet".
 
 ### v0.4: One-Command Application Preparation
 
@@ -281,8 +286,8 @@ Build in this order:
 2. `tools/fetch-jobs.mjs`
 3. `docs/integrations/saramin.md`
 4. `tools/normalize-job.mjs`
-5. `tools/schedule-jobs.mjs`
-6. `tools/rank-jobs.mjs`
+5. `tools/schedule-jobs.mjs` - implemented
+6. `tools/rank-jobs.mjs` - implemented
 7. `tools/prepare-application.mjs`
 8. `tools/apply-browser.mjs`
 9. `tools/apply-adapters/saramin-apply.mjs`
