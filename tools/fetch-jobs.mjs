@@ -1,6 +1,7 @@
 import path from "node:path";
 import { loadDotEnv } from "./env.mjs";
 import { summarizeJobs, writeJobs } from "./normalize-job.mjs";
+import { relativeDisplayPath } from "./platform.mjs";
 import { fetchSaraminJobs } from "./job-sources/saramin.mjs";
 import { fetchWork24Jobs } from "./job-sources/work24.mjs";
 import { fetchJobKoreaJobs } from "./job-sources/jobkorea.mjs";
@@ -98,7 +99,7 @@ async function main() {
 
   console.log(`Fetched ${jobs.length} ${source} jobs`);
   for (const file of written) {
-    console.log(path.relative(process.cwd(), file));
+    console.log(relativeDisplayPath(process.cwd(), file));
   }
 }
 

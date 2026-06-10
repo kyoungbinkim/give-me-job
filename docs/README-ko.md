@@ -10,6 +10,8 @@
 
 영문 문서는 [README.md](../README.md)를 참고하세요.
 
+로컬 도구는 Node.js 18.17 이상에서 Windows PowerShell, Ubuntu/Linux, macOS를 지원합니다. 자세한 내용은 [platform-support](platform-support.md)를 참고하세요.
+
 ## 워크플로우
 
 워크플로우는 두 계층으로 나뉩니다.
@@ -108,7 +110,7 @@ give me job: use resume.md and this JD to prepare the full package
 저장소를 검증합니다.
 
 ```bash
-node tools/validate-skills.mjs
+npm test
 ```
 
 지원 패키지 폴더를 만듭니다.
@@ -176,6 +178,12 @@ node tools/validate-job-schedule.mjs
 node tools/validate-job-ranking.mjs
 ```
 
+Windows, Ubuntu/Linux, macOS에서 동일하게 전체 검증을 실행하려면 다음을 사용합니다.
+
+```bash
+npm test
+```
+
 검증 항목:
 
 - 루트 `AGENTS.md` 저장소 지시문 존재 여부
@@ -199,6 +207,7 @@ node tools/validate-job-ranking.mjs
 ├── docs/
 │   ├── competitive-v1-roadmap.md
 │   ├── integrations/
+│   ├── platform-support.md
 │   ├── quickstart.md
 │   ├── release-checklist.md
 │   └── safety.md

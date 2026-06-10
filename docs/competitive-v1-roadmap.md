@@ -88,6 +88,8 @@ give-me-job/
 
 The repository should remain usable as an agent skill repo. CLI helpers should scaffold, fetch, normalize, validate, and automate browser input, while the agent remains responsible for evidence-grounded judgment and Korean writing quality.
 
+Cross-platform status: Implemented in `v0.3.1`. Local tools use Node.js-only scripts, shared platform helpers, portable `/`-separated display paths, and `npm test` for Windows PowerShell, Ubuntu/Linux, and macOS validation.
+
 ## 4. Common Job Schema
 
 All job-source adapters should normalize into this minimum schema:

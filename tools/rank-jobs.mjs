@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
-import { pathToFileURL } from "node:url";
 import { readJobs, parseTargetList } from "./job-store.mjs";
 import { statusFor } from "./schedule-jobs.mjs";
+import { isMainModule } from "./platform.mjs";
 
 const TECH_TERMS = [
   "java",
@@ -239,7 +239,7 @@ async function main() {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isMainModule(import.meta.url)) {
   main().catch((error) => {
     console.error(error.message);
     process.exit(1);

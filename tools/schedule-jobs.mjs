@@ -1,5 +1,5 @@
 import { readJobs, parseTargetList } from "./job-store.mjs";
-import { pathToFileURL } from "node:url";
+import { isMainModule } from "./platform.mjs";
 
 function parseArgs(argv) {
   const args = {};
@@ -120,7 +120,7 @@ async function main() {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isMainModule(import.meta.url)) {
   main().catch((error) => {
     console.error(error.message);
     process.exit(1);

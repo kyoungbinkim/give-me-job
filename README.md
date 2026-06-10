@@ -10,6 +10,8 @@ Repository-level agent discovery is provided by [`AGENTS.md`](AGENTS.md). Genera
 
 Korean documentation is available at [docs/README-ko.md](docs/README-ko.md).
 
+The local tools support Windows PowerShell, Ubuntu/Linux, and macOS with Node.js 18.17 or newer. See [docs/platform-support.md](docs/platform-support.md).
+
 ## Workflow
 
 The workflow has two layers:
@@ -108,7 +110,7 @@ give me job: use resume.md and this JD to prepare the full package
 Validate the repository:
 
 ```bash
-node tools/validate-skills.mjs
+npm test
 ```
 
 Create a local application package:
@@ -176,6 +178,12 @@ node tools/validate-job-schedule.mjs
 node tools/validate-job-ranking.mjs
 ```
 
+You can run the same checks on Windows, Ubuntu/Linux, and macOS with:
+
+```bash
+npm test
+```
+
 The validator checks:
 
 - root `AGENTS.md` repository instruction presence
@@ -199,6 +207,7 @@ The validator checks:
 ├── docs/
 │   ├── competitive-v1-roadmap.md
 │   ├── integrations/
+│   ├── platform-support.md
 │   ├── quickstart.md
 │   ├── release-checklist.md
 │   └── safety.md

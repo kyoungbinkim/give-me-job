@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { relativeDisplayPath } from "./platform.mjs";
 
 const root = process.cwd();
 
@@ -73,7 +74,7 @@ async function main() {
   const packageDir = path.resolve(root, out, slug);
   await mkdir(packageDir, { recursive: true });
 
-  const values = { company, role, slug, packagePath: path.relative(root, packageDir) };
+  const values = { company, role, slug, packagePath: relativeDisplayPath(root, packageDir) };
   const workflow = render(await readTemplate("workflow-template.md"), values);
   const companyValues = render(await readTemplate("company-values-empty-template.md"), values);
 
@@ -92,7 +93,7 @@ async function main() {
     await writeNew(path.join(packageDir, fileName), content, force);
   }
 
-  console.log(`Created application package: ${path.relative(root, packageDir)}`);
+  console.log(`Created application package: ${relativeDisplayPath(root, packageDir)}`);
 }
 
 main().catch((error) => {

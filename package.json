@@ -1,0 +1,15 @@
+{
+  "name": "give-me-job",
+  "version": "0.3.1",
+  "private": true,
+  "description": "Korea-first job application agent skills and workflow tools.",
+  "type": "module",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "test": "node tools/validate-skills.mjs && node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node tools/validate-application.mjs .tmp-release-check/demo-backend && node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend",
+    "test:skills": "node tools/validate-skills.mjs",
+    "test:jobs": "node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs"
+  }
+}

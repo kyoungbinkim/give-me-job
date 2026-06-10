@@ -26,6 +26,12 @@ When the user asks to run the full workflow, says "give me job", or wants a comp
 Before publishing or pushing release changes, run:
 
 ```bash
+npm test
+```
+
+Equivalent manual checks:
+
+```bash
 node tools/validate-skills.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
 node tools/validate-application.mjs .tmp-release-check/demo-backend

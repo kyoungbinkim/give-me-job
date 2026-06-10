@@ -8,6 +8,7 @@ Use this checklist before tagging a public release.
 - The release is not described as an auto-apply or auto-submit tool.
 - `README.md` and `docs/README-ko.md` describe the same workflow.
 - `docs/safety.md` lists allowed and disallowed actions.
+- `docs/platform-support.md` documents Windows, Ubuntu/Linux, and macOS validation.
 
 ## Agent Compatibility
 
@@ -15,6 +16,7 @@ Use this checklist before tagging a public release.
 - `agent.md` references all six skills.
 - Each skill has valid `SKILL.md` frontmatter.
 - `node tools/validate-skills.mjs` passes.
+- `npm test` passes.
 
 ## Package Workflow
 

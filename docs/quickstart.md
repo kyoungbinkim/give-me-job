@@ -5,7 +5,7 @@ This guide creates one local application package. It does not submit anything.
 ## 1. Validate The Repository
 
 ```bash
-node tools/validate-skills.mjs
+npm test
 ```
 
 ## 2. Create A Package Folder
