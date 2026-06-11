@@ -48,6 +48,20 @@ async function assertSkills(rootDir) {
   }
 }
 
+async function assertSupportBundle(rootDir) {
+  const bundleRoot = path.join(rootDir, "give-me-job");
+  for (const relativePath of [
+    "agent.md",
+    path.join("tools", "init-application.mjs"),
+    path.join("tools", "validate-application.mjs"),
+    path.join("templates", "workflow-template.md"),
+    path.join("tests", "fixtures", "resume-new-grad.md"),
+  ]) {
+    const file = path.join(bundleRoot, relativePath);
+    assert(await exists(file), `missing installed support file: ${file}`);
+  }
+}
+
 async function main() {
   const temp = await mkdtemp(path.join(os.tmpdir(), "give-me-job-install-"));
   const home = path.join(temp, "home");
@@ -62,8 +76,11 @@ async function main() {
     const installAll = run(["install", "--target", "all"], { home });
     assert(installAll.status === 0, `user install failed: ${installAll.stderr}`);
     await assertSkills(path.join(home, ".agents", "skills"));
+    await assertSupportBundle(path.join(home, ".agents", "skills"));
     await assertSkills(path.join(home, ".config", "opencode", "skills"));
+    await assertSupportBundle(path.join(home, ".config", "opencode", "skills"));
     await assertSkills(path.join(home, ".claude", "skills"));
+    await assertSupportBundle(path.join(home, ".claude", "skills"));
 
     const manifest = JSON.parse(await readFile(path.join(home, ".give-me-job", "install-manifest.json"), "utf8"));
     assert(manifest.entries.length > expectedSkills.length, "manifest did not record installed files");
@@ -86,8 +103,11 @@ async function main() {
       assert(result.status === 0, `project install failed for ${target}: ${result.stderr}`);
     }
     await assertSkills(path.join(project, ".agents", "skills"));
+    await assertSupportBundle(path.join(project, ".agents", "skills"));
     await assertSkills(path.join(project, ".opencode", "skills"));
+    await assertSupportBundle(path.join(project, ".opencode", "skills"));
     await assertSkills(path.join(project, ".claude", "skills"));
+    await assertSupportBundle(path.join(project, ".claude", "skills"));
 
     console.log("npm install validation passed");
   } finally {

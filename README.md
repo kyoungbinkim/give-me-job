@@ -161,7 +161,7 @@ node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
 
 ## npm Install
 
-The npm package installs the six domain skills plus the `give-me-job` orchestrator skill.
+The npm package installs the six domain skills plus the `give-me-job` orchestrator skill. The orchestrator skill includes `agent.md`, `tools/`, `templates/`, and validation fixtures so local workflow tools are available after installation.
 
 ```bash
 npx give-me-job install

@@ -8,7 +8,7 @@ Install `give-me-job` as reusable agent skills for Codex, OpenCode, and Claude C
 npx give-me-job install
 ```
 
-This installs the six domain skills plus the `give-me-job` orchestrator skill for all supported agents in your user profile.
+This installs the six domain skills plus the `give-me-job` orchestrator skill for all supported agents in your user profile. The orchestrator skill also includes `agent.md`, `tools/`, `templates/`, and validation fixtures so the local workflow tools are available after installation.
 
 You can also install the CLI globally:
 
@@ -39,6 +39,15 @@ User-scope install paths:
 Codex:      ~/.agents/skills/<skill>/SKILL.md
 OpenCode:   ~/.config/opencode/skills/<skill>/SKILL.md
 Claude Code: ~/.claude/skills/<skill>/SKILL.md
+```
+
+The support bundle is installed under each target's `give-me-job` skill folder:
+
+```txt
+<skills-root>/give-me-job/agent.md
+<skills-root>/give-me-job/tools/
+<skills-root>/give-me-job/templates/
+<skills-root>/give-me-job/tests/fixtures/
 ```
 
 Project-scope install paths:

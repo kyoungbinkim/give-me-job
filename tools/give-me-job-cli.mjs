@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
 import { constants as fsConstants } from "node:fs";
-import { access, mkdir, readdir, readFile, rm, rmdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,6 +19,14 @@ const skillNames = [
 const orchestratorSkillName = "give-me-job";
 const allSkillNames = [...skillNames, orchestratorSkillName];
 const targets = ["codex", "opencode", "claude-code"];
+const supportFiles = [
+  ".env.example",
+  "AGENTS.md",
+  "agent.md",
+  "templates",
+  "tools",
+  path.join("tests", "fixtures"),
+];
 
 function usage() {
   return `Usage:
@@ -151,7 +159,30 @@ async function readSkillSources() {
     content: Buffer.from(orchestrator, "utf8"),
   });
 
+  for (const support of supportFiles) {
+    const supportPath = path.join(packageRoot, support);
+    if (!(await exists(supportPath))) continue;
+
+    const entries = [];
+    const supportStats = await readdirOrFile(supportPath);
+    entries.push(...supportStats);
+
+    for (const file of entries) {
+      sources.push({
+        skillName: orchestratorSkillName,
+        relativePath: path.relative(packageRoot, file),
+        content: await readFile(file),
+      });
+    }
+  }
+
   return sources;
+}
+
+async function readdirOrFile(targetPath) {
+  const stats = await stat(targetPath);
+  if (stats.isFile()) return [targetPath];
+  return listFiles(targetPath);
 }
 
 async function readManifest() {
@@ -262,7 +293,7 @@ function printInstallSummary(entries, dryRun) {
   for (const [key, grouped] of byTarget.entries()) {
     const [target, scope] = key.split(":");
     const skillRoot = skillRootFor(target, scope);
-    console.log(`${dryRun ? "Would install" : "Installed"} ${allSkillNames.length} skills for ${target} (${scope}) at ${toPosixPath(skillRoot)}`);
+    console.log(`${dryRun ? "Would install" : "Installed"} ${allSkillNames.length} skills and support files for ${target} (${scope}) at ${toPosixPath(skillRoot)}`);
   }
 }
 
@@ -337,6 +368,14 @@ async function doctor(options) {
     for (const skill of allSkillNames) {
       const skillFile = path.join(root, skill, "SKILL.md");
       if (!(await exists(skillFile))) missing.push(skill);
+    }
+    const requiredSupportFiles = [
+      path.join(root, orchestratorSkillName, "agent.md"),
+      path.join(root, orchestratorSkillName, "tools", "init-application.mjs"),
+      path.join(root, orchestratorSkillName, "templates", "workflow-template.md"),
+    ];
+    for (const file of requiredSupportFiles) {
+      if (!(await exists(file))) missing.push(path.relative(root, file));
     }
     if (missing.length === 0) {
       console.log(`${target} (${scope}): OK at ${toPosixPath(root)}`);
