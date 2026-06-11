@@ -19,6 +19,7 @@ const skillNames = [
 const orchestratorSkillName = "give-me-job";
 const allSkillNames = [...skillNames, orchestratorSkillName];
 const targets = ["codex", "opencode", "claude-code"];
+const opencodeAgentName = "give-me-job";
 const supportFiles = [
   ".env.example",
   "AGENTS.md",
@@ -104,6 +105,20 @@ function skillRootFor(target, scope) {
   return path.join(home, ".claude", "skills");
 }
 
+function agentRootFor(target, scope) {
+  const home = homeDir();
+  if (target !== "opencode") return null;
+  if (scope === "project") return path.resolve(process.cwd(), ".opencode", "agents");
+  return path.join(home, ".config", "opencode", "agents");
+}
+
+function supportRootFor(target, scope) {
+  const home = homeDir();
+  if (target !== "opencode") return path.join(skillRootFor(target, scope), orchestratorSkillName);
+  if (scope === "project") return path.resolve(process.cwd(), ".opencode", orchestratorSkillName);
+  return path.join(home, ".config", "opencode", orchestratorSkillName);
+}
+
 async function exists(filePath) {
   try {
     await access(filePath, fsConstants.F_OK);
@@ -179,6 +194,34 @@ async function readSkillSources() {
   return sources;
 }
 
+async function readOpenCodeAgentSource() {
+  const agent = await readFile(path.join(packageRoot, "agent.md"), "utf8");
+  const content = `---\ndescription: Run the Korea-only give-me-job application workflow. Use when preparing a company-specific Korean job application package from resume.md, a JD, and optional company values while never submitting, logging in, bypassing CAPTCHA, or transmitting personal information.\nmode: primary\ntools:\n  write: true\n  edit: true\n  bash: true\n  webfetch: true\n---\n\n${agent}`;
+  return {
+    skillName: orchestratorSkillName,
+    relativePath: `${opencodeAgentName}.md`,
+    content: Buffer.from(content, "utf8"),
+  };
+}
+
+function destinationFor(target, scope, source) {
+  if (target === "opencode" && source.kind === "agent") {
+    return path.join(agentRootFor(target, scope), source.relativePath);
+  }
+  if (target === "opencode" && source.skillName === orchestratorSkillName && source.relativePath !== "SKILL.md") {
+    return path.join(supportRootFor(target, scope), source.relativePath);
+  }
+  return path.join(skillRootFor(target, scope), source.skillName, source.relativePath);
+}
+
+function sourcesForTarget(target, sources, opencodeAgentSource) {
+  if (target !== "opencode") return sources;
+  return [
+    ...sources.filter((source) => source.skillName !== orchestratorSkillName || source.relativePath !== "SKILL.md"),
+    { ...opencodeAgentSource, kind: "agent" },
+  ];
+}
+
 async function readdirOrFile(targetPath) {
   const stats = await stat(targetPath);
   if (stats.isFile()) return [targetPath];
@@ -235,15 +278,15 @@ async function install(options) {
   const chosenTargets = expandTargets(options.target);
   const scope = normalizeScope(options.scope);
   const sources = await readSkillSources();
+  const opencodeAgentSource = await readOpenCodeAgentSource();
   const version = await readPackageVersion();
   const manifest = await readManifest();
   const entries = [];
   const plannedFiles = [];
 
   for (const target of chosenTargets) {
-    const skillRoot = skillRootFor(target, scope);
-    for (const source of sources) {
-      const destination = path.join(skillRoot, source.skillName, source.relativePath);
+    for (const source of sourcesForTarget(target, sources, opencodeAgentSource)) {
+      const destination = destinationFor(target, scope, source);
       plannedFiles.push({ target, scope, skillName: source.skillName, path: destination, content: source.content });
     }
   }
@@ -292,8 +335,9 @@ function printInstallSummary(entries, dryRun) {
   }
   for (const [key, grouped] of byTarget.entries()) {
     const [target, scope] = key.split(":");
-    const skillRoot = skillRootFor(target, scope);
-    console.log(`${dryRun ? "Would install" : "Installed"} ${allSkillNames.length} skills and support files for ${target} (${scope}) at ${toPosixPath(skillRoot)}`);
+    const root = target === "opencode" ? path.dirname(supportRootFor(target, scope)) : skillRootFor(target, scope);
+    const label = target === "opencode" ? "6 skills, the give-me-job agent, and support files" : `${allSkillNames.length} skills and support files`;
+    console.log(`${dryRun ? "Would install" : "Installed"} ${label} for ${target} (${scope}) at ${toPosixPath(root)}`);
   }
 }
 
@@ -365,22 +409,29 @@ async function doctor(options) {
   for (const target of chosenTargets) {
     const root = skillRootFor(target, scope);
     const missing = [];
-    for (const skill of allSkillNames) {
+    const requiredSkills = target === "opencode" ? skillNames : allSkillNames;
+    for (const skill of requiredSkills) {
       const skillFile = path.join(root, skill, "SKILL.md");
       if (!(await exists(skillFile))) missing.push(skill);
     }
+    const supportRoot = supportRootFor(target, scope);
     const requiredSupportFiles = [
-      path.join(root, orchestratorSkillName, "agent.md"),
-      path.join(root, orchestratorSkillName, "tools", "init-application.mjs"),
-      path.join(root, orchestratorSkillName, "templates", "workflow-template.md"),
+      path.join(supportRoot, "agent.md"),
+      path.join(supportRoot, "tools", "init-application.mjs"),
+      path.join(supportRoot, "templates", "workflow-template.md"),
     ];
+    if (target === "opencode") {
+      requiredSupportFiles.push(path.join(agentRootFor(target, scope), `${opencodeAgentName}.md`));
+    }
     for (const file of requiredSupportFiles) {
-      if (!(await exists(file))) missing.push(path.relative(root, file));
+      if (!(await exists(file))) missing.push(path.relative(path.dirname(supportRoot), file));
     }
     if (missing.length === 0) {
-      console.log(`${target} (${scope}): OK at ${toPosixPath(root)}`);
+      const displayRoot = target === "opencode" ? path.dirname(supportRoot) : root;
+      console.log(`${target} (${scope}): OK at ${toPosixPath(displayRoot)}`);
     } else {
-      console.log(`${target} (${scope}): missing ${missing.join(", ")} at ${toPosixPath(root)}`);
+      const displayRoot = target === "opencode" ? path.dirname(supportRoot) : root;
+      console.log(`${target} (${scope}): missing ${missing.join(", ")} at ${toPosixPath(displayRoot)}`);
     }
   }
 

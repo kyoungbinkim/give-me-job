@@ -161,7 +161,7 @@ node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
 
 ## npm Install
 
-The npm package installs the six domain skills plus the `give-me-job` orchestrator skill. The orchestrator skill includes `agent.md`, `tools/`, `templates/`, and validation fixtures so local workflow tools are available after installation.
+The npm package installs the six domain skills plus the `give-me-job` orchestrator. For OpenCode, `give-me-job` is installed as an OpenCode agent. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures so local workflow tools are available after installation.
 
 ```bash
 npx give-me-job install
@@ -174,7 +174,8 @@ Default user-scope install paths:
 
 ```txt
 Codex:       ~/.agents/skills/<skill>/SKILL.md
-OpenCode:    ~/.config/opencode/skills/<skill>/SKILL.md
+OpenCode:    ~/.config/opencode/skills/<domain-skill>/SKILL.md
+OpenCode:    ~/.config/opencode/agents/give-me-job.md
 Claude Code: ~/.claude/skills/<skill>/SKILL.md
 ```
 

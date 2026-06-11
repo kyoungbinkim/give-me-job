@@ -15,6 +15,7 @@ const expectedSkills = [
   "application-packager",
   "give-me-job",
 ];
+const expectedDomainSkills = expectedSkills.filter((skill) => skill !== "give-me-job");
 
 function run(args, options = {}) {
   const result = spawnSync(process.execPath, [cli, ...args], {
@@ -48,6 +49,13 @@ async function assertSkills(rootDir) {
   }
 }
 
+async function assertDomainSkills(rootDir) {
+  for (const skill of expectedDomainSkills) {
+    const skillFile = path.join(rootDir, skill, "SKILL.md");
+    assert(await exists(skillFile), `missing installed skill: ${skillFile}`);
+  }
+}
+
 async function assertSupportBundle(rootDir) {
   const bundleRoot = path.join(rootDir, "give-me-job");
   for (const relativePath of [
@@ -60,6 +68,12 @@ async function assertSupportBundle(rootDir) {
     const file = path.join(bundleRoot, relativePath);
     assert(await exists(file), `missing installed support file: ${file}`);
   }
+}
+
+async function assertOpenCodeInstall(rootDir) {
+  await assertDomainSkills(path.join(rootDir, "skills"));
+  assert(await exists(path.join(rootDir, "agents", "give-me-job.md")), "missing OpenCode give-me-job agent");
+  await assertSupportBundle(rootDir);
 }
 
 async function main() {
@@ -77,8 +91,7 @@ async function main() {
     assert(installAll.status === 0, `user install failed: ${installAll.stderr}`);
     await assertSkills(path.join(home, ".agents", "skills"));
     await assertSupportBundle(path.join(home, ".agents", "skills"));
-    await assertSkills(path.join(home, ".config", "opencode", "skills"));
-    await assertSupportBundle(path.join(home, ".config", "opencode", "skills"));
+    await assertOpenCodeInstall(path.join(home, ".config", "opencode"));
     await assertSkills(path.join(home, ".claude", "skills"));
     await assertSupportBundle(path.join(home, ".claude", "skills"));
 
@@ -104,8 +117,7 @@ async function main() {
     }
     await assertSkills(path.join(project, ".agents", "skills"));
     await assertSupportBundle(path.join(project, ".agents", "skills"));
-    await assertSkills(path.join(project, ".opencode", "skills"));
-    await assertSupportBundle(path.join(project, ".opencode", "skills"));
+    await assertOpenCodeInstall(path.join(project, ".opencode"));
     await assertSkills(path.join(project, ".claude", "skills"));
     await assertSupportBundle(path.join(project, ".claude", "skills"));
 
