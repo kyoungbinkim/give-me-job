@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-06-11
+
+### Fixed
+
+- Point the npm executable to a `.js` shim for reliable `npx give-me-job` resolution.
+
 ## [0.4.1] - 2026-06-11
 
 ### Fixed

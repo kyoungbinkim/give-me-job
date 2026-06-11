@@ -1,12 +1,12 @@
 {
   "name": "give-me-job",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": false,
   "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
   "type": "module",
   "bin": {
-    "give-me-job": "bin/give-me-job"
+    "give-me-job": "bin/give-me-job.js"
   },
   "files": [
     ".env.example",
