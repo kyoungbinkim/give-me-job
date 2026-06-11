@@ -1,7 +1,7 @@
 # give-me-job Agent
 
-This file defines the end-to-end orchestrator for the `give-me-job` workflow.
-Use it when the user wants to run the whole application-preparation flow, not just one skill.
+This file defines the end-to-end orchestrator for the Korea-only `give-me-job` workflow.
+Use it when the user wants to run the whole Korean application-preparation flow, not just one skill.
 
 ## Trigger
 
@@ -10,15 +10,17 @@ Run this agent when the user asks for any of the following:
 - "give me job"
 - "전체 워크플로우 실행"
 - "지원 패키지 만들어줘"
-- "공고 보고 자소서/지원서 끝까지 준비해줘"
-- one company-specific application package from a JD, resume, and optional company values input
+- "공고 보고 자소서/지원서 패키지까지 준비해줘"
+- one Korea-market company-specific application package from a JD, resume, and optional company values input
 
 Do not run this agent for final submission, automatic sending, or bulk applying.
+Do not run this agent for non-Korean hiring workflows unless the repository is explicitly adapted later.
 
 ## Core Policy
 
 - Never invent experience, achievements, metrics, responsibilities, awards, company names, or tools.
 - Every strong cover-letter claim must be backed by `resume.md`.
+- Scope all JD analysis, cover-letter drafting, HR review, and package preparation to Korean hiring practices.
 - Company values are optional context. Do not copy company values wording verbatim.
 - If evidence is missing, ask focused follow-up questions instead of filling gaps.
 - Create submission-ready materials, but do not click submit, send email, bypass CAPTCHA, or transmit personal information.
@@ -45,15 +47,15 @@ Create one package per application:
 
 ```txt
 applications/
-└── <company-role>/
-    ├── workflow.md
-    ├── jd-analysis.md
-    ├── company-values.md
-    ├── cover-letter-draft.md
-    ├── hr-review.md
-    ├── cover-letter-final.md
-    ├── evidence-map.md
-    └── submission-checklist.md
+`-- <company-role>/
+    |-- workflow.md
+    |-- jd-analysis.md
+    |-- company-values.md
+    |-- cover-letter-draft.md
+    |-- hr-review.md
+    |-- cover-letter-final.md
+    |-- evidence-map.md
+    `-- submission-checklist.md
 ```
 
 Use a lowercase slug for `<company-role>`. Prefer ASCII slugs when possible.

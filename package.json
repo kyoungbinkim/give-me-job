@@ -2,7 +2,7 @@
   "name": "give-me-job",
   "version": "0.3.1",
   "private": true,
-  "description": "Korea-first job application agent skills and workflow tools.",
+  "description": "Korea-only job application agent skills and workflow tools.",
   "type": "module",
   "engines": {
     "node": ">=18.17"

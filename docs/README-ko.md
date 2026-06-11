@@ -1,14 +1,14 @@
 # give-me-job
 
-`give-me-job`은 Codex CLI, Claude Code, OpenCode 같은 코딩 에이전트에서 사용할 수 있는 취업 도우미 Skill 모음입니다.
+`give-me-job`은 Codex CLI, Claude Code, OpenCode 같은 코딩 에이전트에서 사용할 수 있는 한국 채용 시장 전용 취업 도우미 Skill 모음입니다.
 
-이 프로젝트는 `skills.sh` 호환 저장소를 목표로 합니다. 1차 목표는 웹앱이나 자체 npm CLI가 아니라, 지원자의 경험 정리, JD 분석, 자기소개서 작성, HR 리뷰, 지원 패키지 생성을 도와주는 재사용 가능한 에이전트 Skill을 제공하는 것입니다.
+이 프로젝트는 `skills.sh` 호환 저장소를 목표로 합니다. 1차 목표는 웹앱이나 자체 npm CLI가 아니라, 한국 취업/이직 문맥에서 지원자의 경험 정리, 국내 채용공고 분석, 한국어 자기소개서 작성, HR 리뷰, 지원 패키지 생성을 도와주는 재사용 가능한 에이전트 Skill을 제공하는 것입니다.
 
 전체 지원 준비를 한 번에 실행할 때는 루트의 [`agent.md`](../agent.md)를 오케스트레이터로 사용합니다. `agent.md`는 6개 Skill을 순서대로 실행해 `applications/<company-role>/` 아래에 회사별 지원 패키지를 만듭니다.
 
 저장소 수준 agent discovery는 [`AGENTS.md`](../AGENTS.md)가 담당합니다. 생성된 사용자 지원 패키지인 `applications/`는 Git에서 제외됩니다.
 
-영문 문서는 [README.md](../README.md)를 참고하세요.
+영문 문서는 [README.md](../README.md)를 참고하세요. 한국 외 채용 시장과 해외식 resume/cover letter 워크플로우는 범위에서 제외합니다.
 
 로컬 도구는 Node.js 18.17 이상에서 Windows PowerShell, Ubuntu/Linux, macOS를 지원합니다. 자세한 내용은 [platform-support](platform-support.md)를 참고하세요.
 
@@ -127,7 +127,7 @@ node tools/validate-application.mjs applications/kakao-backend
 
 자세한 내용은 [quickstart](quickstart.md), [safety](safety.md), [release checklist](release-checklist.md)를 참고하세요.
 
-한국 시장에서 경쟁 가능한 v1 제품 로드맵은 [competitive-v1-roadmap](competitive-v1-roadmap.md)을 참고하세요.
+한국 채용 시장 전용 v1 제품 로드맵은 [competitive-v1-roadmap](competitive-v1-roadmap.md)을 참고하세요.
 한국 공고 수집 연동 설정은 [integrations/job-sources](integrations/job-sources.md)를 참고하세요.
 
 공고를 수집한 뒤에는 다음 명령으로 마감 일정과 지원 우선순위를 확인할 수 있습니다.

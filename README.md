@@ -1,14 +1,14 @@
 # give-me-job
 
-`give-me-job` is a job-search assistant skill collection for coding agents such as Codex CLI, Claude Code, and OpenCode.
+`give-me-job` is a Korea-only job-application assistant skill collection for coding agents such as Codex CLI, Claude Code, and OpenCode.
 
-The project is designed as a `skills.sh`-compatible repository. Its first goal is not a web app or a custom npm CLI, but a set of reusable agent skills that help candidates structure career evidence, analyze job descriptions, write evidence-based cover letters, and prepare application packages safely.
+The project is designed as a `skills.sh`-compatible repository for the Korean hiring market. Its first goal is not a web app or a custom npm CLI, but a set of reusable agent skills that help candidates structure career evidence, analyze Korean job descriptions, write evidence-based Korean cover letters, and prepare application packages safely.
 
 For full application preparation, use [`agent.md`](agent.md) as the orchestrator. It runs the six skills in order and creates one company-specific package under `applications/<company-role>/`.
 
 Repository-level agent discovery is provided by [`AGENTS.md`](AGENTS.md). Generated user packages under `applications/` are ignored by Git.
 
-Korean documentation is available at [docs/README-ko.md](docs/README-ko.md).
+Korean documentation is available at [docs/README-ko.md](docs/README-ko.md). Non-Korean hiring workflows are out of scope.
 
 The local tools support Windows PowerShell, Ubuntu/Linux, and macOS with Node.js 18.17 or newer. See [docs/platform-support.md](docs/platform-support.md).
 
@@ -84,15 +84,15 @@ Use `agent.md` when the user wants one complete application workflow. The agent 
 
 ```txt
 applications/
-└── <company-role>/
-    ├── workflow.md
-    ├── jd-analysis.md
-    ├── company-values.md
-    ├── cover-letter-draft.md
-    ├── hr-review.md
-    ├── cover-letter-final.md
-    ├── evidence-map.md
-    └── submission-checklist.md
+`-- <company-role>/
+    |-- workflow.md
+    |-- jd-analysis.md
+    |-- company-values.md
+    |-- cover-letter-draft.md
+    |-- hr-review.md
+    |-- cover-letter-final.md
+    |-- evidence-map.md
+    `-- submission-checklist.md
 ```
 
 Example requests:
@@ -127,7 +127,7 @@ node tools/validate-application.mjs applications/kakao-backend
 
 See [docs/quickstart.md](docs/quickstart.md), [docs/safety.md](docs/safety.md), and [docs/release-checklist.md](docs/release-checklist.md).
 
-For the Korea-first competitive product roadmap, see [docs/competitive-v1-roadmap.md](docs/competitive-v1-roadmap.md).
+For the Korea-only competitive product roadmap, see [docs/competitive-v1-roadmap.md](docs/competitive-v1-roadmap.md).
 For Korean job-source setup, see [docs/integrations/job-sources.md](docs/integrations/job-sources.md).
 
 After fetching jobs, prioritize them with:
@@ -139,9 +139,9 @@ node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
 
 ## Skills
 
-- `resume-intake`: Creates and improves `resume.md` by turning raw career input into structured evidence.
-- `jd-analyzer`: Extracts role requirements, hidden evaluation criteria, keywords, and gaps from a JD or hiring post.
-- `company-values-analyzer`: Analyzes optional company values, talent profiles, culture pages, or pasted text.
+- `resume-intake`: Creates and improves `resume.md` by turning raw career input into structured evidence for Korean applications.
+- `jd-analyzer`: Extracts role requirements, hidden evaluation criteria, keywords, and gaps from a Korean JD or hiring post.
+- `company-values-analyzer`: Analyzes optional company values, talent profiles, culture pages, or pasted text for Korean cover-letter positioning.
 - `cover-letter-writer`: Writes Korean cover letter drafts grounded in `resume.md`, JD analysis, and optional company values.
 - `hr-reviewer`: Reviews resumes, cover letters, evidence maps, and application packages from an HR perspective.
 - `application-packager`: Creates company-specific application packages and pre-submission checklists.
@@ -202,39 +202,39 @@ The validator checks:
 
 ```txt
 .
-├── AGENTS.md
-├── agent.md
-├── docs/
-│   ├── competitive-v1-roadmap.md
-│   ├── integrations/
-│   ├── platform-support.md
-│   ├── quickstart.md
-│   ├── release-checklist.md
-│   └── safety.md
-├── examples/
-├── skills/
-│   ├── resume-intake/
-│   ├── jd-analyzer/
-│   ├── company-values-analyzer/
-│   ├── cover-letter-writer/
-│   ├── hr-reviewer/
-│   └── application-packager/
-├── templates/
-├── tests/
-│   ├── fixtures/
-│   └── golden/
-├── tools/
-│   ├── fetch-jobs.mjs
-│   ├── init-application.mjs
-│   ├── normalize-job.mjs
-│   ├── rank-jobs.mjs
-│   ├── schedule-jobs.mjs
-│   ├── validate-application.mjs
-│   ├── validate-job-ranking.mjs
-│   ├── validate-job-schedule.mjs
-│   ├── validate-job-sources.mjs
-│   └── validate-skills.mjs
-└── job-agent-plan.md
+|-- AGENTS.md
+|-- agent.md
+|-- docs/
+|   |-- competitive-v1-roadmap.md
+|   |-- integrations/
+|   |-- platform-support.md
+|   |-- quickstart.md
+|   |-- release-checklist.md
+|   `-- safety.md
+|-- examples/
+|-- skills/
+|   |-- resume-intake/
+|   |-- jd-analyzer/
+|   |-- company-values-analyzer/
+|   |-- cover-letter-writer/
+|   |-- hr-reviewer/
+|   `-- application-packager/
+|-- templates/
+|-- tests/
+|   |-- fixtures/
+|   `-- golden/
+|-- tools/
+|   |-- fetch-jobs.mjs
+|   |-- init-application.mjs
+|   |-- normalize-job.mjs
+|   |-- rank-jobs.mjs
+|   |-- schedule-jobs.mjs
+|   |-- validate-application.mjs
+|   |-- validate-job-ranking.mjs
+|   |-- validate-job-schedule.mjs
+|   |-- validate-job-sources.mjs
+|   `-- validate-skills.mjs
+`-- job-agent-plan.md
 ```
 
 ## Principles

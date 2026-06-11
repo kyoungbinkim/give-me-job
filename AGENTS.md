@@ -1,16 +1,17 @@
 # give-me-job Repository Instructions
 
-Use this repository as a job-application package generator, not as an automatic application submitter.
+Use this repository as a Korea-only job-application package generator, not as an automatic application submitter.
 
 ## Default Workflow
 
-When the user asks to run the full workflow, says "give me job", or wants a complete company-specific application package:
+When the user asks to run the full workflow, says "give me job", or wants a complete company-specific application package for the Korean hiring market:
 
 1. Read `agent.md` first.
 2. Use the six skills under `skills/` as the domain workflow steps.
 3. Create or update one package under `applications/<company-role>/`.
 4. Keep all strong cover-letter claims grounded in `resume.md`.
 5. Stop when evidence is missing, HR review finds a blocker, or the next action would submit, send, log in, bypass CAPTCHA, or transmit personal information.
+6. Treat non-Korean hiring workflows as out of scope unless the user explicitly asks to adapt the repository later.
 
 ## Skill Routing
 

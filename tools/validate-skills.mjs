@@ -59,6 +59,24 @@ const requiredReleaseFiles = [
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/hr-review.md",
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/cover-letter-final.md",
 ];
+const coreTextFiles = [
+  "README.md",
+  "AGENTS.md",
+  "agent.md",
+  ...expectedSkills.map((skill) => `skills/${skill}/SKILL.md`),
+];
+const mojibakePatterns = [
+  "?꾩",
+  "?먭",
+  "?먯",
+  "?낆",
+  "?쒖",
+  "吏",
+  "怨듦",
+  "쒋",
+  "붴",
+  "異쒕",
+];
 
 const errors = [];
 
@@ -185,6 +203,14 @@ async function validateAgent() {
 
 async function main() {
   await validateAgent();
+
+  for (const file of coreTextFiles) {
+    const text = await readFile(path.join(root, file), "utf8");
+    const hit = mojibakePatterns.find((pattern) => text.includes(pattern));
+    if (hit) {
+      errors.push(`${file}: contains likely mojibake text: ${hit}`);
+    }
+  }
 
   for (const file of requiredReleaseFiles) {
     if (!(await exists(path.join(root, file)))) {
