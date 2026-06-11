@@ -8,7 +8,7 @@ Install `give-me-job` as reusable agent skills for Codex, OpenCode, and Claude C
 npx give-me-job install
 ```
 
-This installs the six domain skills plus the `give-me-job` orchestrator for all supported agents in your user profile. For OpenCode, `give-me-job` is installed as an OpenCode agent. The support bundle also includes `agent.md`, `tools/`, `templates/`, and validation fixtures so the local workflow tools are available after installation.
+This installs the six domain skills plus the `give-me-job` orchestrator agent for all supported agents in your user profile. The support bundle also includes `agent.md`, `tools/`, `templates/`, and validation fixtures so the local workflow tools are available after installation.
 
 You can also install the CLI globally:
 
@@ -37,16 +37,19 @@ User-scope install paths:
 
 ```txt
 Codex:      ~/.agents/skills/<skill>/SKILL.md
+Codex:      ~/.codex/agents/give-me-job.toml
 OpenCode:   ~/.config/opencode/skills/<domain-skill>/SKILL.md
 OpenCode:   ~/.config/opencode/agents/give-me-job.md
-Claude Code: ~/.claude/skills/<skill>/SKILL.md
+Claude Code: ~/.claude/skills/<domain-skill>/SKILL.md
+Claude Code: ~/.claude/agents/give-me-job.md
 ```
 
 The support bundle is installed under each target's `give-me-job` folder:
 
 ```txt
-Codex/Claude Code: <skills-root>/give-me-job/
-OpenCode:          ~/.config/opencode/give-me-job/
+Codex:      ~/.codex/give-me-job/
+OpenCode:   ~/.config/opencode/give-me-job/
+Claude Code: ~/.claude/give-me-job/
 ```
 
 Project-scope install paths:
@@ -57,9 +60,11 @@ give-me-job install --scope project --target all
 
 ```txt
 Codex:      .agents/skills/<skill>/SKILL.md
+Codex:      .codex/agents/give-me-job.toml
 OpenCode:   .opencode/skills/<domain-skill>/SKILL.md
 OpenCode:   .opencode/agents/give-me-job.md
-Claude Code: .claude/skills/<skill>/SKILL.md
+Claude Code: .claude/skills/<domain-skill>/SKILL.md
+Claude Code: .claude/agents/give-me-job.md
 ```
 
 ## Safety And Conflicts
