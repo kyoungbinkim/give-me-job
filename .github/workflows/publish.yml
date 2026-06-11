@@ -1,0 +1,35 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish to npmjs.com
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Run validation suite
+        run: npm test
+
+      - name: Run installer validation
+        run: npm run test:install
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
