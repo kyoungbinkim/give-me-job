@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-06-11
+
+### Fixed
+
+- Use an extensionless npm bin shim so `npx give-me-job` installs the CLI executable.
+
 ## [0.4.0] - 2026-06-11
 
 ### Added

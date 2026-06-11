@@ -1,12 +1,12 @@
 {
   "name": "give-me-job",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": false,
   "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
   "type": "module",
   "bin": {
-    "give-me-job": "./give-me-job.mjs"
+    "give-me-job": "bin/give-me-job"
   },
   "files": [
     ".env.example",
@@ -14,9 +14,9 @@
     "agent.md",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
+    "bin/",
     "docs/",
     "examples/",
-    "give-me-job.mjs",
     "skills/",
     "templates/",
     "tests/",
