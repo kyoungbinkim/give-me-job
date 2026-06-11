@@ -4,6 +4,10 @@
   "private": false,
   "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyoungbinkim/give-me-job"
+  },
   "type": "module",
   "bin": {
     "give-me-job": "bin/give-me-job.js"
