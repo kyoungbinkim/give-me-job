@@ -14,6 +14,16 @@ const requiredFiles = [
 
 const errors = [];
 const warnings = [];
+const validWorkflowStatuses = new Set([
+  "intake",
+  "resume-needed",
+  "jd-analyzed",
+  "drafted",
+  "review-blocked",
+  "ready-for-user-review",
+  "submitted-by-user",
+  "paused",
+]);
 
 async function exists(filePath) {
   try {
@@ -99,6 +109,9 @@ async function main() {
   }
 
   const status = parseField(workflow, "Status");
+  if (status && !validWorkflowStatuses.has(status)) {
+    errors.push(`workflow.md has unsupported Status value: ${status}`);
+  }
   if (/submitted-by-user/i.test(status) && !/submitted by user|사용자.*제출|user confirmed/i.test(workflow)) {
     errors.push("workflow.md marks submitted-by-user without explicit user confirmation note");
   }

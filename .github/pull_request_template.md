@@ -11,6 +11,8 @@
 ## Validation
 
 - [ ] `npm test`
+- [ ] Korean README and English README workflow details remain aligned.
+- [ ] Generated `applications/` or `data/` personal job-search files are not included.
 - [ ] Other:
 
 ## Notes

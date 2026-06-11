@@ -1,15 +1,37 @@
 {
   "name": "give-me-job",
-  "version": "0.3.1",
-  "private": true,
+  "version": "0.4.0",
+  "private": false,
+  "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
   "type": "module",
+  "bin": {
+    "give-me-job": "./tools/give-me-job-cli.mjs"
+  },
+  "files": [
+    ".env.example",
+    "AGENTS.md",
+    "agent.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "docs/",
+    "examples/",
+    "skills/",
+    "templates/",
+    "tests/",
+    "tools/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18.17"
   },
   "scripts": {
     "test": "node tools/validate-skills.mjs && node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node tools/validate-application.mjs .tmp-release-check/demo-backend && node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend",
+    "test:install": "node tools/validate-npm-install.mjs",
     "test:skills": "node tools/validate-skills.mjs",
-    "test:jobs": "node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs"
+    "test:jobs": "node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs",
+    "prepack": "npm test && npm run test:install"
   }
 }

@@ -2,7 +2,7 @@
 
 `give-me-job` is a Korea-only job-application assistant skill collection for coding agents such as Codex CLI, Claude Code, and OpenCode.
 
-The project is designed as a `skills.sh`-compatible repository for the Korean hiring market. Its first goal is not a web app or a custom npm CLI, but a set of reusable agent skills that help candidates structure career evidence, analyze Korean job descriptions, write evidence-based Korean cover letters, and prepare application packages safely.
+The project is designed as a `skills.sh`-compatible repository and npm-distributable package for the Korean hiring market. Its first goal is not a web app or an auto-apply service, but a set of reusable agent skills that help candidates structure career evidence, analyze Korean job descriptions, write evidence-based Korean cover letters, and prepare application packages safely.
 
 For full application preparation, use [`agent.md`](agent.md) as the orchestrator. It runs the six skills in order and creates one company-specific package under `applications/<company-role>/`.
 
@@ -99,13 +99,26 @@ Example requests:
 
 ```txt
 give me job: use resume.md and this JD to prepare the full package
-전체 워크플로우 실행해서 카카오 백엔드 지원 패키지 만들어줘
-공고 URL과 인재상 페이지를 보고 자소서 초안, HR 리뷰, 제출 체크리스트까지 만들어줘
+전체 워크플로우를 실행해서 카카오 백엔드 지원 패키지를 만들어줘
+공고 URL과 현재 이력서를 보고 자소서 초안, HR 리뷰, 제출 체크리스트까지 만들어줘
 ```
 
 `agent.md` is intentionally not a submitter. It prepares files and checklists only.
 
 ## Quickstart
+
+Install the skills for Codex, OpenCode, and Claude Code:
+
+```bash
+npx give-me-job install
+```
+
+Or install the CLI globally:
+
+```bash
+npm i -g give-me-job
+give-me-job install
+```
 
 Validate the repository:
 
@@ -125,7 +138,7 @@ Ask your coding agent to read `agent.md` and fill the package with your `resume.
 node tools/validate-application.mjs applications/kakao-backend
 ```
 
-See [docs/quickstart.md](docs/quickstart.md), [docs/safety.md](docs/safety.md), and [docs/release-checklist.md](docs/release-checklist.md).
+See [docs/quickstart.md](docs/quickstart.md), [docs/npm-install.md](docs/npm-install.md), [docs/safety.md](docs/safety.md), and [docs/release-checklist.md](docs/release-checklist.md).
 
 For the Korea-only competitive product roadmap, see [docs/competitive-v1-roadmap.md](docs/competitive-v1-roadmap.md).
 For Korean job-source setup, see [docs/integrations/job-sources.md](docs/integrations/job-sources.md).
@@ -146,25 +159,26 @@ node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
 - `hr-reviewer`: Reviews resumes, cover letters, evidence maps, and application packages from an HR perspective.
 - `application-packager`: Creates company-specific application packages and pre-submission checklists.
 
-## Install Goal
+## npm Install
 
-After distribution validation, the target install flow is:
+The npm package installs the six domain skills plus the `give-me-job` orchestrator skill.
 
 ```bash
-npx skills add kyoungbinkim/give-me-job --list
-npx skills add kyoungbinkim/give-me-job@cover-letter-writer
-npx skills add kyoungbinkim/give-me-job --agent codex claude-code opencode
+npx give-me-job install
+give-me-job install --target codex
+give-me-job install --target opencode
+give-me-job install --target claude-code
 ```
 
-While this repository is private, `skills.sh` validation that assumes public GitHub access may fail. Before public distribution, decide whether to make this repository public or publish a separate public skills repository.
-
-For local testing in Codex, copy the skill folders into your Codex skills directory:
+Default user-scope install paths:
 
 ```txt
-~/.codex/skills/
+Codex:       ~/.agents/skills/<skill>/SKILL.md
+OpenCode:    ~/.config/opencode/skills/<skill>/SKILL.md
+Claude Code: ~/.claude/skills/<skill>/SKILL.md
 ```
 
-Restart Codex after installing local skills.
+Use `give-me-job install --dry-run` to preview changes, `--force` to back up and overwrite changed files, and `give-me-job uninstall` to remove files tracked in `~/.give-me-job/install-manifest.json`.
 
 ## Local Validation
 
