@@ -280,7 +280,16 @@ async function writeManifest(manifest) {
   await writeFile(file, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 }
 
-async function writeManagedFile(filePath, content, options) {
+function managedEntryFor(manifest, filePath) {
+  return manifest.entries.find((entry) => path.resolve(entry.path) === path.resolve(filePath));
+}
+
+function isManagedUnmodified(manifest, filePath, content) {
+  const entry = managedEntryFor(manifest, filePath);
+  return Boolean(entry && sha256(content) === entry.hash);
+}
+
+async function writeManagedFile(filePath, content, options, manifest) {
   const planned = { path: filePath, hash: sha256(content) };
   if (options.dryRun) return { ...planned, action: "would-write" };
 
@@ -288,24 +297,29 @@ async function writeManagedFile(filePath, content, options) {
   if (await exists(filePath)) {
     const existing = await readFile(filePath);
     if (existing.equals(content)) return { ...planned, action: "unchanged" };
-    if (!options.force) {
+    const canUpgrade = isManagedUnmodified(manifest, filePath, existing);
+    if (!options.force && !canUpgrade) {
       throw new Error(`Refusing to overwrite existing file: ${filePath}. Re-run with --force to back it up and replace it.`);
     }
-    const backup = `${filePath}.bak-${new Date().toISOString().replace(/[:.]/g, "-")}`;
-    await writeFile(backup, existing);
+    if (options.force) {
+      const backup = `${filePath}.bak-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+      await writeFile(backup, existing);
+    }
   }
 
   await writeFile(filePath, content);
   return { ...planned, action: "written" };
 }
 
-async function assertNoConflicts(plannedFiles, options) {
+async function assertNoConflicts(plannedFiles, options, manifest) {
   if (options.dryRun || options.force) return;
   const conflicts = [];
   for (const file of plannedFiles) {
     if (!(await exists(file.path))) continue;
     const existing = await readFile(file.path);
-    if (!existing.equals(file.content)) conflicts.push(file.path);
+    if (existing.equals(file.content)) continue;
+    if (isManagedUnmodified(manifest, file.path, existing)) continue;
+    conflicts.push(file.path);
   }
   if (conflicts.length > 0) {
     throw new Error(`Refusing to overwrite existing files:\n${conflicts.map((file) => `- ${file}`).join("\n")}\nRe-run with --force to back them up and replace them.`);
@@ -328,10 +342,10 @@ async function install(options) {
     }
   }
 
-  await assertNoConflicts(plannedFiles, options);
+  await assertNoConflicts(plannedFiles, options, manifest);
 
   for (const file of plannedFiles) {
-      const result = await writeManagedFile(file.path, file.content, options);
+      const result = await writeManagedFile(file.path, file.content, options, manifest);
       entries.push({
         target: file.target,
         scope: file.scope,
@@ -343,7 +357,8 @@ async function install(options) {
   }
 
   if (!options.dryRun) {
-    const nextEntries = manifest.entries.filter((entry) => {
+    const migrated = await removeLegacyOrchestratorSkillEntries(manifest, chosenTargets, scope, options);
+    const nextEntries = migrated.manifest.entries.filter((entry) => {
       return !entries.some((candidate) => path.resolve(candidate.path) === path.resolve(entry.path));
     });
     for (const entry of entries) {
@@ -389,6 +404,41 @@ async function removeEmptyParents(startDir, stopDir) {
     }
     current = path.dirname(current);
   }
+}
+
+function isLegacyOrchestratorSkillEntry(entry) {
+  return entry.skill === orchestratorSkillName && path.basename(entry.path) === "SKILL.md";
+}
+
+async function removeLegacyOrchestratorSkillEntries(manifest, chosenTargets, scope, options) {
+  const keep = [];
+  const removed = [];
+  for (const entry of manifest.entries) {
+    const selected = chosenTargets.includes(entry.target) && entry.scope === scope && isLegacyOrchestratorSkillEntry(entry);
+    if (!selected) {
+      keep.push(entry);
+      continue;
+    }
+
+    if (!(await exists(entry.path))) {
+      removed.push({ ...entry, action: "missing" });
+      continue;
+    }
+
+    const content = await readFile(entry.path);
+    if (sha256(content) !== entry.hash) {
+      keep.push(entry);
+      continue;
+    }
+
+    if (!options.dryRun) {
+      await rm(entry.path);
+      await removeEmptyParents(path.dirname(entry.path), skillRootFor(entry.target, entry.scope));
+    }
+    removed.push({ ...entry, action: options.dryRun ? "would-remove" : "removed" });
+  }
+
+  return { manifest: { ...manifest, entries: keep }, removed };
 }
 
 async function uninstall(options) {

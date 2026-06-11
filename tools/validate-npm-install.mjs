@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -29,6 +30,10 @@ function run(args, options = {}) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function sha256(content) {
+  return createHash("sha256").update(content).digest("hex");
 }
 
 async function exists(filePath) {
@@ -84,8 +89,37 @@ async function main() {
     await assertAgentInstall(path.join(home, ".config", "opencode", "skills"), path.join(home, ".config", "opencode"), "md");
     await assertAgentInstall(path.join(home, ".claude", "skills"), path.join(home, ".claude"), "md");
 
-    const manifest = JSON.parse(await readFile(path.join(home, ".give-me-job", "install-manifest.json"), "utf8"));
+    const manifestFile = path.join(home, ".give-me-job", "install-manifest.json");
+    const manifest = JSON.parse(await readFile(manifestFile, "utf8"));
     assert(manifest.entries.length > expectedSkills.length, "manifest did not record installed files");
+
+    const managedOpenCodeSkill = path.join(home, ".config", "opencode", "skills", "resume-intake", "SKILL.md");
+    const oldManagedContent = "old managed skill\n";
+    await writeFile(managedOpenCodeSkill, oldManagedContent, "utf8");
+    const managedOpenCodeEntry = manifest.entries.find((entry) => path.resolve(entry.path) === path.resolve(managedOpenCodeSkill));
+    assert(managedOpenCodeEntry, "missing managed OpenCode skill in manifest");
+    managedOpenCodeEntry.hash = sha256(oldManagedContent);
+    managedOpenCodeEntry.version = "0.4.0";
+
+    const legacyOpenCodeSkill = path.join(home, ".config", "opencode", "skills", "give-me-job", "SKILL.md");
+    const legacyContent = "---\nname: give-me-job\n---\nlegacy orchestrator skill\n";
+    await mkdir(path.dirname(legacyOpenCodeSkill), { recursive: true });
+    await writeFile(legacyOpenCodeSkill, legacyContent, "utf8");
+    manifest.entries.push({
+      target: "opencode",
+      scope: "user",
+      skill: "give-me-job",
+      path: legacyOpenCodeSkill,
+      hash: sha256(legacyContent),
+      version: "0.4.0",
+      installedAt: "2026-01-01T00:00:00.000Z",
+    });
+    await writeFile(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+
+    const managedUpgrade = run(["install", "--target", "opencode"], { home });
+    assert(managedUpgrade.status === 0, `managed upgrade failed without --force: ${managedUpgrade.stderr}`);
+    assert((await readFile(managedOpenCodeSkill, "utf8")) !== oldManagedContent, "managed upgrade did not refresh existing skill");
+    assert(!(await exists(legacyOpenCodeSkill)), "managed upgrade did not remove legacy OpenCode orchestrator skill");
 
     const codexAgent = path.join(home, ".codex", "agents", "give-me-job.toml");
     await writeFile(codexAgent, "local edit\n", "utf8");
