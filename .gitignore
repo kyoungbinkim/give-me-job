@@ -3,6 +3,7 @@
 Thumbs.db
 .vscode/
 .idea/
+.codex-remote-attachments/
 
 # Local env
 .env
