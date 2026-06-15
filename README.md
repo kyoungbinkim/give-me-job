@@ -2,11 +2,13 @@
 
 ![give-me-job banner](docs/assets/give-me-job-banner.jpg)
 
-`give-me-job` is a Korea-only job application package generator for coding agents such as Codex CLI, Claude Code, and OpenCode. It provides seven domain skills and local workflow tools that help an agent turn `resume.md` and a job description into a company-specific Korean application package.
+`give-me-job` is an AI agent toolkit for Korean job applications. It helps you turn scattered career notes, a Korean job post, and company context into a focused application package: JD analysis, evidence-grounded 자기소개서 drafts, HR risk review, interview defense, and a manual submission checklist.
 
-This repository is not an auto-apply service. It prepares files such as cover-letter drafts, evidence maps, HR reviews, and manual submission checklists. The user must review and submit applications manually.
+Most job-application tools optimize for speed. `give-me-job` optimizes for confidence: every strong claim should trace back to your `resume.md`, every risky sentence gets reviewed before final use, and every final answer should be something you can defend in an interview.
 
-Korean search keywords: 자기소개서, 취업준비, 개발자 취업준비, 개발자 자기소개서, 취업 에이전트.
+Use it when you want an agent to help with 취업준비 without inventing experience, exaggerating metrics, or auto-submitting applications. The current demo focuses on a backend role, but the workflow is designed for Korean job applications across tech, business, support, creative, and operations roles. This repository prepares the materials; you stay in control of review and final submission.
+
+Korean search keywords: 자기소개서, 취업준비, 한국 취업, 취업 에이전트, 개발자 취업준비, 개발자 자기소개서.
 
 Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository-level agent instructions are in [`AGENTS.md`](AGENTS.md). Korean documentation is available at [`docs/README-ko.md`](docs/README-ko.md).
 
@@ -183,6 +185,8 @@ Validate the completed package:
 node support/validate/validate-application.mjs applications/kakao-backend
 ```
 
+For a complete runnable walkthrough, see [Quickstart](docs/quickstart.md).
+
 ## Workflow
 
 ```txt
@@ -238,6 +242,29 @@ applications/
 ```
 
 `applications/` is ignored by Git because it may contain personal application data.
+
+## Example Output
+
+A checked-in demo package shows the expected output shape:
+
+```txt
+examples/demo-new-grad-backend/applications/demo-cloud-backend/
+|-- cover-letter-final.md
+|-- evidence-map.md
+|-- hr-review.md
+|-- interview-prep.md
+`-- submission-checklist.md
+```
+
+The demo illustrates the core promise of the agent:
+
+- `cover-letter-final.md`: Korean 자기소개서 text grounded in the demo resume.
+- `evidence-map.md`: each key claim is mapped back to resume evidence.
+- `hr-review.md`: unsupported claims, blockers, and submission risks are checked before final use.
+- `interview-prep.md`: likely follow-up questions are prepared from the same evidence.
+- `submission-checklist.md`: the user is reminded to review and submit manually.
+
+Start with [`examples/demo-new-grad-backend/resume.md`](examples/demo-new-grad-backend/resume.md), [`examples/demo-new-grad-backend/jd.md`](examples/demo-new-grad-backend/jd.md), and the generated package under [`examples/demo-new-grad-backend/applications/demo-cloud-backend/`](examples/demo-new-grad-backend/applications/demo-cloud-backend/).
 
 ## Skills
 
