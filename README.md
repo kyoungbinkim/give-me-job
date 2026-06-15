@@ -6,6 +6,8 @@
 
 This repository is not an auto-apply service. It prepares files such as cover-letter drafts, evidence maps, HR reviews, and manual submission checklists. The user must review and submit applications manually.
 
+Korean search keywords: 자기소개서, 취업준비, 개발자 취업준비, 개발자 자기소개서, 취업 에이전트.
+
 Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository-level agent instructions are in [`AGENTS.md`](AGENTS.md). Korean documentation is available at [`docs/README-ko.md`](docs/README-ko.md).
 
 ## Features
