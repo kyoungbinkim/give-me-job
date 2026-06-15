@@ -1,6 +1,7 @@
 ## Application Package
 - Company: Sample Commerce
 - Role: Backend Developer
+- Job Function: tech
 - Deadline: 2026-07-01
 - Package Path: applications/sample-commerce-backend-developer
 - Included Files:
@@ -11,6 +12,7 @@
   - cover-letter-final.md
   - submission-checklist.md
   - evidence-map.md
+  - interview-prep.md
 - Missing Inputs:
   - final attachment file format
   - exact cover letter length limit

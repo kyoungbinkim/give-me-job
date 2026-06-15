@@ -7,6 +7,50 @@ description: Analyze an optional company talent, values, culture, or recruitment
 
 Use this skill only when company values, talent profile, culture, mission, or recruitment-page material is available. The input is optional for cover letter writing.
 
+## Trigger
+
+Use this skill only when the user provides company values, culture, mission, talent profile, recruitment-page material, or asks to align a cover letter with company values.
+
+## Do Not Trigger
+
+Do not use this skill when no values source is available. Do not rely on built-in company stereotypes or unsourced assumptions.
+
+## Autonomy Level
+
+**DoF: HIGH**
+
+You may synthesize positioning guidance from official or user-provided company material, but all source facts must remain separate from your interpretation.
+
+Permitted inferences:
+
+- Preferred behaviors and tone implied by repeated official wording.
+- Candidate positioning angles that connect company values to `resume.md`.
+
+Prohibited inferences:
+
+- Do not create a company-specific values database from memory.
+- Do not copy company wording verbatim into cover letters.
+
+## Input Contract
+
+Required context:
+
+- Company values URL, pasted values text, culture notes, mission text, or talent-profile material.
+
+Optional context:
+
+- `resume.md` for evidence matching.
+- JD analysis for role-specific positioning.
+
+Required parameters:
+
+- `company`: target company name.
+- `source`: URL, pasted text, notes, or `unknown`.
+
+Outputs produced:
+
+- `applications/<company-role>/company-values.md`
+
 ## Workflow
 
 1. Accept a URL, pasted page text, or short company notes.

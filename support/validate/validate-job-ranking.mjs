@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { readJobs } from "./job-store.mjs";
-import { extractResumeProfile, scoreJob } from "./rank-jobs.mjs";
+import { readJobs } from "../../tools/job-store.mjs";
+import { extractResumeProfile, scoreJob } from "../../tools/rank-jobs.mjs";
 
 const errors = [];
 const resumeText = await readFile("tests/fixtures/resume-new-grad.md", "utf8");

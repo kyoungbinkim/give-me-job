@@ -1,8 +1,9 @@
 ## Application Package
 - Company:
 - Role:
+- Job Function:
 - Deadline:
-- Status: interested | drafting | review-needed | ready-to-submit | submitted | paused | rejected | accepted
+- Status: intake | resume-needed | jd-analyzed | drafted | review-blocked | ready-for-user-review | submitted-by-user | paused
 - Package Path:
 - Included Files:
 - Missing Inputs:

@@ -1,3 +1,21 @@
+## Question
+
+지원 직무와 관련된 프로젝트 경험을 서술하세요.
+
+## Question Type
+
+직무형
+
+## Length Check
+- Target Length: Not provided
+- Current Length: 411 characters including spaces
+- Counting Rule: Include spaces unless the company or question states otherwise.
+
+## Evidence IDs
+
+- E1
+- E2
+
 ## Draft
 
 백엔드 프로젝트에서 가장 집중한 문제는 주문 API의 중복 생성이었습니다. 팀 프로젝트 중 클라이언트 재시도로 같은 주문이 반복 저장될 수 있다는 점을 발견했고, 단순 예외 처리보다 요청 자체를 안전하게 만드는 방향이 필요하다고 판단했습니다. 저는 idempotency key를 도입하고 트랜잭션 경계를 정리했으며, 재시도와 중복 제출 상황을 검증하는 통합 테스트 12개를 추가했습니다. 이 과정을 통해 API는 정상 요청뿐 아니라 실패와 재시도 상황까지 고려해야 신뢰할 수 있다는 점을 배웠습니다. 이후 상품 목록 API에서도 쿼리 로그를 비교하며 페이지네이션과 fetch 전략을 조정해 데이터가 늘어나는 상황을 점검했습니다. 입사 후에도 기능 구현에 그치지 않고 장애 가능성과 검증 기준을 함께 보는 백엔드 개발자로 기여하겠습니다.

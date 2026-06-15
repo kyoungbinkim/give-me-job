@@ -103,13 +103,14 @@ give-me-job uninstall --target all
 
 ## 설치되는 내용
 
-설치기는 여섯 개의 도메인 Skill과 `give-me-job` 오케스트레이터 Agent를 설치합니다.
+설치기는 일곱 개의 도메인 Skill과 `give-me-job` 오케스트레이터 Agent를 설치합니다.
 
 - `resume-intake`
 - `jd-analyzer`
 - `company-values-analyzer`
 - `cover-letter-writer`
 - `hr-reviewer`
+- `interview-prep`
 - `application-packager`
 
 support bundle에는 다음이 포함됩니다.
@@ -171,7 +172,7 @@ agent.md를 읽고, resume.md와 이 JD를 사용해서 applications/kakao-backe
 4. 결과 패키지를 검증합니다.
 
 ```bash
-node tools/validate-application.mjs applications/kakao-backend
+node support/validate/validate-application.mjs applications/kakao-backend
 ```
 
 5. 최종 제출은 사용자가 직접 합니다.
@@ -196,6 +197,9 @@ cover-letter-writer
 hr-reviewer
       |
       v
+interview-prep
+      |
+      v
 application-packager
 ```
 
@@ -211,6 +215,7 @@ applications/
     |-- hr-review.md
     |-- cover-letter-final.md
     |-- evidence-map.md
+    |-- interview-prep.md
     `-- submission-checklist.md
 ```
 
@@ -241,7 +246,7 @@ node tools/fetch-jobs.mjs --source saramin --keywords "백엔드 Java" --deadlin
 fixture 기반 검증:
 
 ```bash
-node tools/validate-job-sources.mjs
+node support/validate/validate-job-sources.mjs
 ```
 
 마감 일정과 적합도 랭킹:

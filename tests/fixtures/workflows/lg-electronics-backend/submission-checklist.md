@@ -1,10 +1,10 @@
 ## Application Package
-- Company: Demo Cloud
+- Company: LG전자
 - Role: Backend Engineer
 - Job Function: tech
 - Deadline: Not provided
 - Status: ready-for-user-review
-- Package Path: examples/demo-new-grad-backend/applications/demo-cloud-backend
+- Package Path: examples/demo-new-grad-backend/applications/lg-electronics-backend
 - Included Files:
   - workflow.md
   - jd-analysis.md
@@ -16,12 +16,13 @@
   - interview-prep.md
   - submission-checklist.md
 - Missing Inputs:
-  - Real company-specific values source
   - Exact submission deadline
-  - Exact character limit
+  - Exact required attachments
+- Interview Prep:
+  - Review `interview-prep.md` before using the final text.
 - Submission Checklist:
   - Confirm company name and role.
-  - Confirm final character limit.
+  - Confirm final character limit and counting rule.
   - Confirm required attachments.
   - Confirm all strong claims appear in `evidence-map.md`.
   - Confirm no HR blockers remain.

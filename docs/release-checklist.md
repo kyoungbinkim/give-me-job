@@ -14,9 +14,9 @@ Use this checklist before tagging a public release.
 ## Agent Compatibility
 
 - `AGENTS.md` points full-workflow requests to `agent.md`.
-- `agent.md` references all six skills.
+- `agent.md` references all seven skills.
 - Each skill has valid `SKILL.md` frontmatter.
-- `node tools/validate-skills.mjs` passes.
+- `node tests/validate/validate-skills.mjs` passes.
 - `npm test` passes.
 - Before public GitHub distribution, `skills.sh` installation has been manually checked from a clean project.
 - `npm pack --dry-run` contains only intended repository files.
@@ -25,10 +25,10 @@ Use this checklist before tagging a public release.
 ## Package Workflow
 
 - `node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force` creates a package.
-- `node tools/validate-application.mjs .tmp-release-check/demo-backend` passes.
-- `node tools/validate-job-sources.mjs` passes.
-- `node tools/validate-job-schedule.mjs` passes.
-- `node tools/validate-job-ranking.mjs` passes.
+- `node support/validate/validate-application.mjs .tmp-release-check/demo-backend` passes.
+- `node support/validate/validate-job-sources.mjs` passes.
+- `node support/validate/validate-job-schedule.mjs` passes.
+- `node support/validate/validate-job-ranking.mjs` passes.
 - Generated user packages remain ignored by Git.
 - At least one checked-in demo package exists under `examples/`.
 

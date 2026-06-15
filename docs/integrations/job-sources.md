@@ -105,7 +105,7 @@ data/jobs/YYYY-MM-DD/<source>-<sourceId>.json
 Run fixture-based source validation without API keys:
 
 ```bash
-node tools/validate-job-sources.mjs
+node support/validate/validate-job-sources.mjs
 ```
 
 This validates Saramin JSON, Work24 XML, and JobKorea XML fixtures against the common job schema.

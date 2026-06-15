@@ -21,6 +21,7 @@ node_modules/
 # Generated application packages
 /applications/
 /.tmp-release-check/
+/.tmp-workflow-check/
 /.tmp-npm-cache/
 /data/
 

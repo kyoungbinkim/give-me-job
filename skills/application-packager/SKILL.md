@@ -7,6 +7,57 @@ description: Create a company-specific job application package from a JD, resume
 
 Create submission-ready materials, but do not submit applications automatically.
 
+## Trigger
+
+Use this skill after the JD analysis, cover letter draft/final, evidence map, HR review, and optional interview prep are ready or when the user asks to assemble a final Korean application package.
+
+## Do Not Trigger
+
+Do not use this skill to bypass HR review, submit an application, send email, log in, solve CAPTCHA, or transmit personal information.
+
+## Autonomy Level
+
+**DoF: LOW**
+
+Create and validate the package structure deterministically. Do not mark an application submitted unless the user explicitly confirms manual submission.
+
+Permitted inferences:
+
+- ASCII package slug from company and role.
+- Missing package files from the canonical package structure.
+
+Prohibited inferences:
+
+- Do not create unsupported cover letter claims.
+- Do not invent deadlines, required documents, or submission status.
+
+## Input Contract
+
+Required context:
+
+- Company name and role name.
+- JD or `applications/<company-role>/jd-analysis.md`.
+- `resume.md`.
+- Cover letter draft or final.
+- `applications/<company-role>/evidence-map.md`.
+- `applications/<company-role>/hr-review.md`.
+
+Optional context:
+
+- Company values analysis.
+- `applications/<company-role>/interview-prep.md`.
+- Deadline, file requirements, and length limits.
+
+Required parameters:
+
+- `company`: target company name.
+- `role`: target role title.
+
+Outputs produced:
+
+- `applications/<company-role>/workflow.md`
+- `applications/<company-role>/submission-checklist.md`
+
 ## Inputs
 
 - company name
@@ -22,9 +73,10 @@ Create submission-ready materials, but do not submit applications automatically.
 1. Normalize the application slug as `company-role`.
 2. Create or propose the package structure from `references/package-structure.md`.
 3. Save JD analysis, company values analysis, cover letter draft/final, evidence map, and checklist.
-4. Check company name, role name, file names, length limits, and required attachments.
-5. Prepare manual submission snippets or email draft text when requested.
-6. Record submission status only after the user confirms what happened.
+4. Save interview preparation when available.
+5. Check company name, role name, file names, length limits, and required attachments.
+6. Prepare manual submission snippets or email draft text when requested.
+7. Record submission status only after the user confirms what happened.
 
 ## Hard Rules
 
@@ -43,6 +95,7 @@ Create submission-ready materials, but do not submit applications automatically.
 - Package Path:
 - Included Files:
 - Missing Inputs:
+- Interview Prep:
 - Submission Checklist:
 - Manual Submission Notes:
 ```

@@ -86,6 +86,7 @@ async function main() {
     ["hr-review.md", render(await readTemplate("hr-review-template.md"), values)],
     ["cover-letter-final.md", "## Final Cover Letter\n\n"],
     ["evidence-map.md", render(await readTemplate("evidence-map-template.md"), values)],
+    ["interview-prep.md", render(await readTemplate("interview-prep-template.md"), values)],
     ["submission-checklist.md", render(await readTemplate("application-package-template.md"), values)],
   ]);
 

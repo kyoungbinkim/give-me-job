@@ -36,13 +36,13 @@ npm test
 Equivalent manual commands:
 
 ```bash
-node tools/validate-skills.mjs
-node tools/validate-job-sources.mjs
-node tools/validate-job-schedule.mjs
-node tools/validate-job-ranking.mjs
+node tests/validate/validate-skills.mjs
+node support/validate/validate-job-sources.mjs
+node support/validate/validate-job-schedule.mjs
+node support/validate/validate-job-ranking.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
-node tools/validate-application.mjs .tmp-release-check/demo-backend
-node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
+node support/validate/validate-application.mjs .tmp-release-check/demo-backend
+node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
 ```
 
 ## Environment File

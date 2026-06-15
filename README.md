@@ -2,7 +2,7 @@
 
 ![give-me-job banner](docs/assets/give-me-job-banner.jpg)
 
-`give-me-job` is a Korea-only job application package generator for coding agents such as Codex CLI, Claude Code, and OpenCode. It provides six domain skills and local workflow tools that help an agent turn `resume.md` and a job description into a company-specific Korean application package.
+`give-me-job` is a Korea-only job application package generator for coding agents such as Codex CLI, Claude Code, and OpenCode. It provides seven domain skills and local workflow tools that help an agent turn `resume.md` and a job description into a company-specific Korean application package.
 
 This repository is not an auto-apply service. It prepares files such as cover-letter drafts, evidence maps, HR reviews, and manual submission checklists. The user must review and submit applications manually.
 
@@ -15,6 +15,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - Company-values analysis: use optional mission, culture, values, or talent-profile material for positioning.
 - Korean cover-letter drafting: write answers grounded in `resume.md`, JD analysis, and optional company context.
 - HR review: check exaggeration, unsupported claims, company-name residue, and pre-submission blockers.
+- Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
 - Korean job-source tools: support Saramin, Work24, and JobKorea adapters plus deadline scheduling and fit ranking.
 
@@ -62,7 +63,7 @@ The simplest install path is `npx`:
 npx give-me-job install
 ```
 
-This installs the six domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures.
+This installs the seven domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures.
 
 You can also install the CLI globally:
 
@@ -177,7 +178,7 @@ Read agent.md and complete the package in applications/kakao-backend using my re
 Validate the completed package:
 
 ```bash
-node tools/validate-application.mjs applications/kakao-backend
+node support/validate/validate-application.mjs applications/kakao-backend
 ```
 
 ## Workflow
@@ -204,6 +205,9 @@ cover-letter-writer
 hr-reviewer
         |
         v
+interview-prep
+        |
+        v
 application-packager
         |
         v
@@ -227,6 +231,7 @@ applications/
     |-- hr-review.md
     |-- cover-letter-final.md
     |-- evidence-map.md
+    |-- interview-prep.md
     `-- submission-checklist.md
 ```
 
@@ -239,6 +244,7 @@ applications/
 - `company-values-analyzer`: analyzes optional company values, culture, mission, or talent-profile material.
 - `cover-letter-writer`: drafts Korean cover-letter answers grounded in evidence.
 - `hr-reviewer`: checks application materials from an HR risk perspective.
+- `interview-prep`: prepares interview follow-up questions and answer points grounded in evidence.
 - `application-packager`: assembles the company-specific package and manual submission checklist.
 
 ## Job Sources And Prioritization
@@ -266,7 +272,7 @@ node tools/fetch-jobs.mjs --source saramin --keywords "backend Java" --deadline 
 Run fixture-based validation without API keys:
 
 ```bash
-node tools/validate-job-sources.mjs
+node support/validate/validate-job-sources.mjs
 ```
 
 After fetching jobs, check deadlines and fit ranking:
@@ -289,13 +295,13 @@ npm test
 Equivalent manual checks:
 
 ```bash
-node tools/validate-skills.mjs
-node tools/validate-job-sources.mjs
-node tools/validate-job-schedule.mjs
-node tools/validate-job-ranking.mjs
+node tests/validate/validate-skills.mjs
+node support/validate/validate-job-sources.mjs
+node support/validate/validate-job-schedule.mjs
+node support/validate/validate-job-ranking.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
-node tools/validate-application.mjs .tmp-release-check/demo-backend
-node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
+node support/validate/validate-application.mjs .tmp-release-check/demo-backend
+node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
 ```
 
 ## Repository Structure
@@ -320,6 +326,7 @@ node tools/validate-application.mjs examples/demo-new-grad-backend/applications/
 |   |-- company-values-analyzer/
 |   |-- cover-letter-writer/
 |   |-- hr-reviewer/
+|   |-- interview-prep/
 |   `-- application-packager/
 |-- templates/
 |-- tests/

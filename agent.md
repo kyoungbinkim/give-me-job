@@ -55,6 +55,7 @@ applications/
     |-- hr-review.md
     |-- cover-letter-final.md
     |-- evidence-map.md
+    |-- interview-prep.md
     `-- submission-checklist.md
 ```
 
@@ -68,6 +69,7 @@ Collect or infer:
 
 - company
 - role
+- job function: `tech`, `business`, `support`, `creative`, `operations`, or `unknown`
 - career level
 - source URL or source type
 - deadline
@@ -102,6 +104,7 @@ applications/<company-role>/jd-analysis.md
 ```
 
 The analysis must separate explicit JD facts from conservative inferences.
+The analysis should parse facts, analyze inferred criteria, and gap map resume evidence as separate steps.
 
 ### 4. Company Values
 
@@ -122,10 +125,12 @@ Use `skills/cover-letter-writer/SKILL.md`.
 For each question:
 
 - identify question intent
+- classify the question type
 - select resume evidence
 - draft in Korean unless the user asks otherwise
 - map each key claim to resume evidence
 - respect length limits if provided
+- report target length, current length, and counting rule when a limit exists
 
 Save:
 
@@ -170,7 +175,24 @@ The final text must:
 - match the requested company and role
 - remain explainable in an interview
 
-### 8. Application Package
+### 8. Interview Prep
+
+Use `skills/interview-prep/SKILL.md`.
+
+Save:
+
+```txt
+applications/<company-role>/interview-prep.md
+```
+
+The interview prep must:
+
+- generate follow-up questions for key cover-letter claims
+- include answer points grounded in `resume.md`
+- mark claims that are difficult to defend
+- avoid adding new facts that are absent from `resume.md`
+
+### 9. Application Package
 
 Use `skills/application-packager/SKILL.md`.
 
@@ -185,10 +207,12 @@ The checklist must include:
 
 - company name
 - role name
+- job function
 - deadline
 - required files
 - length limits
 - final answer files
+- interview preparation file
 - company-name residue check
 - unsupported-claim check
 - manual submission reminder
@@ -202,6 +226,7 @@ Maintain `workflow.md` as a short status log:
 
 - Company:
 - Role:
+- Job Function:
 - Source:
 - Status:
 - Missing Inputs:
@@ -233,6 +258,16 @@ Stop and ask the user before proceeding when:
 - the JD requires facts not present in `resume.md`
 - the HR review finds a blocker
 - the next action would submit, send, log in, bypass CAPTCHA, or transmit personal information
+
+## Non-Interactive Fallback
+
+When running in an automated or non-interactive context, do not wait for open-ended user answers. Instead:
+
+- If `resume.md` is missing or too thin, write `workflow.md` with `Status: resume-needed`, list missing evidence under `Missing Inputs`, and halt.
+- If the JD or target role is missing, write `workflow.md` with `Status: intake`, list the missing JD or role fields, and halt.
+- If a JD URL cannot be reached, write `workflow.md` with `Status: paused`, include the URL and error type, and halt.
+- If HR review finds a blocker, write `hr-review.md`, set `workflow.md` to `Status: review-blocked`, do not write substantive final text, and halt.
+- If the next action would submit, send, log in, bypass CAPTCHA, or transmit personal information, set `Status: paused`, record the manual action needed, and halt.
 
 ## Final Response
 

@@ -7,5 +7,8 @@
 - JD Fit:
 - Company Fit:
 - Interview Defense Risk:
+- Blockers:
+- Warnings:
+- Interview Defense Questions:
 - Recommended Revision:
 - Final Submission Checklist:

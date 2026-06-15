@@ -1,13 +1,17 @@
 {
   "name": "give-me-job",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "private": false,
   "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kyoungbinkim/give-me-job"
+    "url": "git+https://github.com/kyoungbinkim/give-me-job.git"
   },
+  "bugs": {
+    "url": "https://github.com/kyoungbinkim/give-me-job/issues"
+  },
+  "homepage": "https://github.com/kyoungbinkim/give-me-job#readme",
   "type": "module",
   "bin": {
     "give-me-job": "bin/give-me-job.js"
@@ -20,10 +24,18 @@
     "CONTRIBUTING.md",
     "bin/",
     "docs/",
-    "examples/",
+    "examples/demo-new-grad-backend/README.md",
+    "examples/demo-new-grad-backend/jd.md",
+    "examples/demo-new-grad-backend/resume.md",
+    "examples/demo-new-grad-backend/applications/demo-cloud-backend/",
     "skills/",
+    "support/",
     "templates/",
-    "tests/",
+    "tests/fixtures/saramin-job-search.json",
+    "tests/fixtures/work24-jobs.xml",
+    "tests/fixtures/jobkorea-jobs.xml",
+    "tests/fixtures/resume-new-grad.md",
+    "tests/fixtures/jobs-normalized/",
     "tools/"
   ],
   "publishConfig": {
@@ -33,10 +45,11 @@
     "node": ">=18.17"
   },
   "scripts": {
-    "test": "node tools/validate-skills.mjs && node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node tools/validate-application.mjs .tmp-release-check/demo-backend && node tools/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend",
-    "test:install": "node tools/validate-npm-install.mjs",
-    "test:skills": "node tools/validate-skills.mjs",
-    "test:jobs": "node tools/validate-job-sources.mjs && node tools/validate-job-schedule.mjs && node tools/validate-job-ranking.mjs",
+    "test": "node tests/validate/validate-skills.mjs && node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node support/validate/validate-application.mjs .tmp-release-check/demo-backend && node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend && node tests/validate/validate-lg-electronics-workflow.mjs",
+    "test:workflow": "node tests/validate/validate-lg-electronics-workflow.mjs",
+    "test:install": "node tests/validate/validate-npm-install.mjs",
+    "test:skills": "node tests/validate/validate-skills.mjs",
+    "test:jobs": "node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs",
     "prepack": "npm test && npm run test:install"
   }
 }

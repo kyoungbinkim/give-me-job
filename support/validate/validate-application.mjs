@@ -9,6 +9,7 @@ const requiredFiles = [
   "hr-review.md",
   "cover-letter-final.md",
   "evidence-map.md",
+  "interview-prep.md",
   "submission-checklist.md",
 ];
 
@@ -23,6 +24,14 @@ const validWorkflowStatuses = new Set([
   "ready-for-user-review",
   "submitted-by-user",
   "paused",
+]);
+const validJobFunctions = new Set([
+  "tech",
+  "business",
+  "support",
+  "creative",
+  "operations",
+  "unknown",
 ]);
 
 async function exists(filePath) {
@@ -61,10 +70,50 @@ function hasEvidenceRows(markdown) {
 }
 
 function unresolvedBlockerLines(markdown) {
-  return markdown
-    .split(/\r?\n/)
-    .filter((line) => /blocker/i.test(line))
-    .filter((line) => !/none|resolved|n\/a|없음|해결/i.test(line));
+  const lines = markdown.split(/\r?\n/);
+  const blockers = [];
+  let inBlockers = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    if (/^#{1,6}\s+/i.test(trimmed) && !/^#{1,6}\s*blockers?\b/i.test(trimmed)) {
+      inBlockers = false;
+    }
+
+    const blockerHeading = /^#{1,6}\s*blockers?\b/i.test(trimmed);
+    const blockerField = /^-\s*blockers?:\s*(.*)$/i.exec(trimmed);
+
+    if (blockerHeading) {
+      inBlockers = true;
+      continue;
+    }
+
+    if (blockerField) {
+      inBlockers = true;
+      const value = blockerField[1].trim();
+      if (value && !/none|resolved|n\/a|없음|해결/i.test(value)) blockers.push(trimmed);
+      continue;
+    }
+
+    if (inBlockers) {
+      if (/^-\s*[A-Z][A-Za-z ]+:/i.test(trimmed) && !/blocker/i.test(trimmed)) {
+        inBlockers = false;
+        continue;
+      }
+      if (/^-\s+/.test(trimmed) && !/none|resolved|n\/a|없음|해결/i.test(trimmed)) {
+        blockers.push(trimmed);
+      }
+      continue;
+    }
+
+    if (/blocker/i.test(trimmed) && !/none|resolved|n\/a|없음|해결/i.test(trimmed)) {
+      blockers.push(trimmed);
+    }
+  }
+
+  return blockers;
 }
 
 function parseField(markdown, field) {
@@ -111,6 +160,10 @@ async function main() {
   const status = parseField(workflow, "Status");
   if (status && !validWorkflowStatuses.has(status)) {
     errors.push(`workflow.md has unsupported Status value: ${status}`);
+  }
+  const jobFunction = parseField(workflow, "Job Function");
+  if (jobFunction && !validJobFunctions.has(jobFunction)) {
+    errors.push(`workflow.md has unsupported Job Function value: ${jobFunction}`);
   }
   if (/submitted-by-user/i.test(status) && !/submitted by user|사용자.*제출|user confirmed/i.test(workflow)) {
     errors.push("workflow.md marks submitted-by-user without explicit user confirmation note");

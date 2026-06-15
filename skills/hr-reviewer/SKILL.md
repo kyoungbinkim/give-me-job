@@ -7,6 +7,55 @@ description: Review resumes, cover letters, application packages, and evidence m
 
 Review as a strict but practical HR screener. Prioritize risks that can cause rejection or weak interview defense.
 
+## Trigger
+
+Use this skill after `cover-letter-draft.md` and `evidence-map.md` exist and before `cover-letter-final.md` is created.
+
+Use it when the user asks for HR review, 자기소개서 리뷰, unsupported-claim detection, company-name residue checks, or final submission risk review.
+
+## Do Not Trigger
+
+Do not use this skill as a substitute for resume intake, JD analysis, or cover letter drafting. Do not create final text when blockers remain.
+
+## Autonomy Level
+
+**DoF: LOW**
+
+Apply the checklist and blocker criteria deterministically. Do not soften blocker findings to keep the workflow moving.
+
+Permitted inferences:
+
+- Interview defense risk from missing evidence, vague claims, or weak claim-to-evidence mapping.
+- Severity level from the blocker and warning criteria below.
+
+Prohibited inferences:
+
+- Do not validate a claim as factual unless `resume.md` supports it.
+- Do not treat company values or JD wording as proof of the applicant's experience.
+
+## Input Contract
+
+Required context:
+
+- Draft cover letter or resume text.
+- `resume.md`.
+- JD analysis or job posting.
+- `applications/<company-role>/evidence-map.md` when reviewing a cover letter package.
+
+Optional context:
+
+- Company values analysis.
+- Length limit and counting rule.
+
+Required parameters:
+
+- `company`: target company name.
+- `role`: target role title.
+
+Outputs produced:
+
+- `applications/<company-role>/hr-review.md`
+
 ## Inputs
 
 - draft cover letter or resume text
@@ -23,7 +72,22 @@ Review as a strict but practical HR screener. Prioritize risks that can cause re
 4. Flag invented or unsupported achievements.
 5. Check company name, role name, and copy-paste residue.
 6. Check readability, sentence length, repetition, and vague claims.
-7. Recommend concrete revisions.
+7. Generate 2-3 interview follow-up questions for each key claim.
+8. Recommend concrete revisions.
+
+## Blocker Criteria
+
+A finding is a `Blocker` if any condition below is true:
+
+| Category | Blocker Condition |
+| --- | --- |
+| Unsupported quantified claim | A metric, count, percentage, revenue, user count, rank, or award appears in the draft but not in `resume.md`. |
+| Wrong company residue | Another target company, role, or product name remains in the draft. |
+| Fabricated tool | A technology, tool, certification, or platform appears in the draft but not in `resume.md` or the user-provided context. |
+| Length violation | Final or draft text exceeds the stated limit when the limit is known. |
+| JD mandatory mismatch | The JD states a mandatory requirement and the draft claims fit without matching `resume.md` evidence. |
+
+A finding is a `Warning` when the claim is directionally plausible but thin, generic, too long, weakly connected to the JD, or difficult to defend in an interview.
 
 ## Output
 
@@ -37,6 +101,9 @@ Review as a strict but practical HR screener. Prioritize risks that can cause re
 - JD Fit:
 - Company Fit:
 - Interview Defense Risk:
+- Blockers:
+- Warnings:
+- Interview Defense Questions:
 - Recommended Revision:
 - Final Submission Checklist:
 ```

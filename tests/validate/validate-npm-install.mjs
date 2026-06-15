@@ -4,17 +4,10 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const cli = path.join(root, "tools", "give-me-job-cli.mjs");
-const expectedSkills = [
-  "resume-intake",
-  "jd-analyzer",
-  "company-values-analyzer",
-  "cover-letter-writer",
-  "hr-reviewer",
-  "application-packager",
-];
 
 function run(args, options = {}) {
   const result = spawnSync(process.execPath, [cli, ...args], {
@@ -57,7 +50,7 @@ async function assertSupportBundle(rootDir) {
   for (const relativePath of [
     "agent.md",
     path.join("tools", "init-application.mjs"),
-    path.join("tools", "validate-application.mjs"),
+    path.join("support", "validate", "validate-application.mjs"),
     path.join("templates", "workflow-template.md"),
     path.join("tests", "fixtures", "resume-new-grad.md"),
   ]) {

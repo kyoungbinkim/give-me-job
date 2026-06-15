@@ -7,10 +7,53 @@ description: Analyze a job description, hiring post, or recruitment page for rol
 
 Use this skill to convert a hiring post into practical selection criteria.
 
+## Trigger
+
+Use this skill when the user provides a JD URL, pasted hiring post, normalized job record, or hiring notes that need Korean-market role analysis.
+
+## Do Not Trigger
+
+Do not use this skill to draft cover letters, invent missing JD requirements, or analyze company culture pages that are not part of the hiring post.
+
+## Autonomy Level
+
+**DoF: MEDIUM**
+
+Separate deterministic parsing from conservative inference. Label every inferred evaluation criterion as inferred.
+
+Permitted inferences:
+
+- Hidden evaluation criteria that follow directly from explicit duties, tools, seniority, or hiring process language.
+- Likely resume evidence categories needed to answer the JD.
+
+Prohibited inferences:
+
+- Do not add requirements absent from the JD or role context.
+- Do not treat inferred criteria as explicit facts.
+
+## Input Contract
+
+Required context:
+
+- JD URL, JD text, normalized job record, or hiring-post notes.
+
+Optional context:
+
+- `resume.md` for gap mapping.
+- Cover letter questions and length limits.
+
+Required parameters:
+
+- `source`: URL, text, normalized job record, or `unknown`.
+
+Outputs produced:
+
+- `applications/<company-role>/jd-analysis.md`
+
 ## Workflow
 
 1. Accept a JD URL, pasted JD text, or mixed notes.
-2. Extract the basic facts:
+2. Parse deterministic facts only:
    - source URL or source type
    - accessed date when browsing or checking a live posting
    - company
@@ -19,10 +62,11 @@ Use this skill to convert a hiring post into practical selection criteria.
    - deadline
    - required documents
    - cover letter questions and length limits
-3. Separate explicit requirements from inferred evaluation criteria.
-4. Identify the likely evidence needed from `resume.md`.
-5. Mark gaps where the resume evidence appears weak or missing.
-6. Keep inference conservative. Label inferred criteria as inferred.
+3. Analyze explicit requirements and inferred evaluation criteria in separate sections.
+4. Gap map the JD against `resume.md` when resume evidence is available.
+5. Identify the likely evidence needed from `resume.md`.
+6. Mark gaps where the resume evidence appears weak or missing.
+7. Keep inference conservative. Label inferred criteria as inferred.
 
 ## Output
 

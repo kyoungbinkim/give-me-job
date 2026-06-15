@@ -12,6 +12,7 @@ applications/
     ├── hr-review.md
     ├── cover-letter-final.md
     ├── evidence-map.md
+    ├── interview-prep.md
     └── submission-checklist.md
 ```
 
@@ -23,18 +24,19 @@ applications/
 - `hr-review.md`: HR risk review before final text.
 - `cover-letter-final.md`: final text prepared for user review.
 - `evidence-map.md`: mapping from claims to `resume.md` evidence IDs.
+- `interview-prep.md`: interview follow-up questions and answer points grounded in evidence.
 - `submission-checklist.md`: final manual checklist before submission.
 - `workflow.md`: package status, missing inputs, blockers, and manual submission notes.
 
 ## Status Values
 
-- `interested`
-- `drafting`
-- `review-needed`
-- `ready-to-submit`
-- `submitted`
+- `intake`
+- `resume-needed`
+- `jd-analyzed`
+- `drafted`
+- `review-blocked`
+- `ready-for-user-review`
+- `submitted-by-user`
 - `paused`
-- `rejected`
-- `accepted`
 
-Use `submitted` only after the user explicitly confirms that they submitted manually.
+Use `submitted-by-user` only after the user explicitly confirms that they submitted manually.

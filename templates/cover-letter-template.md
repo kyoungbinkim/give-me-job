@@ -1,5 +1,14 @@
 ## Question
 
+## Question Type
+
+## Length Check
+- Target Length:
+- Current Length:
+- Counting Rule: Include spaces unless the company or question states otherwise.
+
+## Evidence IDs
+
 ## Draft
 
 ## Evidence Map

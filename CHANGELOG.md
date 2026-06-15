@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-06-15
+
+### Added
+
+- Add `interview-prep` skill and package output for evidence-grounded interview defense questions.
+- Add an LG Electronics backend full-workflow example test using the existing demo candidate and official talent-page values.
+
+### Changed
+
+- Add skill contracts, autonomy levels, and trigger guidance across the domain skills.
+- Strengthen deterministic HR review blocker criteria and cover-letter length/type controls.
+- Move public validation commands from `tools/validate-*` to `support/validate/` and keep release-only checks under `tests/validate/`.
+- Narrow the npm package allowlist so dev-only workflow tests and draft examples are excluded from the published tarball.
+
 ## [0.4.6] - 2026-06-11
 
 ### Fixed
@@ -23,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - Install `give-me-job` as an OpenCode agent at `~/.config/opencode/agents/give-me-job.md` instead of an OpenCode skill.
+- Add npm package repository metadata required for GitHub trusted publishing.
 
 ## [0.4.3] - 2026-06-11
 

@@ -2,6 +2,7 @@
 
 - Company: {{company}}
 - Role: {{role}}
+- Job Function: unknown
 - Source:
 - Status: intake
 - Deadline:
@@ -14,6 +15,7 @@
   - hr-review.md
   - cover-letter-final.md
   - evidence-map.md
+  - interview-prep.md
   - submission-checklist.md
 - Blockers:
 - Manual Submission Notes:
@@ -29,6 +31,7 @@
 | Draft | pending | Draft answers from `resume.md` evidence only. |
 | HR Review | pending | Block final text when blockers remain. |
 | Final Text | pending | Create only after review risk is acceptable. |
+| Interview Prep | pending | Prepare interview defense questions from final or draft text. |
 | Package | pending | Prepare manual submission checklist. |
 
 ## Submission Policy

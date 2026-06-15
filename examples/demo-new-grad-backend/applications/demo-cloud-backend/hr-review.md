@@ -15,7 +15,14 @@
   - Limited because no company-values source was provided.
 - Interview Defense Risk:
   - Low. E1 and E2 provide defendable project details.
-- Blocker: None
+- Blockers:
+  - None
+- Warnings:
+  - Company-specific context is thin because no values source was provided.
+- Interview Defense Questions:
+  - Why did you choose idempotency key instead of only handling duplicate exceptions?
+  - How did the 12 integration tests cover retry and duplicate submission cases?
+  - What query-log change showed that pagination or fetch strategy needed adjustment?
 - Recommended Revision:
   - 실제 회사명과 공고 문항에 맞춰 마지막 기여 문장을 조정한다.
 - Final Submission Checklist:

@@ -1,18 +1,11 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
 
 const root = process.cwd();
 const skillsDir = path.join(root, "skills");
 const agentFile = path.join(root, "agent.md");
 const agentsFile = path.join(root, "AGENTS.md");
-const expectedSkills = [
-  "resume-intake",
-  "jd-analyzer",
-  "company-values-analyzer",
-  "cover-letter-writer",
-  "hr-reviewer",
-  "application-packager",
-];
 const bannedDocs = new Set([
   "README.md",
   "INSTALL.md",
@@ -29,6 +22,7 @@ const requiredReleaseFiles = [
   "docs/release-checklist.md",
   "templates/workflow-template.md",
   "templates/company-values-empty-template.md",
+  "templates/interview-prep-template.md",
   ".env.example",
   "tools/env.mjs",
   "tools/platform.mjs",
@@ -38,10 +32,12 @@ const requiredReleaseFiles = [
   "tools/schedule-jobs.mjs",
   "tools/rank-jobs.mjs",
   "tools/init-application.mjs",
-  "tools/validate-application.mjs",
-  "tools/validate-job-sources.mjs",
-  "tools/validate-job-schedule.mjs",
-  "tools/validate-job-ranking.mjs",
+  "tools/skill-registry.mjs",
+  "support/validate/validate-application.mjs",
+  "support/validate/validate-job-sources.mjs",
+  "support/validate/validate-job-schedule.mjs",
+  "support/validate/validate-job-ranking.mjs",
+  "tests/validate/validate-lg-electronics-workflow.mjs",
   "tools/job-sources/saramin.mjs",
   "tools/job-sources/work24.mjs",
   "tools/job-sources/jobkorea.mjs",
@@ -57,6 +53,7 @@ const requiredReleaseFiles = [
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/workflow.md",
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/evidence-map.md",
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/hr-review.md",
+  "examples/demo-new-grad-backend/applications/demo-cloud-backend/interview-prep.md",
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/cover-letter-final.md",
 ];
 const coreTextFiles = [
@@ -87,6 +84,20 @@ async function exists(target) {
   } catch {
     return false;
   }
+}
+
+async function listFiles(rootDir) {
+  const entries = await readdir(rootDir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const absolute = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await listFiles(absolute)));
+    } else if (entry.isFile()) {
+      files.push(absolute);
+    }
+  }
+  return files;
 }
 
 function parseFrontmatter(text, file) {
@@ -150,7 +161,7 @@ async function validateSkill(skillName) {
     errors.push(`${skillName}/SKILL.md: missing fallback guidance`);
   }
 
-  if (["cover-letter-writer", "hr-reviewer", "application-packager"].includes(skillName)) {
+  if (["cover-letter-writer", "hr-reviewer", "interview-prep", "application-packager"].includes(skillName)) {
     if (!text.includes("resume.md")) {
       errors.push(`${skillName}/SKILL.md: must mention resume.md evidence rules`);
     }
@@ -201,8 +212,52 @@ async function validateAgent() {
   }
 }
 
+async function validateReleasePackaging() {
+  const toolsDir = path.join(root, "tools");
+  const toolFiles = await listFiles(toolsDir);
+  for (const file of toolFiles) {
+    if (/validate-.*\.mjs$/.test(path.basename(file))) {
+      errors.push(`tools/: test validation script must not live in tools/: ${path.relative(root, file)}`);
+    }
+  }
+
+  const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+  const packageFiles = packageJson.files ?? [];
+  const forbiddenPackageEntries = [
+    "tests/",
+    "tests/validate/",
+    "tests/golden/",
+    "give-me-job-agent-expert-review.md",
+    "give-me-job-hr-review_2.md",
+    "job-agent-plan.md",
+  ];
+  for (const entry of forbiddenPackageEntries) {
+    if (packageFiles.includes(entry)) {
+      errors.push(`package.json files must not include dev-only entry: ${entry}`);
+    }
+  }
+
+  const requiredPackageEntries = [
+    "support/",
+    "tests/fixtures/saramin-job-search.json",
+    "tests/fixtures/work24-jobs.xml",
+    "tests/fixtures/jobkorea-jobs.xml",
+    "tests/fixtures/resume-new-grad.md",
+    "tests/fixtures/jobs-normalized/",
+    "tools/",
+    "skills/",
+    "templates/",
+  ];
+  for (const required of requiredPackageEntries) {
+    if (!packageFiles.includes(required)) {
+      errors.push(`package.json files missing required package entry: ${required}`);
+    }
+  }
+}
+
 async function main() {
   await validateAgent();
+  await validateReleasePackaging();
 
   for (const file of coreTextFiles) {
     const text = await readFile(path.join(root, file), "utf8");

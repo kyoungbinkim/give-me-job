@@ -1,6 +1,6 @@
-import { fetchSaraminJobs } from "./job-sources/saramin.mjs";
-import { fetchWork24Jobs } from "./job-sources/work24.mjs";
-import { fetchJobKoreaJobs } from "./job-sources/jobkorea.mjs";
+import { fetchSaraminJobs } from "../../tools/job-sources/saramin.mjs";
+import { fetchWork24Jobs } from "../../tools/job-sources/work24.mjs";
+import { fetchJobKoreaJobs } from "../../tools/job-sources/jobkorea.mjs";
 
 const fixtures = [
   ["saramin", "tests/fixtures/saramin-job-search.json", fetchSaraminJobs],

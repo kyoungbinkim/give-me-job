@@ -158,7 +158,7 @@ Goal: prioritize jobs worth applying to.
 - [x] Add `tools/rank-jobs.mjs` for JD-resume fit scoring.
 - [x] Score by role match, tech stack, career level, education, location, evidence coverage, deadline urgency, and application risk.
 - [x] Output `Job Fit` Markdown for agent use.
-- [x] Add fixture validation with `tools/validate-job-schedule.mjs` and `tools/validate-job-ranking.mjs`.
+- [x] Add fixture validation with `support/validate/validate-job-schedule.mjs` and `support/validate/validate-job-ranking.mjs`.
 
 Acceptance:
 

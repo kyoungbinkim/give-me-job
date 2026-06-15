@@ -1,12 +1,12 @@
 # Application Workflow
 
-- Company: Demo Cloud
+- Company: LG전자
 - Role: Backend Engineer
 - Job Function: tech
-- Source: examples/demo-new-grad-backend/jd.md
+- Source: examples/demo-new-grad-backend/lg-electronics-jd.md
 - Status: ready-for-user-review
 - Deadline: Not provided
-- Missing Inputs: None for demo
+- Missing Inputs: Exact submission deadline, exact required attachments
 - Created Files:
   - workflow.md
   - jd-analysis.md
@@ -24,10 +24,10 @@
 
 | Step | Status | Notes |
 | --- | --- | --- |
-| Intake | done | Company, role, JD, and question identified. |
+| Intake | done | LG전자, Backend Engineer, local JD fixture, and 700-character question identified. |
 | Resume Evidence | done | Used E1 and E2 from demo resume. |
-| JD Analysis | done | Reliability, API design, testing, and database performance selected. |
-| Company Values | skipped | No company-values source provided. |
+| JD Analysis | done | Reliability, retry handling, transaction boundaries, testing, and query performance selected. |
+| Company Values | done | Used official LG전자 인재상 page. |
 | Draft | done | Drafted from E1 and E2 only. |
 | HR Review | done | No blocker for demo package. |
 | Final Text | done | Final text prepared for user review. |

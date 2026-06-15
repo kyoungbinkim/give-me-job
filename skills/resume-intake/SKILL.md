@@ -7,6 +7,49 @@ description: Build or improve a job seeker's resume.md source file from conversa
 
 Use this skill to turn raw career material into a structured `resume.md` that other give-me-job skills can trust.
 
+## Trigger
+
+Use this skill when `resume.md` is missing, thin, outdated, or lacks evidence that can support a Korean cover letter.
+
+## Do Not Trigger
+
+Do not use this skill when the user already has a usable `resume.md` and only needs JD analysis, cover letter drafting, HR review, or packaging.
+
+## Autonomy Level
+
+**DoF: LOW**
+
+Follow user-provided facts only. Do not infer missing employers, dates, metrics, awards, tools, responsibilities, or outcomes.
+
+Permitted inferences:
+
+- Career type from stated graduation date, work history, or years of experience.
+- Evidence strength from specificity, role clarity, and observable result.
+
+Prohibited inferences:
+
+- Do not upgrade a school project into professional work.
+- Do not turn participation into ownership unless the user says they owned the work.
+
+## Input Contract
+
+Required context:
+
+- Raw career material from the user or an existing `resume.md`.
+
+Optional context:
+
+- Target role, target company, JD, or desired cover-letter questions.
+
+Required parameters:
+
+- `target_role`: target role when available, otherwise `unknown`.
+- `career_type`: `new-grad`, `experienced`, or `unknown`.
+
+Outputs produced:
+
+- `resume.md` draft, a patch/update plan, or focused follow-up questions.
+
 ## Workflow
 
 1. Determine whether the user is `New Grad` or `Experienced`.

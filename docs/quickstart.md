@@ -38,13 +38,14 @@ The agent should fill:
 - `evidence-map.md`
 - `hr-review.md`
 - `cover-letter-final.md`
+- `interview-prep.md`
 - `submission-checklist.md`
 - `workflow.md`
 
 ## 4. Validate The Package
 
 ```bash
-node tools/validate-application.mjs applications/kakao-backend
+node support/validate/validate-application.mjs applications/kakao-backend
 ```
 
 Validation checks required files, evidence map presence, HR blockers, and manual submission reminders.
@@ -64,7 +65,7 @@ node tools/fetch-jobs.mjs --source saramin --keywords "백엔드 Java" --deadlin
 Fixture-based validation without API keys:
 
 ```bash
-node tools/validate-job-sources.mjs
+node support/validate/validate-job-sources.mjs
 ```
 
 See [integrations/job-sources.md](integrations/job-sources.md).
@@ -79,6 +80,6 @@ node tools/rank-jobs.mjs --resume resume.md --jobs data/jobs
 Fixture validation:
 
 ```bash
-node tools/validate-job-schedule.mjs
-node tools/validate-job-ranking.mjs
+node support/validate/validate-job-schedule.mjs
+node support/validate/validate-job-ranking.mjs
 ```

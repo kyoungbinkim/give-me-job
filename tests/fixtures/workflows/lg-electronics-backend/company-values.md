@@ -1,0 +1,35 @@
+## Company Values Analysis
+- Source: https://www.lge.co.kr/company/recruit/talent
+- Company: LG전자
+- Talent Keywords:
+  - LG WAY 신념과 실행력
+  - 세계 최고에 도전
+  - 고객 최우선
+  - 혁신
+  - 팀워크
+  - 자율과 창의
+  - 꾸준한 실력 배양
+  - 정정당당한 경쟁
+- Core Values:
+  - LG전자는 LG WAY에 대한 신념과 실행력을 갖춘 사람을 인재상으로 제시한다.
+  - 꿈과 열정을 가지고 세계 최고에 도전하는 사람을 강조한다.
+  - 고객을 최우선으로 생각하고 끊임없이 혁신하는 사람을 강조한다.
+  - 팀워크를 이루며 자율적이고 창의적으로 일하는 사람을 강조한다.
+  - 꾸준히 실력을 배양하며 정정당당하게 경쟁하는 사람을 강조한다.
+- Preferred Behaviors:
+  - 사용자 문제를 먼저 정의하고 안정성 개선 근거를 남긴다.
+  - 팀원이 재현할 수 있는 테스트와 로그 기반 설명을 준비한다.
+  - 신입 지원자 범위 안에서 프로젝트 경험과 학습 태도를 분명히 구분한다.
+- Tone To Use:
+  - Practical, technical, customer-aware, evidence-based, and clear about project scope.
+- Tone To Avoid:
+  - Do not invent LG전자 products, organizational culture, or live hiring criteria beyond the official talent page.
+  - Do not overclaim production impact from a local project.
+- Resume Evidence Candidates:
+  - E1. Order API Reliability Project
+  - E2. Query Performance Improvement
+- Inferences:
+  - Customer-first and innovation can be connected to API reliability only when grounded in E1 and E2.
+  - Teamwork and autonomous execution can be connected to how the candidate identified, fixed, and verified project issues.
+- Risks:
+  - Final submission should still be revised if the real LG전자 posting includes product, team, or role-specific criteria not present in this fixture.

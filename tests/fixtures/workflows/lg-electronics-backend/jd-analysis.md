@@ -1,0 +1,42 @@
+## JD Analysis
+- Company: LG전자
+- Source: examples/demo-new-grad-backend/lg-electronics-jd.md
+- Accessed Date: Local fixture
+- Role: Backend Engineer
+- Career Level: New Grad
+- Main Responsibilities:
+  - Build backend APIs for service-facing systems.
+  - Improve API reliability, retry handling, and test coverage.
+  - Work with database-backed services and performance-sensitive queries.
+- Must-Have:
+  - Java or Kotlin backend development experience.
+  - API design, transaction handling, and database understanding.
+  - Ability to explain technical decisions and verification methods clearly.
+- Nice-To-Have:
+  - Retry and duplicate-request handling.
+  - Query performance improvement.
+- Hidden Evaluation Criteria:
+  - [INFERRED] Can explain how a backend issue was reproduced, fixed, and verified.
+  - [INFERRED] Can connect a new-grad project to reliability and quality habits without overstating production impact.
+- Resume Keywords:
+  - Java
+  - Spring Boot
+  - API
+  - idempotency key
+  - transaction
+  - integration test
+  - SQL
+  - pagination
+- Cover Letter Angles:
+  - Order API reliability project using idempotency keys and retry tests.
+  - Product-list API query review using pagination and fetch strategy.
+- Risk/Gaps:
+  - Demo candidate has project evidence, not production service operation experience.
+  - No official LG전자 values source was provided.
+- Unknown Or Unverified Fields:
+  - Deadline
+  - Required attachments
+  - Official values or talent profile
+- Questions To Ask:
+  - Are spaces counted in the 700-character limit?
+  - Is there an official LG전자 values or talent-profile page to use?

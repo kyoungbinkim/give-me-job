@@ -6,18 +6,9 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { toPosixPath } from "./platform.mjs";
+import { allSkillNames, orchestratorSkillName, skillNames } from "./skill-registry.mjs";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const skillNames = [
-  "resume-intake",
-  "jd-analyzer",
-  "company-values-analyzer",
-  "cover-letter-writer",
-  "hr-reviewer",
-  "application-packager",
-];
-const orchestratorSkillName = "give-me-job";
-const allSkillNames = [...skillNames, orchestratorSkillName];
 const targets = ["codex", "opencode", "claude-code"];
 const agentName = "give-me-job";
 const agentDescription =
@@ -26,9 +17,14 @@ const supportFiles = [
   ".env.example",
   "AGENTS.md",
   "agent.md",
+  "support",
   "templates",
   "tools",
-  path.join("tests", "fixtures"),
+  path.join("tests", "fixtures", "saramin-job-search.json"),
+  path.join("tests", "fixtures", "work24-jobs.xml"),
+  path.join("tests", "fixtures", "jobkorea-jobs.xml"),
+  path.join("tests", "fixtures", "resume-new-grad.md"),
+  path.join("tests", "fixtures", "jobs-normalized"),
 ];
 
 function usage() {
@@ -388,7 +384,7 @@ function printInstallSummary(entries, dryRun) {
   for (const [key, grouped] of byTarget.entries()) {
     const [target, scope] = key.split(":");
     const root = targetConfigRootFor(target, scope);
-    const label = "6 skills, the give-me-job agent, and support files";
+    const label = `${skillNames.length} skills, the give-me-job agent, and support files`;
     console.log(`${dryRun ? "Would install" : "Installed"} ${label} for ${target} (${scope}) at ${toPosixPath(root)}`);
   }
 }

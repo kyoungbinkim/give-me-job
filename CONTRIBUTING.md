@@ -28,10 +28,10 @@ npm test
 For focused checks:
 
 ```bash
-node tools/validate-skills.mjs
-node tools/validate-job-sources.mjs
-node tools/validate-job-schedule.mjs
-node tools/validate-job-ranking.mjs
+node tests/validate/validate-skills.mjs
+node support/validate/validate-job-sources.mjs
+node support/validate/validate-job-schedule.mjs
+node support/validate/validate-job-ranking.mjs
 ```
 
 ## Pull Request Checklist
