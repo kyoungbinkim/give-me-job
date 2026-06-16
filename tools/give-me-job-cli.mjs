@@ -328,9 +328,11 @@ function printInstallSummary(entries, dryRun) {
   }
   for (const [key, grouped] of byTarget.entries()) {
     const [target, scope] = key.split(":");
-    const root = targetConfigRootFor(target, scope);
     const label = `${skillNames.length} skills, the give-me-job agent, and support files`;
-    console.log(`${dryRun ? "Would install" : "Installed"} ${label} for ${target} (${scope}) at ${toPosixPath(root)}`);
+    console.log(`${dryRun ? "Would install" : "Installed"} ${label} for ${target} (${scope}):`);
+    console.log(`  skills:  ${toPosixPath(skillRootFor(target, scope))}`);
+    console.log(`  agent:   ${toPosixPath(path.join(agentRootFor(target, scope), `${agentName}.${agentExtensionFor(target)}`))}`);
+    console.log(`  support: ${toPosixPath(supportRootFor(target, scope))}`);
   }
 }
 
@@ -449,8 +451,10 @@ async function doctor(options) {
       if (!(await exists(file))) missing.push(path.relative(targetConfigRootFor(target, scope), file));
     }
     if (missing.length === 0) {
-      const displayRoot = targetConfigRootFor(target, scope);
-      console.log(`${target} (${scope}): OK at ${toPosixPath(displayRoot)}`);
+      console.log(`${target} (${scope}): OK`);
+      console.log(`  skills:  ${toPosixPath(skillRootFor(target, scope))}`);
+      console.log(`  agent:   ${toPosixPath(path.join(agentRootFor(target, scope), `${agentName}.${agentExtensionFor(target)}`))}`);
+      console.log(`  support: ${toPosixPath(supportRootFor(target, scope))}`);
     } else {
       const displayRoot = targetConfigRootFor(target, scope);
       console.log(`${target} (${scope}): missing ${missing.join(", ")} at ${toPosixPath(displayRoot)}`);

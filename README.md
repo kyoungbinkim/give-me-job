@@ -124,6 +124,8 @@ give-me-job uninstall --target all
 
 ## Install Paths
 
+These paths match the official discovery locations for Codex, Claude Code, and OpenCode skills and agents.
+
 Default user-scope install paths:
 
 ```txt

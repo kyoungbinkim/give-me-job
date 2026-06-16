@@ -33,6 +33,17 @@ give-me-job install --target opencode
 give-me-job install --target claude-code
 ```
 
+## Verified Install Locations
+
+The installer uses the official filesystem discovery locations for each supported agent:
+
+- Codex skills: user `$HOME/.agents/skills`, project `.agents/skills`.
+- Codex custom agents: user `~/.codex/agents`, project `.codex/agents`.
+- Claude Code skills: user `~/.claude/skills`, project `.claude/skills`.
+- Claude Code subagents: user `~/.claude/agents`, project `.claude/agents`.
+- OpenCode skills: user `~/.config/opencode/skills`, project `.opencode/skills`.
+- OpenCode agents: user `~/.config/opencode/agents`, project `.opencode/agents`.
+
 User-scope install paths:
 
 ```txt
