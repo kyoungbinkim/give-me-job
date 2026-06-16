@@ -65,6 +65,7 @@
     "test:install": "node tests/validate/validate-npm-install.mjs",
     "test:skills": "node tests/validate/validate-skills.mjs",
     "test:jobs": "node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs",
-    "prepack": "npm test && npm run test:install"
+    "test:release": "npm test && npm run test:install",
+    "prepack": "npm run test:release"
   }
 }

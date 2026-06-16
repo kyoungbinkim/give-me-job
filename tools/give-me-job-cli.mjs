@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { toPosixPath } from "./platform.mjs";
 import { orchestratorSkillName, skillNames } from "./skill-registry.mjs";
+import { agentName, generatedSourcesForTarget, readAgentSource, sourceForTarget, workflowTools } from "./install-adapters.mjs";
 import {
   agentExtensionFor,
   agentRootFor,
@@ -20,35 +21,6 @@ import {
 } from "./install-layout.mjs";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const agentName = "give-me-job";
-const agentDescription =
-  "Run the Korea-only give-me-job application workflow. Use when preparing a company-specific Korean job application package from resume.md, a JD, and optional company values while never submitting, logging in, bypassing CAPTCHA, or transmitting personal information.";
-const workflowTools = [
-  {
-    name: "fetch-jobs",
-    script: "tools/fetch-jobs.mjs",
-    description: "Search Korean job postings and company information through the give-me-job job-source adapters.",
-    hint: "[--source work24|saramin|jobkorea] [flags...]",
-  },
-  {
-    name: "init-application",
-    script: "tools/init-application.mjs",
-    description: "Create a company-role Korean application package folder from give-me-job templates.",
-    hint: "--company <company> --role <role> [--out applications] [--force]",
-  },
-  {
-    name: "schedule-jobs",
-    script: "tools/schedule-jobs.mjs",
-    description: "Summarize today, tomorrow, or weekly deadlines from normalized job files.",
-    hint: "[--today|--tomorrow|--week] [--jobs data/jobs]",
-  },
-  {
-    name: "rank-jobs",
-    script: "tools/rank-jobs.mjs",
-    description: "Rank normalized job postings against a resume.md source file.",
-    hint: "--resume resume.md --jobs data/jobs",
-  },
-];
 
 function usage() {
   return `Usage:
@@ -183,149 +155,6 @@ async function readSkillSources() {
   return [...(await readDomainSkillSources()), ...(await readSupportSources())];
 }
 
-function sourceForTarget(target, source) {
-  if (target !== "claude-code" || source.kind !== "domain-skill" || source.skillName !== "job-searcher" || source.relativePath !== "SKILL.md") {
-    return source;
-  }
-
-  const text = source.content.toString("utf8");
-  if (text.includes("\nallowed-tools:")) return source;
-  const content = text.replace(/^---\r?\n/, "---\nallowed-tools: Bash, Read, Grep\n");
-  return { ...source, content: Buffer.from(content, "utf8") };
-}
-
-function claudeToolSkillContent(toolSpec, scriptPath) {
-  return [
-    "---",
-    `name: give-me-job-${toolSpec.name}`,
-    `description: ${toolSpec.description}`,
-    "allowed-tools: Bash, Read, Grep",
-    `argument-hint: ${JSON.stringify(toolSpec.hint)}`,
-    "disable-model-invocation: true",
-    "---",
-    "",
-    `# give-me-job ${toolSpec.name}`,
-    "",
-    `Use this Claude Code tool skill to run the installed \`${toolSpec.script}\` support script.`,
-    "",
-    "## Execution",
-    "",
-    "1. Treat this as an allowlisted give-me-job workflow tool, not as a generic script runner.",
-    "2. Verify Node.js is available with `node --version` if needed.",
-    "3. Run the installed script with Claude Code's Bash tool:",
-    "",
-    "```bash",
-    `node ${JSON.stringify(scriptPath)} $ARGUMENTS`,
-    "```",
-    "",
-    "4. Report the real stdout/stderr and exit code. Do not fabricate results.",
-    "",
-  ].join("\n");
-}
-
-function opencodeToolContent(toolSpec, scriptPath) {
-  return `import { tool } from "@opencode-ai/plugin";
-import { spawn } from "node:child_process";
-
-const scriptPath = ${JSON.stringify(scriptPath)};
-
-function runNode(args, context) {
-  return new Promise((resolve) => {
-    const child = spawn("node", [scriptPath, ...(args.args ?? [])], {
-      cwd: context?.directory ?? process.cwd(),
-      env: process.env,
-      shell: false,
-      windowsHide: true,
-    });
-
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (data) => {
-      stdout += data.toString("utf8");
-    });
-    child.stderr.on("data", (data) => {
-      stderr += data.toString("utf8");
-    });
-    child.on("error", (error) => {
-      resolve(JSON.stringify({ success: false, exitCode: null, stdout, stderr: stderr ? stderr + "\\n" + error.message : error.message }, null, 2));
-    });
-    child.on("close", (code) => {
-      resolve(JSON.stringify({ success: code === 0, exitCode: code, stdout, stderr }, null, 2));
-    });
-  });
-}
-
-export default tool({
-  description: ${JSON.stringify(toolSpec.description)},
-  args: {
-    args: tool.schema.array(tool.schema.string()).optional().describe("Command-line arguments passed to ${toolSpec.script}, excluding node and the script path."),
-  },
-  async execute(args, context) {
-    return runNode(args, context);
-  },
-});
-`;
-}
-
-function generatedSourcesForTarget(target, scope) {
-  if (target === "claude-code") {
-    return workflowTools.map((toolSpec) => {
-      const scriptPath = path.join(supportRootFor(target, scope), toolSpec.script);
-      return {
-        kind: "claude-tool-skill",
-        skillName: `give-me-job-${toolSpec.name}`,
-        relativePath: "SKILL.md",
-        content: Buffer.from(claudeToolSkillContent(toolSpec, scriptPath), "utf8"),
-      };
-    });
-  }
-
-  if (target === "opencode") {
-    return workflowTools.map((toolSpec) => {
-      const scriptPath = path.join(supportRootFor(target, scope), toolSpec.script);
-      return {
-        kind: "opencode-tool",
-        skillName: `give-me-job-${toolSpec.name}`,
-        relativePath: `give_me_job_${toolSpec.name.replaceAll("-", "_")}.js`,
-        content: Buffer.from(opencodeToolContent(toolSpec, scriptPath), "utf8"),
-      };
-    });
-  }
-
-  return [];
-}
-
-async function readAgentSource(target) {
-  const agent = await readFile(path.join(packageRoot, "agent.md"), "utf8");
-  if (target === "codex") {
-    const content = `name = ${JSON.stringify(agentName)}\ndescription = ${JSON.stringify(agentDescription)}\ndeveloper_instructions = ${JSON.stringify(agent)}\n`;
-    return {
-      kind: "agent",
-      skillName: orchestratorSkillName,
-      relativePath: `${agentName}.toml`,
-      content: Buffer.from(content, "utf8"),
-    };
-  }
-
-  if (target === "claude-code") {
-    const content = `---\nname: ${agentName}\ndescription: ${agentDescription}\ntools: Read, Write, Edit, Bash, Glob, Grep\nmodel: inherit\n---\n\n${agent}`;
-    return {
-      kind: "agent",
-      skillName: orchestratorSkillName,
-      relativePath: `${agentName}.md`,
-      content: Buffer.from(content, "utf8"),
-    };
-  }
-
-  const content = `---\ndescription: ${agentDescription}\nmode: primary\npermission:\n  edit: allow\n  bash: allow\n  webfetch: allow\n  skill: allow\n---\n\n${agent}`;
-  return {
-    kind: "agent",
-    skillName: orchestratorSkillName,
-    relativePath: `${agentName}.md`,
-    content: Buffer.from(content, "utf8"),
-  };
-}
-
 function destinationFor(target, scope, source) {
   if (source.kind === "agent") {
     return path.join(agentRootFor(target, scope), source.relativePath);
@@ -340,7 +169,7 @@ function destinationFor(target, scope, source) {
 }
 
 async function sourcesForTarget(target, scope, sources) {
-  return [...sources.map((source) => sourceForTarget(target, source)), await readAgentSource(target), ...generatedSourcesForTarget(target, scope)];
+  return [...sources.map((source) => sourceForTarget(target, source)), await readAgentSource(target, packageRoot), ...generatedSourcesForTarget(target, scope)];
 }
 
 async function readdirOrFile(targetPath) {

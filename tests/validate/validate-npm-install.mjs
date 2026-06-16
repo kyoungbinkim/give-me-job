@@ -5,6 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
+import { workflowTools } from "../../tools/install-adapters.mjs";
 import {
   agentExtensionFor,
   agentRootFor,
@@ -17,7 +18,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const cli = path.join(root, "tools", "give-me-job-cli.mjs");
-const expectedWorkflowTools = ["fetch-jobs", "init-application", "schedule-jobs", "rank-jobs"];
+const expectedWorkflowTools = workflowTools.map((tool) => tool.name);
 
 function run(args, options = {}) {
   const result = spawnSync(process.execPath, [cli, ...args], {
@@ -69,12 +70,21 @@ async function assertAgentInstall(target, scope, options) {
   await assertSkills(skillRootDir);
   if (target === "claude-code") {
     const jobSearcher = await readFile(path.join(skillRootDir, "job-searcher", "SKILL.md"), "utf8");
-    assert(jobSearcher.includes("allowed-tools: Bash, Read, Grep"), "Claude Code job-searcher skill must allow Bash tool execution");
+    assert(
+      jobSearcher.includes("allowed-tools: Bash(node *fetch-jobs.mjs), Bash(node *fetch-jobs.mjs *), Read, Grep"),
+      "Claude Code job-searcher skill must restrict Bash to fetch-jobs",
+    );
+    const agent = await readFile(path.join(agentRootFor(target, scope, options), `give-me-job.${agentExtensionFor(target)}`), "utf8");
+    assert(!agent.includes("tools: Read, Write, Edit, Bash"), "Claude Code agent must not grant unrestricted Bash access");
     for (const toolName of expectedWorkflowTools) {
       const toolSkill = path.join(skillRootDir, `give-me-job-${toolName}`, "SKILL.md");
       assert(await exists(toolSkill), `missing Claude Code tool skill: ${toolSkill}`);
       const text = await readFile(toolSkill, "utf8");
-      assert(text.includes("allowed-tools: Bash, Read, Grep"), `Claude Code tool skill must allow Bash: ${toolSkill}`);
+      const scriptName = workflowTools.find((tool) => tool.name === toolName).script.split("/").at(-1);
+      assert(
+        text.includes(`allowed-tools: Bash(node *${scriptName}), Bash(node *${scriptName} *), Read, Grep`),
+        `Claude Code tool skill must restrict Bash to ${scriptName}: ${toolSkill}`,
+      );
     }
   }
   if (target === "opencode") {
@@ -84,6 +94,9 @@ async function assertAgentInstall(target, scope, options) {
       assert(await exists(toolFile), `missing OpenCode custom tool: ${toolFile}`);
       const text = await readFile(toolFile, "utf8");
       assert(text.includes("export default tool"), `OpenCode custom tool must export a tool definition: ${toolFile}`);
+      assert(text.includes("function validateArgs"), `OpenCode custom tool must validate arguments: ${toolFile}`);
+      assert(text.includes("blockedFlags"), `OpenCode custom tool must include blocked flag policy: ${toolFile}`);
+      assert(text.includes("Path for ${flag} must stay inside the current workspace"), `OpenCode custom tool must restrict path flags: ${toolFile}`);
     }
   }
   assert(

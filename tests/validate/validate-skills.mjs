@@ -33,6 +33,7 @@ const requiredReleaseFiles = [
   "tools/schedule-jobs.mjs",
   "tools/rank-jobs.mjs",
   "tools/init-application.mjs",
+  "tools/install-adapters.mjs",
   "tools/install-layout.mjs",
   "tools/skill-registry.mjs",
   "support/validate/validate-application.mjs",
