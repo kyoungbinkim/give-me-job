@@ -102,6 +102,20 @@ Work24 API를 사용하여 한국 채용 공고 및 기업 정보를 검색하�
 | OpenCode | `~/.config/opencode/give-me-job/tools/fetch-jobs.mjs` | `.opencode/give-me-job/tools/fetch-jobs.mjs` |
 | Claude Code | `~/.claude/give-me-job/tools/fetch-jobs.mjs` | `.claude/give-me-job/tools/fetch-jobs.mjs` |
 
+Codex execution note:
+- Codex does not auto-register these `.mjs` files as MCP/custom tools.
+- Treat `fetch-jobs.mjs` as a support script invoked through the shell.
+- For Codex installs, resolve the script in this order: current repo `tools/fetch-jobs.mjs`, project `.codex/give-me-job/tools/fetch-jobs.mjs`, then user `~/.codex/give-me-job/tools/fetch-jobs.mjs`.
+- Run the resolved path explicitly, for example `node "<resolved-fetch-jobs.mjs>" --source work24 --dry-run --active-only --param.display 10`.
+- If the command fails, report the real stdout/stderr and exit code. Do not fabricate results.
+
+Claude Code execution note:
+- The Claude Code installer injects `allowed-tools: Bash, Read, Grep` into this skill so Claude can run the workflow script with its Bash tool while this skill is active.
+- Treat `fetch-jobs.mjs` as an allowlisted support script, not as an arbitrary script runner.
+- Resolve the script in this order: current repo `tools/fetch-jobs.mjs`, project `.claude/give-me-job/tools/fetch-jobs.mjs`, then user `~/.claude/give-me-job/tools/fetch-jobs.mjs`.
+- Run the resolved path explicitly with the Bash tool, for example `node "<resolved-fetch-jobs.mjs>" --source work24 --dry-run --active-only --param.display 10`.
+- If the command fails, report the real stdout/stderr and exit code. Do not fabricate results.
+
 도구가 여러 위치에 있으면 현재 프로젝트 루트의 파일을 우선 사용하고, 그다음 현재 에이전트 대상의 project scope, user scope 순서로 사용합니다.
 
 어느 위치에서도 `fetch-jobs.mjs`를 찾을 수 없으면 `give-me-job install --target <target>` 실행이 필요하다고 안내하고 중단합니다.

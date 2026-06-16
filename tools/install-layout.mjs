@@ -70,6 +70,17 @@ export function agentRootFor(target, scope, options = {}) {
   return path.join(home, ".claude", "agents");
 }
 
+export function toolRootFor(target, scope, options = {}) {
+  if (target !== "opencode") {
+    throw new Error(`Target does not have a custom tool root: ${target}`);
+  }
+
+  const home = homeDir(options);
+  const cwd = options.cwd ?? process.cwd();
+  if (scope === "project") return path.resolve(cwd, ".opencode", "tools");
+  return path.join(home, ".config", "opencode", "tools");
+}
+
 export function targetConfigRootFor(target, scope, options = {}) {
   const home = homeDir(options);
   const cwd = options.cwd ?? process.cwd();

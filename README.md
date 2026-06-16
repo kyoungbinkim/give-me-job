@@ -67,7 +67,7 @@ The simplest install path is `npx`:
 npx give-me-job install
 ```
 
-This installs the eight domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures.
+This installs the eight domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures. Claude Code also gets tool-shaped skills such as `give-me-job-fetch-jobs`; OpenCode also gets custom tool definitions under its tools directory.
 
 You can also install the CLI globally:
 
@@ -135,9 +135,11 @@ Codex:       ~/.codex/give-me-job/
 
 OpenCode:    ~/.config/opencode/skills/<domain-skill>/SKILL.md
 OpenCode:    ~/.config/opencode/agents/give-me-job.md
+OpenCode:    ~/.config/opencode/tools/give_me_job_<tool>.js
 OpenCode:    ~/.config/opencode/give-me-job/
 
 Claude Code: ~/.claude/skills/<domain-skill>/SKILL.md
+Claude Code: ~/.claude/skills/give-me-job-<tool>/SKILL.md
 Claude Code: ~/.claude/agents/give-me-job.md
 Claude Code: ~/.claude/give-me-job/
 ```
@@ -150,8 +152,10 @@ Codex:       .codex/agents/give-me-job.toml
 
 OpenCode:    .opencode/skills/<domain-skill>/SKILL.md
 OpenCode:    .opencode/agents/give-me-job.md
+OpenCode:    .opencode/tools/give_me_job_<tool>.js
 
 Claude Code: .claude/skills/<domain-skill>/SKILL.md
+Claude Code: .claude/skills/give-me-job-<tool>/SKILL.md
 Claude Code: .claude/agents/give-me-job.md
 ```
 

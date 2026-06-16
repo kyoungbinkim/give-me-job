@@ -11,11 +11,13 @@ import {
   requiredSupportFiles,
   skillRootFor,
   targetConfigRootFor,
+  toolRootFor,
   targets,
 } from "../../tools/install-layout.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const cli = path.join(root, "tools", "give-me-job-cli.mjs");
+const expectedWorkflowTools = ["fetch-jobs", "init-application", "schedule-jobs", "rank-jobs"];
 
 function run(args, options = {}) {
   const result = spawnSync(process.execPath, [cli, ...args], {
@@ -65,6 +67,25 @@ async function assertAgentInstall(target, scope, options) {
   const skillRootDir = skillRootFor(target, scope, options);
   const configRootDir = targetConfigRootFor(target, scope, options);
   await assertSkills(skillRootDir);
+  if (target === "claude-code") {
+    const jobSearcher = await readFile(path.join(skillRootDir, "job-searcher", "SKILL.md"), "utf8");
+    assert(jobSearcher.includes("allowed-tools: Bash, Read, Grep"), "Claude Code job-searcher skill must allow Bash tool execution");
+    for (const toolName of expectedWorkflowTools) {
+      const toolSkill = path.join(skillRootDir, `give-me-job-${toolName}`, "SKILL.md");
+      assert(await exists(toolSkill), `missing Claude Code tool skill: ${toolSkill}`);
+      const text = await readFile(toolSkill, "utf8");
+      assert(text.includes("allowed-tools: Bash, Read, Grep"), `Claude Code tool skill must allow Bash: ${toolSkill}`);
+    }
+  }
+  if (target === "opencode") {
+    const toolRootDir = toolRootFor(target, scope, options);
+    for (const toolName of expectedWorkflowTools) {
+      const toolFile = path.join(toolRootDir, `give_me_job_${toolName.replaceAll("-", "_")}.js`);
+      assert(await exists(toolFile), `missing OpenCode custom tool: ${toolFile}`);
+      const text = await readFile(toolFile, "utf8");
+      assert(text.includes("export default tool"), `OpenCode custom tool must export a tool definition: ${toolFile}`);
+    }
+  }
   assert(
     await exists(path.join(agentRootFor(target, scope, options), `give-me-job.${agentExtensionFor(target)}`)),
     `missing give-me-job agent under ${configRootDir}`,

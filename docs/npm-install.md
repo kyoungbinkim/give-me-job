@@ -43,6 +43,7 @@ The installer uses the official filesystem discovery locations for each supporte
 - Claude Code subagents: user `~/.claude/agents`, project `.claude/agents`.
 - OpenCode skills: user `~/.config/opencode/skills`, project `.opencode/skills`.
 - OpenCode agents: user `~/.config/opencode/agents`, project `.opencode/agents`.
+- OpenCode custom tools: user `~/.config/opencode/tools`, project `.opencode/tools`.
 
 User-scope install paths:
 
@@ -51,7 +52,9 @@ Codex:      ~/.agents/skills/<skill>/SKILL.md
 Codex:      ~/.codex/agents/give-me-job.toml
 OpenCode:   ~/.config/opencode/skills/<domain-skill>/SKILL.md
 OpenCode:   ~/.config/opencode/agents/give-me-job.md
+OpenCode:   ~/.config/opencode/tools/give_me_job_<tool>.js
 Claude Code: ~/.claude/skills/<domain-skill>/SKILL.md
+Claude Code: ~/.claude/skills/give-me-job-<tool>/SKILL.md
 Claude Code: ~/.claude/agents/give-me-job.md
 ```
 
@@ -61,6 +64,16 @@ The support bundle is installed under each target's `give-me-job` folder:
 Codex:      ~/.codex/give-me-job/
 OpenCode:   ~/.config/opencode/give-me-job/
 Claude Code: ~/.claude/give-me-job/
+```
+
+For Claude Code, the installer writes tool-shaped skills such as `give-me-job-fetch-jobs` and injects `allowed-tools: Bash, Read, Grep`. That lets Claude Code use its Bash tool to run allowlisted `.mjs` workflow scripts without a separate MCP registration step.
+
+For OpenCode, the installer writes custom tool definitions under the official tools directory. Each tool definition invokes the installed support script and returns structured stdout/stderr JSON.
+
+Example command the Claude Code tool skill can run from the installed user bundle:
+
+```bash
+node ~/.claude/give-me-job/tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.display 10
 ```
 
 Project-scope install paths:
@@ -74,7 +87,9 @@ Codex:      .agents/skills/<skill>/SKILL.md
 Codex:      .codex/agents/give-me-job.toml
 OpenCode:   .opencode/skills/<domain-skill>/SKILL.md
 OpenCode:   .opencode/agents/give-me-job.md
+OpenCode:   .opencode/tools/give_me_job_<tool>.js
 Claude Code: .claude/skills/<domain-skill>/SKILL.md
+Claude Code: .claude/skills/give-me-job-<tool>/SKILL.md
 Claude Code: .claude/agents/give-me-job.md
 ```
 
