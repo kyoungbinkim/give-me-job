@@ -310,6 +310,7 @@ With a Work24 API key, set `WORK24_AUTH_KEY` as an environment variable or in `.
 ```bash
 node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
 node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --match-keyword "엘지" --pages 30 --param.display 100
 node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
 ```
 

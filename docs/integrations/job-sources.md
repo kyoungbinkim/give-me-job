@@ -60,7 +60,10 @@ Search current recruit notices:
 ```bash
 node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
 node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --match-keyword "엘지" --pages 30 --param.display 100
 ```
+
+Use `--match-keyword` for company or brand-name recruit notice searches when Work24 API parameters do not reliably filter by company name. It filters locally across company, title, URL, role, and keywords after fetching the requested pages.
 
 Search company information:
 

@@ -30,6 +30,43 @@ function work24RecruitXml() {
 </root>`;
 }
 
+function work24RecruitPageXml(url) {
+  const startPage = url.searchParams.get("startPage");
+  if (startPage === "2") {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <dhsOpenEmpInfo>
+    <empSeqno>match-2</empSeqno>
+    <empBusiNm>엘지테스트</empBusiNm>
+    <empWantedTitle>백엔드 개발자</empWantedTitle>
+    <empWantedHomepgDetail>https://example.com/jobs/match-2</empWantedHomepgDetail>
+    <empWantedCareerNm>신입</empWantedCareerNm>
+    <empWantedEduNm>대졸</empWantedEduNm>
+    <regionNm>서울</regionNm>
+    <empWantedTypeNm>정규직</empWantedTypeNm>
+    <empWantedStdt>20260601</empWantedStdt>
+    <empWantedEndt>20991231</empWantedEndt>
+  </dhsOpenEmpInfo>
+</root>`;
+  }
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <dhsOpenEmpInfo>
+    <empSeqno>nomatch-1</empSeqno>
+    <empBusiNm>다른회사</empBusiNm>
+    <empWantedTitle>백엔드 개발자</empWantedTitle>
+    <empWantedHomepgDetail>https://example.com/jobs/nomatch-1</empWantedHomepgDetail>
+    <empWantedCareerNm>신입</empWantedCareerNm>
+    <empWantedEduNm>대졸</empWantedEduNm>
+    <regionNm>서울</regionNm>
+    <empWantedTypeNm>정규직</empWantedTypeNm>
+    <empWantedStdt>20260601</empWantedStdt>
+    <empWantedEndt>20991231</empWantedEndt>
+  </dhsOpenEmpInfo>
+</root>`;
+}
+
 async function withHttpServer(handler, callback) {
   const requests = [];
   const server = createServer((request, response) => {
@@ -94,6 +131,62 @@ async function main() {
       if (jobs.length !== 1) errors.push("work24-env-auth: expected one job from local API");
       if (requests[0]?.searchParams.get("authKey") !== "env-auth-key") {
         errors.push("work24-env-auth: WORK24_AUTH_KEY environment variable was not sent as authKey");
+      }
+    });
+  } finally {
+    if (previousWork24Key === undefined) {
+      delete process.env.WORK24_AUTH_KEY;
+    } else {
+      process.env.WORK24_AUTH_KEY = previousWork24Key;
+    }
+  }
+
+  process.env.WORK24_AUTH_KEY = "env-auth-key";
+  try {
+    await withHttpServer((url) => work24RecruitPageXml(url), async ({ endpoint, requests }) => {
+      const jobs = await fetchWork24Jobs({
+        endpoint,
+        noCompanyEnrichment: true,
+        activeOnly: true,
+        matchKeyword: "엘지",
+        pages: 2,
+        params: { display: 1 },
+      });
+      if (jobs.length !== 1) errors.push("work24-local-match: expected one locally matched job");
+      if (jobs[0]?.company !== "엘지테스트") {
+        errors.push("work24-local-match: expected the page 2 LG job after keyword filtering");
+      }
+      const startPages = requests.map((request) => request.searchParams.get("startPage")).join(",");
+      if (startPages !== "1,2") {
+        errors.push(`work24-local-match: expected startPage 1,2 but got ${startPages}`);
+      }
+    });
+  } finally {
+    if (previousWork24Key === undefined) {
+      delete process.env.WORK24_AUTH_KEY;
+    } else {
+      process.env.WORK24_AUTH_KEY = previousWork24Key;
+    }
+  }
+
+  process.env.WORK24_AUTH_KEY = "env-auth-key";
+  try {
+    await withHttpServer((url) => work24RecruitPageXml(url), async ({ endpoint, requests }) => {
+      const jobs = await fetchWork24Jobs({
+        endpoint,
+        companyEndpoint: endpoint,
+        activeOnly: true,
+        matchKeyword: "엘지",
+        pages: 2,
+        params: { display: 1 },
+      });
+      if (jobs.length !== 1) errors.push("work24-local-match-enriched: expected one locally matched job");
+      const companyRequests = requests.filter((request) => request.searchParams.has("coNm"));
+      if (companyRequests.length !== 1) {
+        errors.push(`work24-local-match-enriched: expected one company enrichment request but got ${companyRequests.length}`);
+      }
+      if (companyRequests[0]?.searchParams.get("coNm") !== "엘지테스트") {
+        errors.push("work24-local-match-enriched: expected enrichment only for the matched company");
       }
     });
   } finally {

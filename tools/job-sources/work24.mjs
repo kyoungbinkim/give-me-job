@@ -137,6 +137,43 @@ function baseParams(params = {}) {
   };
 }
 
+function positiveInteger(value, fallback) {
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? number : fallback;
+}
+
+function keywordText(job) {
+  return [job.company, job.title, job.url, job.role, ...(job.keywords ?? [])].join(" ").toLowerCase();
+}
+
+function preEnrichmentKeywordText(job) {
+  return [job.company, job.title, job.url, ...(job.keywords ?? [])].join(" ").toLowerCase();
+}
+
+function filterJobs(jobs, options = {}) {
+  let filtered = jobs;
+  if (options.activeOnly) filtered = filtered.filter((job) => job.active);
+
+  const keyword = cleanText(options.matchKeyword).toLowerCase();
+  if (keyword) {
+    filtered = filtered.filter((job) => keywordText(job).includes(keyword));
+  }
+
+  return filtered;
+}
+
+function filterJobsBeforeEnrichment(jobs, options = {}) {
+  let filtered = jobs;
+  if (options.activeOnly) filtered = filtered.filter((job) => job.active);
+
+  const keyword = cleanText(options.matchKeyword).toLowerCase();
+  if (keyword) {
+    filtered = filtered.filter((job) => preEnrichmentKeywordText(job).includes(keyword));
+  }
+
+  return filtered;
+}
+
 async function fetchCompanyInfoByName(company, options) {
   const endpoint = options.companyEndpoint ?? process.env.WORK24_COMPANY_API_URL ?? DEFAULT_COMPANY_API_URL;
   const url = buildUrl(endpoint, options.authKey, baseParams({ display: 5, coNm: company }));
@@ -162,7 +199,7 @@ export async function fetchWork24Companies(options = {}) {
 export async function fetchWork24Jobs(options = {}) {
   if (options.fixture) {
     const jobs = normalizeWork24Xml(await readFile(options.fixture, "utf8"));
-    return options.activeOnly ? jobs.filter((job) => job.active) : jobs;
+    return filterJobs(jobs, options);
   }
 
   const endpoint = options.endpoint ?? process.env.WORK24_RECRUIT_API_URL ?? DEFAULT_RECRUIT_API_URL;
@@ -173,16 +210,26 @@ export async function fetchWork24Jobs(options = {}) {
     );
   }
 
-  const params = baseParams(options.params);
-  const url = buildUrl(endpoint, authKey, params);
-  const xml = await fetchText(url, "Work24 recruit");
+  const pageCount = positiveInteger(options.pages, 1);
+  const xmlPages = [];
+  const firstPage = positiveInteger(options.params?.startPage, 1);
+  for (let offset = 0; offset < pageCount; offset += 1) {
+    const params = baseParams({ ...options.params, startPage: firstPage + offset });
+    const url = buildUrl(endpoint, authKey, params);
+    const xml = await fetchText(url, "Work24 recruit");
+    xmlPages.push(xml);
 
-  if (options.noCompanyEnrichment) {
-    const jobs = normalizeWork24Xml(xml);
-    return options.activeOnly ? jobs.filter((job) => job.active) : jobs;
+    const pageJobs = normalizeWork24Xml(xml);
+    const display = positiveInteger(params.display, 10);
+    if (pageJobs.length < display) break;
   }
 
-  const jobs = normalizeWork24Xml(xml);
+  if (options.noCompanyEnrichment) {
+    const jobs = xmlPages.flatMap((xml) => normalizeWork24Xml(xml));
+    return filterJobs(jobs, options);
+  }
+
+  const jobs = filterJobsBeforeEnrichment(xmlPages.flatMap((xml) => normalizeWork24Xml(xml)), options);
   const companyInfoByName = new Map();
   for (const company of [...new Set(jobs.map((job) => job.company).filter(Boolean))]) {
     try {
@@ -193,6 +240,6 @@ export async function fetchWork24Jobs(options = {}) {
     }
   }
 
-  const enrichedJobs = normalizeWork24Xml(xml, { companyInfoByName });
-  return options.activeOnly ? enrichedJobs.filter((job) => job.active) : enrichedJobs;
+  const enrichedJobs = jobs.map((job) => (job.raw?.xml?.includes("empBusiNm") ? normalizeRecruitBlock(job.raw.xml, companyInfoByName) : job));
+  return filterJobs(enrichedJobs, options);
 }

@@ -251,6 +251,7 @@ Work24 API 사용. L21 공채속보와 L31 공채기업정보 URL은 도구에 �
 ```bash
 node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
 node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --match-keyword "엘지" --pages 30 --param.display 100
 node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
 ```
 

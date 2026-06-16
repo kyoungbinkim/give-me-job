@@ -83,6 +83,7 @@ Work24 API를 사용하여 한국 채용 공고 및 기업 정보를 검색하�
 - 결과 수: 명시하지 않으면 기본값 `10`
 - 공고 상태: `현재`, `진행중`, `마감 전` 또는 명시 없으면 활성 공고만 표시 (`--active-only`). 사용자가 명시적으로 전체 조회를 요청한 경우에만 해제
 - 의도 모호 시: 기업소개, 홈페이지, 로고, 사업자번호, 기업 정보 등을 명시적으로 요청하지 않는 한 채용공고 검색 우선
+- 회사명으로 보이는 키워드가 포함된 모집공고 요청(예: `엘지 모집공고`, `삼성 채용공고`)은 Work24 모집공고 API의 회사명 필터가 적용되지 않을 수 있으므로 `--match-keyword "<company>" --pages 30 --param.display 100`을 사용해 여러 페이지를 받은 뒤 회사명/공고명/URL을 로컬 필터링합니다.
 
 ---
 
@@ -135,6 +136,9 @@ node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.displa
 ```bash
 # 직무/제목 키워드
 --param.empWantedTitle "<keyword>"
+
+# 회사명/브랜드 키워드로 모집공고 검색
+--match-keyword "<company-or-brand>" --pages 30 --param.display 100
 
 # 기업구분
 --param.coClcd <code>
