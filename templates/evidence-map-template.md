@@ -1,5 +1,5 @@
 ## Evidence Map
 
-| Claim | Resume Evidence ID | JD Requirement | Company Value | Evidence Strength | Risk |
+| Claim | Resume Evidence | JD Requirement | Company Value | Evidence Strength | Risk |
 | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |

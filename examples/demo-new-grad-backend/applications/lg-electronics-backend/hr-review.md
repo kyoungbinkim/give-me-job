@@ -1,0 +1,38 @@
+## HR Review
+- Overall Score: 8/10
+- Strong Points:
+  - LG전자 공식 인재상의 고객 최우선, 혁신, 팀워크, 자율적 실행을 E1/E2 프로젝트 근거와 연결한다.
+  - LG전자 백엔드 직무 fixture의 API 신뢰성, 재시도 처리, 테스트 검증 요구와 직접 연결된다.
+  - 신입 지원자 수준을 넘는 운영 경험처럼 과장하지 않는다.
+  - 700자 제한의 90% 이상을 사용하면서 E1과 E2 근거를 모두 포함한다.
+- Weak Points:
+  - 실제 LG전자 공고의 제품, 조직 맥락은 반영되지 않았다.
+  - E2는 로컬 테스트 데이터 기준이므로 실서비스 성과로 표현하면 안 된다.
+- Risky Claims:
+  - "사용자 접점의 서비스"는 일반적 기여 방향으로만 사용해야 하며 특정 LG전자 제품 경험처럼 말하면 안 된다.
+- Missing Evidence:
+  - Real deadline and attachment requirements
+- JD Fit:
+  - Strong for API reliability, retry handling, transaction boundaries, and testing.
+- Company Fit:
+  - Moderate. Official 인재상 values are reflected, but no product or team-specific context is provided.
+- Interview Defense Risk:
+  - Low to medium. E1 is strong; E2 is defendable only as local project evidence.
+- Blockers:
+  - None
+- Warnings:
+  - Confirm whether the real 700-character limit counts spaces.
+  - Replace the final contribution sentence if the real posting emphasizes a different product or backend domain.
+- Interview Defense Questions:
+  - 고객 최우선과 혁신을 왜 API 신뢰성 경험으로 연결했나요?
+  - 왜 idempotency key가 중복 주문 문제에 적합했나요?
+  - 트랜잭션 경계를 어떻게 정리했고 어떤 문제가 줄었나요?
+  - 통합 테스트 12개는 어떤 재시도/중복 제출 케이스를 포함했나요?
+  - 10,000건 로컬 테스트 데이터에서 쿼리 로그로 무엇을 확인했나요?
+- Recommended Revision:
+  - 실제 LG전자 공고의 제품 또는 조직 자료가 제공되면 마지막 기여 문장을 1문장만 근거 있게 보강한다.
+- Final Submission Checklist:
+  - Confirm character limit and counting rule.
+  - Confirm company name and role.
+  - Confirm required attachments.
+  - Confirm no unsupported production-impact claim remains.

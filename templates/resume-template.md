@@ -1,47 +1,58 @@
-# Resume Source
+<!--
+last-updated: YYYY-MM-DD
+career-type: new-grad | experienced
+target-role: Unknown
+intake-version: 1
+-->
 
-## Profile
+## Personal Info
 - Name:
-- Target Roles:
-- Target Industries:
-- Career Type: New Grad | Experienced
-- Location Preference:
+- Email:
+- Phone:
+- LinkedIn:
+- GitHub / Portfolio:
+- Location:
 
-## Core Summary
-- One-line Positioning:
-- Strengths:
-- Work Style:
-- Career Vision:
-- 1-Year Contribution:
-- 3-Year Growth Direction:
+## Target Role
+Unknown
 
-## Skills
-- Technical Skills:
-- Domain Skills:
-- Tools:
-- Languages:
+## Summary
+Pending stronger evidence.
 
-## Experience Bank
-### EXP-001. Experience Title
-- Type: Project | Work | Internship | Activity | Education | Award | Study
-- Period:
-- Context:
-- Problem:
-- Action:
-- Result:
-- Metrics:
-- Related Competencies:
-- Related Job Roles:
-- Evidence Strength: High | Medium | Low
+## Work Experience
 
-## Work History
+### [Job Title] - [Company Name], [City]
+*[Month Year] - [Month Year or Present]*
+**Team / Org:** [Optional]
+**Headcount managed:** [Optional]
+
+- [Action verb] [what you did] [method or scale], resulting in [measurable or observable outcome].
+- [Action verb] [what you did] [method or scale], resulting in [measurable or observable outcome].
+<!-- strength: Medium -->
+
+## Projects
+
+### [Project Name]
+*[Month Year] - [Month Year] | [Your Role] | [Tech Stack]*
+[Optional repo or demo link]
+
+- [Action verb] [what you did] [method or scale], resulting in [measurable or observable outcome].
+- [Action verb] [what you did] [method or scale], resulting in [measurable or observable outcome].
+<!-- strength: Medium -->
 
 ## Education
 
-## Certifications
+### [Degree Name] - [School Name]
+*[Graduation Year or Expected Year]*
+- GPA:
+- Thesis / Capstone:
+- Relevant coursework:
+- Honors / Awards:
 
-## Preferences And Constraints
-- Preferred Company Type:
-- Unwanted Conditions:
-- Salary Range:
-- Notes:
+## Skills
+- **Programming languages:**
+- **Frameworks & tools:**
+- **Human languages:**
+
+## Certificates & Awards
+- [Certificate Name], [Issuing Body], [Year]

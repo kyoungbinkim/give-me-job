@@ -5,7 +5,8 @@ description: Build or improve a job seeker's resume.md source file from conversa
 
 # Resume Intake
 
-Use this skill to turn raw career material into a structured `resume.md` that other give-me-job skills can trust.
+Use this skill to turn raw career material into a structured `resume.md` that
+other give-me-job skills can trust.
 
 ## Trigger
 
@@ -52,37 +53,79 @@ Outputs produced:
 
 ## Workflow
 
-1. Determine whether the user is `New Grad` or `Experienced`.
-2. Read an existing `resume.md` if present. If it does not exist, propose creating one from the schema in `references/resume-schema.md`.
-3. Collect raw experiences in the user's language first. Do not force the user to fill every field before making progress.
-4. Split the material into evidence units:
-   - project, work, internship, activity, education, certificate, award, or personal study
-   - one evidence unit per concrete problem, action, and result
-5. Convert each evidence unit into STAR or CAR:
-   - Situation/Context
-   - Task/Problem
-   - Action
-   - Result
-6. Ask follow-up questions only for fields that materially affect cover letter quality:
-   - metric, scale, period, role scope, stakeholder, tool, business impact, learning, or failure recovery
-7. Mark `Evidence Strength` as `High`, `Medium`, or `Low`.
-8. Keep claims factual. Do not invent company names, numbers, responsibilities, awards, or outcomes.
+1. Read `references/resume-schema.md` before creating or rewriting
+   `resume.md`.
+2. Determine whether the user is `new-grad`, `experienced`, or still
+   `unknown`.
+3. Read an existing `resume.md` if present. Preserve valid facts, but migrate
+   old `Profile`, `Core Summary`, `Experience Bank`, or `Work History`
+   structures into the canonical sections.
+4. Create or update the metadata block:
+   - `last-updated`: today's date
+   - `career-type`: `new-grad` or `experienced`
+   - `target-role`: target role or `Unknown`
+   - `intake-version`: increment the existing value, or use `1`
+5. Collect raw experiences in the user's language first. Do not force every
+   field before making progress, but ask for missing facts that materially
+   affect evidence quality.
+6. Build the canonical top-level sections in this order:
+   - `Personal Info`
+   - `Target Role`
+   - `Summary`
+   - `Work Experience` for experienced candidates, or for new graduates only
+     when they have relevant work/internship/part-time experience
+   - `Projects`
+   - `Education`
+   - `Skills`
+   - `Certificates & Awards` only when relevant
+7. Split work and project material into STAR/CAR bullets:
+   - action verb
+   - what was done
+   - method, scale, or constraints
+   - measurable or observable result
+8. End every work role and project entry with exactly one strength comment:
+   `<!-- strength: High -->`, `<!-- strength: Medium -->`, or
+   `<!-- strength: Low -->`.
+9. Write `Summary` last. If any core work/project evidence remains `Low`, do
+   not polish a final summary; leave `Pending stronger evidence.` and ask
+   follow-up questions.
+10. Keep claims factual. Do not invent company names, numbers,
+    responsibilities, awards, links, tools, or outcomes.
 
 ## New Grad Focus
 
-Emphasize project depth, learning speed, role clarity, problem solving, collaboration, and job relevance. If metrics are weak, strengthen the explanation of process, decision making, and learning.
+Emphasize project depth, learning speed, role clarity, problem solving,
+collaboration, and job relevance. `Projects` is required even when work
+experience is absent. If metrics are weak, strengthen the explanation of
+process, decision making, and learning without pretending there was business
+impact.
 
 ## Experienced Focus
 
-Separate responsibility from achievement. Emphasize role scope, measurable result, business impact, cross-functional work, decision making, and repeatable contribution.
+Separate responsibility from achievement. `Work Experience` is required for
+experienced candidates. Emphasize role scope, measurable result, business
+impact, cross-functional work, decision making, and repeatable contribution.
+
+## Schema Decisions
+
+Adopt the canonical resume-style structure in `references/resume-schema.md`.
+Do not create a separate `Experience Bank` for new intake. Existing downstream
+skills can cite evidence by section, entry title, and bullet number. If an old
+resume already has stable IDs such as `EXP-001`, preserve them only as legacy
+references while migrating the content into `Work Experience` or `Projects`.
+
+Treat missing contact fields and profile links as intake gaps. Ask for them or
+mark them clearly as missing; do not fabricate placeholder URLs, phone numbers,
+schools, employers, or metrics.
 
 ## Output
 
 Return one of these:
 
-- a complete `resume.md` draft
+- a complete `resume.md` draft using the canonical schema
 - a patch/update plan for the existing `resume.md`
-- focused follow-up questions when evidence is too weak
+- focused follow-up questions when evidence is too weak or required personal
+  info is missing
 
 Use `references/resume-schema.md` for the canonical structure.
 

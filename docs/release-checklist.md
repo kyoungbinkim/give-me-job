@@ -14,7 +14,7 @@ Use this checklist before tagging a public release.
 ## Agent Compatibility
 
 - `AGENTS.md` points full-workflow requests to `agent.md`.
-- `agent.md` references all seven skills.
+- `agent.md` references the application-package workflow skills.
 - Each skill has valid `SKILL.md` frontmatter.
 - `node tests/validate/validate-skills.mjs` passes.
 - `npm test` passes.

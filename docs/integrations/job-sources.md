@@ -47,20 +47,28 @@ node tools/fetch-jobs.mjs --source saramin --fixture tests/fixtures/saramin-job-
 
 ## Work24
 
-Work24 Open API requires membership, API key application, review, and approval. After approval, configure:
+Work24 Open API requires membership, API key application, review, and approval. After approval, set `WORK24_AUTH_KEY` as an environment variable or configure:
 
 ```env
-WORK24_API_URL=
 WORK24_AUTH_KEY=
 ```
 
-Then run:
+The tool has built-in defaults for Work24 public recruit notices (L21) and company information (L31). Use `--endpoint` or `--company-endpoint` only when Work24 changes an approved endpoint.
+
+Search current recruit notices:
 
 ```bash
-node tools/fetch-jobs.mjs --source work24 --param.callTp L --param.returnType XML
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
 ```
 
-Because Work24 service-specific endpoints can vary by approved API, pass additional parameters with `--param.<name>`.
+Search company information:
+
+```bash
+node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
+```
+
+Pass additional Work24 parameters with `--param.<name>`.
 
 Fixture test:
 

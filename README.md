@@ -21,7 +21,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - HR review: check exaggeration, unsupported claims, company-name residue, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
-- Korean job-source tools: support Saramin, Work24, and JobKorea adapters plus deadline scheduling and fit ranking.
+- Korean job-source tools: support Saramin, Work24, and JobKorea adapters plus natural-language job search guidance, deadline scheduling, and fit ranking.
 
 ## Documentation
 
@@ -67,7 +67,7 @@ The simplest install path is `npx`:
 npx give-me-job install
 ```
 
-This installs the seven domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures.
+This installs the eight domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures.
 
 You can also install the CLI globally:
 
@@ -275,6 +275,7 @@ Start with [`examples/demo-new-grad-backend/resume.md`](examples/demo-new-grad-b
 - `hr-reviewer`: checks application materials from an HR risk perspective.
 - `interview-prep`: prepares interview follow-up questions and answer points grounded in evidence.
 - `application-packager`: assembles the company-specific package and manual submission checklist.
+- `job-searcher`: searches Korean job postings and company information through Work24-backed tools.
 
 ## Job Sources And Prioritization
 
@@ -296,6 +297,14 @@ With a Saramin API key, set `SARAMIN_ACCESS_KEY` in `.env` and fetch jobs:
 
 ```bash
 node tools/fetch-jobs.mjs --source saramin --keywords "backend Java" --deadline tomorrow --count 20
+```
+
+With a Work24 API key, set `WORK24_AUTH_KEY` as an environment variable or in `.env` and search current public recruit notices. Work24 L21/L31 URLs are built into the tool by default:
+
+```bash
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
+node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
 ```
 
 Run fixture-based validation without API keys:

@@ -5,7 +5,7 @@
 
 ## Claim Defense
 
-| Claim | Evidence ID | Follow-Up Questions | Answer Points | Evidence Risk |
+| Claim | Resume Evidence | Follow-Up Questions | Answer Points | Evidence Risk |
 | --- | --- | --- | --- | --- |
 |  |  |  |  |  |
 
@@ -17,7 +17,7 @@
 ## JD Fit Questions
 - Question:
 - Answer Points:
-- Resume Evidence ID:
+- Resume Evidence:
 
 ## Missing Evidence
 - Claim:

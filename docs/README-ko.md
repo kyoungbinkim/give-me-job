@@ -105,7 +105,7 @@ give-me-job uninstall --target all
 
 ## 설치되는 내용
 
-설치기는 일곱 개의 도메인 Skill과 `give-me-job` 오케스트레이터 Agent를 설치합니다.
+설치기는 여덟 개의 도메인 Skill과 `give-me-job` 오케스트레이터 Agent를 설치합니다.
 
 - `resume-intake`
 - `jd-analyzer`
@@ -114,6 +114,7 @@ give-me-job uninstall --target all
 - `hr-reviewer`
 - `interview-prep`
 - `application-packager`
+- `job-searcher`
 
 support bundle에는 다음이 포함됩니다.
 
@@ -181,7 +182,7 @@ node support/validate/validate-application.mjs applications/kakao-backend
 
 ## 전체 워크플로우
 
-`agent.md`는 다음 순서로 여섯 개 Skill을 사용합니다.
+`agent.md`는 다음 순서로 지원 패키지 작성 Skill을 사용합니다.
 
 ```txt
 resume-intake
@@ -243,6 +244,14 @@ Saramin API 사용:
 
 ```bash
 node tools/fetch-jobs.mjs --source saramin --keywords "백엔드 Java" --deadline tomorrow --count 20
+```
+
+Work24 API 사용. L21 공채속보와 L31 공채기업정보 URL은 도구에 기본값으로 들어 있으므로 환경변수 또는 `.env`에 `WORK24_AUTH_KEY`만 설정하면 됩니다.
+
+```bash
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
+node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
+node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
 ```
 
 fixture 기반 검증:

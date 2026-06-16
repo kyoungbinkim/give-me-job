@@ -2,30 +2,26 @@
 import { createHash } from "node:crypto";
 import { constants as fsConstants } from "node:fs";
 import { access, mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { toPosixPath } from "./platform.mjs";
-import { allSkillNames, orchestratorSkillName, skillNames } from "./skill-registry.mjs";
+import { orchestratorSkillName, skillNames } from "./skill-registry.mjs";
+import {
+  agentExtensionFor,
+  agentRootFor,
+  manifestPath,
+  requiredSupportPathsFor,
+  skillRootFor,
+  supportFiles,
+  supportRootFor,
+  targetConfigRootFor,
+  targets,
+} from "./install-layout.mjs";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const targets = ["codex", "opencode", "claude-code"];
 const agentName = "give-me-job";
 const agentDescription =
   "Run the Korea-only give-me-job application workflow. Use when preparing a company-specific Korean job application package from resume.md, a JD, and optional company values while never submitting, logging in, bypassing CAPTCHA, or transmitting personal information.";
-const supportFiles = [
-  ".env.example",
-  "AGENTS.md",
-  "agent.md",
-  "support",
-  "templates",
-  "tools",
-  path.join("tests", "fixtures", "saramin-job-search.json"),
-  path.join("tests", "fixtures", "work24-jobs.xml"),
-  path.join("tests", "fixtures", "jobkorea-jobs.xml"),
-  path.join("tests", "fixtures", "resume-new-grad.md"),
-  path.join("tests", "fixtures", "jobs-normalized"),
-];
 
 function usage() {
   return `Usage:
@@ -60,14 +56,6 @@ function parseArgs(argv) {
   return args;
 }
 
-function homeDir() {
-  return path.resolve(process.env.GIVE_ME_JOB_HOME || os.homedir());
-}
-
-function manifestPath() {
-  return path.join(homeDir(), ".give-me-job", "install-manifest.json");
-}
-
 function expandTargets(value) {
   const raw = String(value ?? "all")
     .split(",")
@@ -88,49 +76,6 @@ function normalizeScope(value) {
     throw new Error(`Unknown scope: ${scope}`);
   }
   return scope;
-}
-
-function skillRootFor(target, scope) {
-  const home = homeDir();
-  if (scope === "project") {
-    if (target === "codex") return path.resolve(process.cwd(), ".agents", "skills");
-    if (target === "opencode") return path.resolve(process.cwd(), ".opencode", "skills");
-    return path.resolve(process.cwd(), ".claude", "skills");
-  }
-
-  if (target === "codex") return path.join(home, ".agents", "skills");
-  if (target === "opencode") return path.join(home, ".config", "opencode", "skills");
-  return path.join(home, ".claude", "skills");
-}
-
-function agentRootFor(target, scope) {
-  const home = homeDir();
-  if (scope === "project") {
-    if (target === "codex") return path.resolve(process.cwd(), ".codex", "agents");
-    if (target === "opencode") return path.resolve(process.cwd(), ".opencode", "agents");
-    return path.resolve(process.cwd(), ".claude", "agents");
-  }
-
-  if (target === "codex") return path.join(home, ".codex", "agents");
-  if (target === "opencode") return path.join(home, ".config", "opencode", "agents");
-  return path.join(home, ".claude", "agents");
-}
-
-function targetConfigRootFor(target, scope) {
-  const home = homeDir();
-  if (scope === "project") {
-    if (target === "codex") return path.resolve(process.cwd(), ".codex");
-    if (target === "opencode") return path.resolve(process.cwd(), ".opencode");
-    return path.resolve(process.cwd(), ".claude");
-  }
-
-  if (target === "codex") return path.join(home, ".codex");
-  if (target === "opencode") return path.join(home, ".config", "opencode");
-  return path.join(home, ".claude");
-}
-
-function supportRootFor(target, scope) {
-  return path.join(targetConfigRootFor(target, scope), orchestratorSkillName);
 }
 
 async function exists(filePath) {
@@ -496,15 +441,11 @@ async function doctor(options) {
       const skillFile = path.join(root, skill, "SKILL.md");
       if (!(await exists(skillFile))) missing.push(skill);
     }
-    const supportRoot = supportRootFor(target, scope);
-    const agentExtension = target === "codex" ? "toml" : "md";
-    const requiredSupportFiles = [
-      path.join(supportRoot, "agent.md"),
-      path.join(supportRoot, "tools", "init-application.mjs"),
-      path.join(supportRoot, "templates", "workflow-template.md"),
-      path.join(agentRootFor(target, scope), `${agentName}.${agentExtension}`),
+    const requiredFiles = [
+      ...requiredSupportPathsFor(target, scope),
+      path.join(agentRootFor(target, scope), `${agentName}.${agentExtensionFor(target)}`),
     ];
-    for (const file of requiredSupportFiles) {
+    for (const file of requiredFiles) {
       if (!(await exists(file))) missing.push(path.relative(targetConfigRootFor(target, scope), file));
     }
     if (missing.length === 0) {

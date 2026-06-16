@@ -1,43 +1,50 @@
-# Resume Source
+<!--
+last-updated: 2026-06-16
+career-type: experienced
+target-role: Backend Engineer at fintech or B2B SaaS company
+intake-version: 1
+-->
 
-## Profile
+## Personal Info
 - Name: Sample Experienced Candidate
-- Target Roles: Backend Engineer, Platform Engineer
-- Target Industries: Fintech, B2B SaaS
-- Career Type: Experienced
-- Location Preference: Seoul or Remote
+- Email: sample.experienced@example.com
+- Phone: +82-10-0000-0000
+- LinkedIn: https://www.linkedin.com/in/sample-experienced
+- GitHub / Portfolio:
+- Location: Seoul, Korea
 
-## Core Summary
-- One-line Positioning: Backend engineer with experience improving batch reliability and operational efficiency.
-- Strengths: system debugging, stakeholder coordination, incident prevention
-- Work Style: clarifies ownership and turns repeated incidents into process changes
-- Career Vision: build reliable backend systems with measurable operational impact
-- 1-Year Contribution: improve service reliability and reduce recurring manual work
-- 3-Year Growth Direction: lead platform reliability initiatives across teams
+## Target Role
+Backend Engineer at fintech or B2B SaaS company
+
+## Summary
+Backend engineer with experience improving batch reliability, retry behavior, and operational visibility in payment systems. Looking for a backend or platform role where incident prevention and measurable service reliability matter.
+
+## Work Experience
+
+### Backend Engineer - SamplePay, Seoul
+*July 2022 - May 2026*
+**Team / Org:** Payment Platform
+
+- Classified recurring settlement batch failure types and adjusted retry policy by error category, reducing manual recovery cases from 12 per month to 3 per month.
+- Built a Grafana monitoring dashboard for settlement batch status and failure categories, improving incident visibility for engineering and operations stakeholders.
+- Maintained payment APIs and settlement batch jobs with Java, Spring Boot, PostgreSQL, and Redis, supporting day-to-day incident response and feature delivery.
+<!-- strength: High -->
+
+## Projects
+
+### Settlement Batch Monitoring Dashboard
+*January 2024 - April 2024 | Backend owner | Java, Spring Boot, PostgreSQL, Grafana*
+
+- Modeled batch failure categories and exposed status data for dashboard consumption, resulting in clearer triage paths during settlement incidents.
+- Documented retry behavior and operational handoff rules with the operations team, reducing ambiguity in repeated recovery work.
+<!-- strength: High -->
+
+## Education
+
+### Bachelor of Computer Science - Sample University
+*2022*
 
 ## Skills
-- Technical Skills: Java, Spring Boot, PostgreSQL, Redis, Kafka
-- Domain Skills: payment operations, batch processing, monitoring
-- Tools: GitHub Actions, Grafana, Jira
-- Languages: Korean
-
-## Experience Bank
-### EXP-001. Payment Batch Failure Reduction
-- Type: Work
-- Period: 2024-01 to 2024-04
-- Context: Daily settlement batch failures required manual recovery by operations.
-- Problem: Failures were caused by inconsistent retry behavior and unclear error classification.
-- Action: Classified failure types, added retry policy by type, and created a monitoring dashboard.
-- Result: Reduced recurring manual recovery and improved incident visibility.
-- Metrics: Manual recovery cases decreased from 12 per month to 3 per month.
-- Related Competencies: reliability, backend engineering, operations improvement
-- Related Job Roles: Backend Engineer, Platform Engineer
-- Evidence Strength: High
-
-## Work History
-### SamplePay
-- Period: 2022-07 to 2026-05
-- Role: Backend Engineer
-- Responsibilities: settlement batch maintenance, payment API development, incident response
-- Achievements: reduced recurring manual recovery cases through retry and monitoring improvements
-- Tech/Tools: Java, Spring Boot, PostgreSQL, Redis, Grafana
+- **Programming languages:** Java
+- **Frameworks & tools:** Spring Boot, PostgreSQL, Redis, Kafka, GitHub Actions, Grafana, Jira
+- **Human languages:** Korean (native)

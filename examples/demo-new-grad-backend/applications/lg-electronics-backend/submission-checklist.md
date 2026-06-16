@@ -1,0 +1,31 @@
+## Application Package
+- Company: LG전자
+- Role: Backend Engineer
+- Job Function: tech
+- Deadline: Not provided
+- Status: ready-for-user-review
+- Package Path: examples/demo-new-grad-backend/applications/lg-electronics-backend
+- Included Files:
+  - workflow.md
+  - jd-analysis.md
+  - company-values.md
+  - cover-letter-draft.md
+  - hr-review.md
+  - cover-letter-final.md
+  - evidence-map.md
+  - interview-prep.md
+  - submission-checklist.md
+- Missing Inputs:
+  - Exact submission deadline
+  - Exact required attachments
+- Interview Prep:
+  - Review `interview-prep.md` before using the final text.
+- Submission Checklist:
+  - Confirm company name and role.
+  - Confirm final character limit and counting rule.
+  - Confirm required attachments.
+  - Confirm all strong claims appear in `evidence-map.md`.
+  - Confirm no HR blockers remain.
+  - Submit manually through the official channel.
+- Manual Submission Notes:
+  - This demo package is not submitted by the agent.

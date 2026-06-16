@@ -7,7 +7,7 @@ Use this repository as a Korea-only job-application package generator, not as an
 When the user asks to run the full workflow, says "give me job", or wants a complete company-specific application package for the Korean hiring market:
 
 1. Read `agent.md` first.
-2. Use the seven skills under `skills/` as the domain workflow steps.
+2. Use the application workflow skills under `skills/` as the domain workflow steps.
 3. Create or update one package under `applications/<company-role>/`.
 4. Keep all strong cover-letter claims grounded in `resume.md`.
 5. Stop when evidence is missing, HR review finds a blocker, or the next action would submit, send, log in, bypass CAPTCHA, or transmit personal information.

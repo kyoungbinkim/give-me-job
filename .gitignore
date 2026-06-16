@@ -4,6 +4,7 @@ Thumbs.db
 .vscode/
 .idea/
 .codex-remote-attachments/
+.omo/
 
 # Local env
 .env
@@ -22,6 +23,7 @@ node_modules/
 /applications/
 /.tmp-release-check/
 /.tmp-workflow-check/
+/.tmp-codex-cli-workflow/
 /.tmp-npm-cache/
 /data/
 

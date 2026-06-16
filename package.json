@@ -47,6 +47,7 @@
     "templates/",
     "tests/fixtures/saramin-job-search.json",
     "tests/fixtures/work24-jobs.xml",
+    "tests/fixtures/work24-company-info.xml",
     "tests/fixtures/jobkorea-jobs.xml",
     "tests/fixtures/resume-new-grad.md",
     "tests/fixtures/jobs-normalized/",
@@ -59,8 +60,8 @@
     "node": ">=18.17"
   },
   "scripts": {
-    "test": "node tests/validate/validate-skills.mjs && node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node support/validate/validate-application.mjs .tmp-release-check/demo-backend && node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend && node tests/validate/validate-lg-electronics-workflow.mjs",
-    "test:workflow": "node tests/validate/validate-lg-electronics-workflow.mjs",
+    "test": "node tests/validate/validate-skills.mjs && node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node support/validate/validate-application.mjs .tmp-release-check/demo-backend && node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend && node tests/validate/validate-lg-electronics-workflow.mjs && node tests/validate/validate-codex-agent-workflow.mjs",
+    "test:workflow": "node tests/validate/validate-lg-electronics-workflow.mjs && node tests/validate/validate-codex-agent-workflow.mjs",
     "test:install": "node tests/validate/validate-npm-install.mjs",
     "test:skills": "node tests/validate/validate-skills.mjs",
     "test:jobs": "node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs",

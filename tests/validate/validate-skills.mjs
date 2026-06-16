@@ -1,6 +1,7 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
+import { supportPackageEntries } from "../../tools/install-layout.mjs";
 
 const root = process.cwd();
 const skillsDir = path.join(root, "skills");
@@ -32,17 +33,20 @@ const requiredReleaseFiles = [
   "tools/schedule-jobs.mjs",
   "tools/rank-jobs.mjs",
   "tools/init-application.mjs",
+  "tools/install-layout.mjs",
   "tools/skill-registry.mjs",
   "support/validate/validate-application.mjs",
   "support/validate/validate-job-sources.mjs",
   "support/validate/validate-job-schedule.mjs",
   "support/validate/validate-job-ranking.mjs",
+  "tests/validate/validate-codex-agent-workflow.mjs",
   "tests/validate/validate-lg-electronics-workflow.mjs",
   "tools/job-sources/saramin.mjs",
   "tools/job-sources/work24.mjs",
   "tools/job-sources/jobkorea.mjs",
   "tests/fixtures/saramin-job-search.json",
   "tests/fixtures/work24-jobs.xml",
+  "tests/fixtures/work24-company-info.xml",
   "tests/fixtures/jobkorea-jobs.xml",
   "tests/fixtures/jobs-normalized/job-today.json",
   "tests/fixtures/jobs-normalized/job-tomorrow.json",
@@ -238,15 +242,8 @@ async function validateReleasePackaging() {
   }
 
   const requiredPackageEntries = [
-    "support/",
-    "tests/fixtures/saramin-job-search.json",
-    "tests/fixtures/work24-jobs.xml",
-    "tests/fixtures/jobkorea-jobs.xml",
-    "tests/fixtures/resume-new-grad.md",
-    "tests/fixtures/jobs-normalized/",
-    "tools/",
     "skills/",
-    "templates/",
+    ...supportPackageEntries,
   ];
   for (const required of requiredPackageEntries) {
     if (!packageFiles.includes(required)) {

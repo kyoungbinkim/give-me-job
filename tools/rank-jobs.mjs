@@ -57,6 +57,29 @@ function containsAny(text, terms) {
   return terms.filter((term) => text.includes(term.toLowerCase()));
 }
 
+function metadataValue(resumeText, field) {
+  const pattern = new RegExp(`^${field}:\\s*(.*)$`, "im");
+  return resumeText.match(pattern)?.[1]?.trim() ?? "";
+}
+
+function sectionText(markdown, heading) {
+  const pattern = new RegExp(`^##\\s+${heading}\\s*$([\\s\\S]*?)(?=^##\\s+|(?![\\s\\S]))`, "im");
+  return markdown.match(pattern)?.[1]?.trim() ?? "";
+}
+
+function firstContentLine(markdown) {
+  return markdown
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line && !line.startsWith("<!--") && !line.startsWith("#")) ?? "";
+}
+
+function bulletField(section, field) {
+  const escaped = field.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`^-\\s*(?:\\*\\*)?${escaped}\\s*:\\s*(?:\\*\\*)?\\s*(.*)$`, "im");
+  return section.match(pattern)?.[1]?.trim() ?? "";
+}
+
 function locationMatches(jobLocation, resumeLocation) {
   const job = normalizeText(jobLocation);
   const resume = normalizeText(resumeLocation);
@@ -77,12 +100,40 @@ function locationMatches(jobLocation, resumeLocation) {
 
 function extractResumeProfile(resumeText) {
   const lower = normalizeText(resumeText);
-  const targetRoles = resumeText.match(/Target Roles:\s*(.*)/i)?.[1] ?? "";
-  const location = resumeText.match(/Location Preference:\s*(.*)/i)?.[1] ?? "";
-  const careerType = resumeText.match(/Career Type:\s*(.*)/i)?.[1] ?? "";
-  const skills = resumeText.match(/Technical Skills:\s*(.*)/i)?.[1] ?? "";
-  const competencies = [...resumeText.matchAll(/Related Competencies:\s*(.*)/gi)].map((match) => match[1]).join(", ");
-  const evidenceIds = [...resumeText.matchAll(/^###\s+([A-Z0-9-]+)/gim)].map((match) => match[1]);
+  const personalInfo = sectionText(resumeText, "Personal Info");
+  const skillsSection = sectionText(resumeText, "Skills");
+  const targetRoleSection = sectionText(resumeText, "Target Role");
+  const targetRoles =
+    firstContentLine(targetRoleSection) ||
+    resumeText.match(/Target Roles:\s*(.*)/i)?.[1] ||
+    metadataValue(resumeText, "target-role");
+  const location =
+    bulletField(personalInfo, "Location") ||
+    resumeText.match(/Location Preference:\s*(.*)/i)?.[1] ||
+    "";
+  const careerType =
+    metadataValue(resumeText, "career-type") ||
+    resumeText.match(/Career Type:\s*(.*)/i)?.[1] ||
+    "";
+  const skills =
+    [
+      bulletField(skillsSection, "Programming languages"),
+      bulletField(skillsSection, "Frameworks & tools"),
+      resumeText.match(/^-\s*Technical Skills:\s*(.*)$/im)?.[1] ?? "",
+      resumeText.match(/^-\s*Tools:\s*(.*)$/im)?.[1] ?? "",
+    ]
+      .filter(Boolean)
+      .join(", ");
+  const competencies = [
+    ...[...resumeText.matchAll(/Related Competencies:\s*(.*)/gi)].map((match) => match[1]),
+    sectionText(resumeText, "Work Experience"),
+    sectionText(resumeText, "Projects"),
+  ].join(", ");
+  const legacyEvidenceIds = [...resumeText.matchAll(/^###\s+([A-Z]+-\d+)/gim)].map((match) => match[1]);
+  const canonicalEvidenceIds = [...resumeText.matchAll(/^###\s+(.+)$/gim)]
+    .map((match) => match[1].trim())
+    .filter((heading) => !/Degree|School|University|College/i.test(heading));
+  const evidenceIds = legacyEvidenceIds.length > 0 ? legacyEvidenceIds : canonicalEvidenceIds;
 
   return {
     raw: resumeText,

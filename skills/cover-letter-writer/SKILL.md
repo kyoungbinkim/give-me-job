@@ -75,7 +75,9 @@ Outputs produced:
 1. Analyze the question intent. Read `references/question-types.md` if needed.
 2. Analyze the JD requirements or use an existing JD analysis.
 3. If company values are provided, use them as supporting context only.
-4. Select the strongest matching `resume.md` evidence IDs.
+4. Select the strongest matching `resume.md` evidence references. Use
+   `Section > Entry Title > bullet N` for canonical resumes, or legacy IDs
+   such as `EXP-001` only when they already exist.
 5. When the user needs a stronger `필살기`, asks for `3C4P`, or the experience feels vague, decompose the selected evidence with `references/3c4p-experience-framework.md`.
 6. If evidence is missing, ask follow-up questions before drafting.
 7. Classify each question before drafting:
@@ -90,7 +92,8 @@ Outputs produced:
 9. Apply natural Korean writing rules.
 10. Count characters immediately after drafting. Include spaces unless the company or question states otherwise.
 11. Target 90-98% of the stated limit when a limit exists.
-12. Produce an evidence map that links key sentences to `resume.md` evidence IDs.
+12. Produce an evidence map that links key sentences to concrete `resume.md`
+    evidence references.
 13. Review for unsupported claims, company-name leftovers, vague enthusiasm, and length limit.
 
 ## Natural Korean Writing Rules
@@ -125,13 +128,13 @@ Read `references/3c4p-experience-framework.md` when decomposing an experience in
 - Current Length:
 - Counting Rule:
 
-## Evidence IDs
+## Evidence References
 
 ## Draft
 
 ## Evidence Map
 - Sentence/Claim:
-- Resume Evidence ID:
+- Resume Evidence:
 - JD Requirement:
 - Company Value:
 

@@ -5,6 +5,14 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
+import {
+  agentExtensionFor,
+  agentRootFor,
+  requiredSupportFiles,
+  skillRootFor,
+  targetConfigRootFor,
+  targets,
+} from "../../tools/install-layout.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const cli = path.join(root, "tools", "give-me-job-cli.mjs");
@@ -47,21 +55,20 @@ async function assertSkills(rootDir) {
 
 async function assertSupportBundle(rootDir) {
   const bundleRoot = path.join(rootDir, "give-me-job");
-  for (const relativePath of [
-    "agent.md",
-    path.join("tools", "init-application.mjs"),
-    path.join("support", "validate", "validate-application.mjs"),
-    path.join("templates", "workflow-template.md"),
-    path.join("tests", "fixtures", "resume-new-grad.md"),
-  ]) {
+  for (const relativePath of requiredSupportFiles) {
     const file = path.join(bundleRoot, relativePath);
     assert(await exists(file), `missing installed support file: ${file}`);
   }
 }
 
-async function assertAgentInstall(skillRootDir, configRootDir, extension) {
+async function assertAgentInstall(target, scope, options) {
+  const skillRootDir = skillRootFor(target, scope, options);
+  const configRootDir = targetConfigRootFor(target, scope, options);
   await assertSkills(skillRootDir);
-  assert(await exists(path.join(configRootDir, "agents", `give-me-job.${extension}`)), `missing give-me-job agent under ${configRootDir}`);
+  assert(
+    await exists(path.join(agentRootFor(target, scope, options), `give-me-job.${agentExtensionFor(target)}`)),
+    `missing give-me-job agent under ${configRootDir}`,
+  );
   await assertSupportBundle(configRootDir);
 }
 
@@ -78,9 +85,9 @@ async function main() {
 
     const installAll = run(["install", "--target", "all"], { home });
     assert(installAll.status === 0, `user install failed: ${installAll.stderr}`);
-    await assertAgentInstall(path.join(home, ".agents", "skills"), path.join(home, ".codex"), "toml");
-    await assertAgentInstall(path.join(home, ".config", "opencode", "skills"), path.join(home, ".config", "opencode"), "md");
-    await assertAgentInstall(path.join(home, ".claude", "skills"), path.join(home, ".claude"), "md");
+    for (const target of targets) {
+      await assertAgentInstall(target, "user", { home });
+    }
 
     const manifestFile = path.join(home, ".give-me-job", "install-manifest.json");
     const manifest = JSON.parse(await readFile(manifestFile, "utf8"));
@@ -127,13 +134,13 @@ async function main() {
     assert(uninstall.status === 0, `uninstall failed: ${uninstall.stderr}`);
     assert(!(await exists(codexAgent)), "uninstall did not remove managed agent file");
 
-    for (const target of ["codex", "opencode", "claude-code"]) {
+    for (const target of targets) {
       const result = run(["install", "--target", target, "--scope", "project"], { home, cwd: project });
       assert(result.status === 0, `project install failed for ${target}: ${result.stderr}`);
     }
-    await assertAgentInstall(path.join(project, ".agents", "skills"), path.join(project, ".codex"), "toml");
-    await assertAgentInstall(path.join(project, ".opencode", "skills"), path.join(project, ".opencode"), "md");
-    await assertAgentInstall(path.join(project, ".claude", "skills"), path.join(project, ".claude"), "md");
+    for (const target of targets) {
+      await assertAgentInstall(target, "project", { home, cwd: project });
+    }
 
     console.log("npm install validation passed");
   } finally {

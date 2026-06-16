@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<response>
-  <items>
-    <item>
-      <wantedAuthNo>KJDEMO001</wantedAuthNo>
-      <wantedInfoUrl>https://www.work24.go.kr/jobs/demo/KJDEMO001</wantedInfoUrl>
-      <company>데모공공</company>
-      <title>공공서비스 백엔드 개발자</title>
-      <jobCont>Java 기반 공공서비스 API 개발</jobCont>
-      <career>신입</career>
-      <education>대졸</education>
-      <region>세종</region>
-      <empTpNm>정규직</empTpNm>
-      <regDt>2026-06-10</regDt>
-      <closeDt>2026-06-30</closeDt>
-      <closeType>접수마감일</closeType>
-    </item>
-  </items>
-</response>
+<dhsOpenEmpInfoList>
+  <total>1</total>
+  <startPage>1</startPage>
+  <display>1</display>
+  <dhsOpenEmpInfo>
+    <empSeqno>165987</empSeqno>
+    <empWantedTitle>데이터 사이언스 직무 채용</empWantedTitle>
+    <empBusiNm>데모데이터</empBusiNm>
+    <coClcdNm>대기업</coClcdNm>
+    <empWantedStdt>20260612</empWantedStdt>
+    <empWantedEndt>20260630</empWantedEndt>
+    <empWantedTypeNm>정규직</empWantedTypeNm>
+    <empWantedCareerNm>신입</empWantedCareerNm>
+    <empWantedEduNm>대졸</empWantedEduNm>
+    <regLogImgNm>https://example.com/logo.png</regLogImgNm>
+    <empWantedHomepgDetail>https://example.com/jobs/165987</empWantedHomepgDetail>
+    <empWantedMobileUrl></empWantedMobileUrl>
+  </dhsOpenEmpInfo>
+</dhsOpenEmpInfoList>

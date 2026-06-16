@@ -7,13 +7,13 @@
 - Current Length:
 - Counting Rule: Include spaces unless the company or question states otherwise.
 
-## Evidence IDs
+## Evidence References
 
 ## Draft
 
 ## Evidence Map
 - Sentence/Claim:
-- Resume Evidence ID:
+- Resume Evidence:
 - JD Requirement:
 - Company Value:
 

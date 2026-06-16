@@ -77,7 +77,7 @@ Outputs produced:
 - Source Cover Letter:
 
 ## Claim Defense
-| Claim | Evidence ID | Follow-Up Questions | Answer Points | Evidence Risk |
+| Claim | Resume Evidence | Follow-Up Questions | Answer Points | Evidence Risk |
 | --- | --- | --- | --- | --- |
 
 ## Metric And Tool Verification
@@ -88,7 +88,7 @@ Outputs produced:
 ## JD Fit Questions
 - Question:
 - Answer Points:
-- Resume Evidence ID:
+- Resume Evidence:
 
 ## Missing Evidence
 - Claim:

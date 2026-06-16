@@ -92,7 +92,10 @@ export function summarizeJobs(jobs) {
     sourceId: job.sourceId,
     company: job.company,
     title: job.title,
+    employmentType: job.employmentType,
+    postingDate: job.postingDate,
     deadline: job.deadline,
+    location: job.location,
     active: job.active,
     url: job.url,
   }));

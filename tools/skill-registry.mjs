@@ -6,6 +6,7 @@ export const skillNames = [
   "hr-reviewer",
   "interview-prep",
   "application-packager",
+  "job-searcher",
 ];
 
 export const orchestratorSkillName = "give-me-job";
