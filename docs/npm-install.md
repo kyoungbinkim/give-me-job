@@ -17,6 +17,8 @@ npm i -g give-me-job
 give-me-job install
 ```
 
+Without `--target`, the installer asks which AI agent to install to. Use the arrow keys to choose `codex`, `claude`, `opencode`, or `all`.
+
 ## Targets
 
 Install every target:

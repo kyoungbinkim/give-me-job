@@ -1,6 +1,6 @@
 {
   "name": "give-me-job",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "private": false,
   "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
@@ -66,6 +66,6 @@
     "test:skills": "node tests/validate/validate-skills.mjs",
     "test:jobs": "node support/validate/validate-job-sources.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs",
     "test:release": "npm test && npm run test:install",
-    "prepack": "npm run test:release"
+    "prepublishOnly": "npm run test:release"
   }
 }

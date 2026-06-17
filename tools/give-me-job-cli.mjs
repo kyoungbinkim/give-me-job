@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { constants as fsConstants } from "node:fs";
 import { access, mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { clearLine, cursorTo, emitKeypressEvents, moveCursor } from "node:readline";
+import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 import { toPosixPath } from "./platform.mjs";
 import { orchestratorSkillName, skillNames } from "./skill-registry.mjs";
@@ -21,6 +23,20 @@ import {
 } from "./install-layout.mjs";
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const interactiveTargetChoices = [
+  { label: "codex", value: "codex" },
+  { label: "claude", value: "claude-code" },
+  { label: "opencode", value: "opencode" },
+  { label: "all", value: "all" },
+];
+const color = {
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
+  cyan: "\x1b[36m",
+  green: "\x1b[32m",
+  inverse: "\x1b[7m",
+  reset: "\x1b[0m",
+};
 
 function usage() {
   return `Usage:
@@ -28,7 +44,7 @@ give-me-job install [--target all|codex|opencode|claude-code] [--scope user|proj
 give-me-job uninstall [--target all|codex|opencode|claude-code] [--scope user|project] [--dry-run]
 give-me-job doctor [--target all|codex|opencode|claude-code] [--scope user|project]
 
-Defaults: install --target all --scope user
+Defaults: install prompts for --target and uses --scope user
 `;
 }
 
@@ -67,6 +83,121 @@ function expandTargets(value) {
     }
   }
   return [...new Set(expanded)];
+}
+
+function normalizeInteractiveTarget(value) {
+  const text = String(value ?? "").trim().toLowerCase();
+  const numbered = Number(text);
+  if (Number.isInteger(numbered) && numbered >= 1 && numbered <= interactiveTargetChoices.length) {
+    return interactiveTargetChoices[numbered - 1].value;
+  }
+
+  const match = interactiveTargetChoices.find((choice) => choice.label === text || choice.value === text);
+  if (match) return match.value;
+  throw new Error(`Unknown target choice: ${value}`);
+}
+
+async function promptInstallTarget() {
+  if (process.stdin.isTTY && process.stdout.isTTY) {
+    return promptInstallTargetInteractive();
+  }
+
+  const input = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    console.log("Which AI agent would you like to install to?");
+    for (const [index, choice] of interactiveTargetChoices.entries()) {
+      console.log(`${index + 1}. ${choice.label}`);
+    }
+    const answer = await input.question("Enter choice: ");
+    return normalizeInteractiveTarget(answer);
+  } finally {
+    input.close();
+  }
+}
+
+function targetPromptLines(selectedIndex) {
+  return [
+    `${color.bold}${color.cyan}Which AI agent would you like to install to?${color.reset}`,
+    `${color.dim}Use ↑/↓ to move, Enter to select.${color.reset}`,
+    ...interactiveTargetChoices.map((choice, index) => {
+      const selected = index === selectedIndex;
+      const pointer = selected ? `${color.green}›${color.reset}` : " ";
+      const label = selected ? `${color.inverse} ${choice.label} ${color.reset}` : ` ${choice.label} `;
+      return `${pointer} ${label}`;
+    }),
+  ];
+}
+
+function renderTargetPrompt(selectedIndex, previousLineCount = 0) {
+  const lines = targetPromptLines(selectedIndex);
+  if (previousLineCount > 0) {
+    moveCursor(process.stdout, 0, -previousLineCount);
+  }
+
+  for (const line of lines) {
+    cursorTo(process.stdout, 0);
+    clearLine(process.stdout, 0);
+    process.stdout.write(`${line}\n`);
+  }
+  return lines.length;
+}
+
+function promptInstallTargetInteractive() {
+  return new Promise((resolve, reject) => {
+    let selectedIndex = 0;
+    let renderedLines = 0;
+    const canUseRawMode = typeof process.stdin.setRawMode === "function";
+    const wasPaused = process.stdin.isPaused();
+    let done = false;
+
+    function cleanup() {
+      if (done) return;
+      done = true;
+      process.stdin.off("keypress", onKeypress);
+      if (canUseRawMode) process.stdin.setRawMode(false);
+      if (wasPaused) process.stdin.pause();
+      process.stdout.write("\x1b[?25h");
+    }
+
+    function finish() {
+      const choice = interactiveTargetChoices[selectedIndex];
+      cleanup();
+      console.log(`${color.green}Selected:${color.reset} ${choice.label}`);
+      resolve(choice.value);
+    }
+
+    function onKeypress(_input, key = {}) {
+      if (key.ctrl && key.name === "c") {
+        cleanup();
+        reject(new Error("Install target selection cancelled."));
+        return;
+      }
+      if (key.name === "up") {
+        selectedIndex = (selectedIndex - 1 + interactiveTargetChoices.length) % interactiveTargetChoices.length;
+        renderedLines = renderTargetPrompt(selectedIndex, renderedLines);
+        return;
+      }
+      if (key.name === "down") {
+        selectedIndex = (selectedIndex + 1) % interactiveTargetChoices.length;
+        renderedLines = renderTargetPrompt(selectedIndex, renderedLines);
+        return;
+      }
+      if (key.name === "return" || key.name === "enter") {
+        finish();
+      }
+    }
+
+    emitKeypressEvents(process.stdin);
+    process.stdin.on("keypress", onKeypress);
+    if (canUseRawMode) process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdout.write("\x1b[?25l");
+    renderedLines = renderTargetPrompt(selectedIndex);
+  });
+}
+
+async function resolveInstallTarget(options) {
+  return options.target === undefined ? await promptInstallTarget() : options.target;
 }
 
 function normalizeScope(value) {
@@ -239,7 +370,7 @@ async function assertNoConflicts(plannedFiles, options, manifest) {
 }
 
 async function install(options) {
-  const chosenTargets = expandTargets(options.target);
+  const chosenTargets = expandTargets(await resolveInstallTarget(options));
   const scope = normalizeScope(options.scope);
   const sources = await readSkillSources();
   const version = await readPackageVersion();

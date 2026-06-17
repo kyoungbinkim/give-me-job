@@ -28,6 +28,7 @@ function run(args, options = {}) {
       GIVE_ME_JOB_HOME: options.home,
     },
     encoding: "utf8",
+    input: options.input,
   });
   return result;
 }
@@ -116,6 +117,13 @@ async function main() {
     const dryRun = run(["install", "--target", "all", "--dry-run"], { home });
     assert(dryRun.status === 0, `dry-run install failed: ${dryRun.stderr}`);
     assert(!(await exists(path.join(home, ".give-me-job", "install-manifest.json"))), "dry-run wrote a manifest");
+
+    const promptedDryRun = run(["install", "--dry-run"], { home, input: "claude\n" });
+    assert(promptedDryRun.status === 0, `prompted dry-run install failed: ${promptedDryRun.stderr}`);
+    assert(promptedDryRun.stdout.includes("Which AI agent would you like to install to?"), "install without --target should ask for a target");
+    assert(promptedDryRun.stdout.includes("Would install 8 skills, the give-me-job agent, and support files for claude-code"), "prompted install should map claude to claude-code");
+    assert(!promptedDryRun.stdout.includes("for codex"), "prompted claude install should not include codex");
+    assert(!promptedDryRun.stdout.includes("for opencode"), "prompted claude install should not include opencode");
 
     const installAll = run(["install", "--target", "all"], { home });
     assert(installAll.status === 0, `user install failed: ${installAll.stderr}`);
