@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { constants as fsConstants } from "node:fs";
 import { access, mkdir, readdir, readFile, rm, rmdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 import { clearLine, cursorTo, emitKeypressEvents, moveCursor } from "node:readline";
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
@@ -37,6 +38,7 @@ const color = {
   inverse: "\x1b[7m",
   reset: "\x1b[0m",
 };
+const debugTiming = process.env.GIVE_ME_JOB_DEBUG_TIMING === "1";
 
 function usage() {
   return `Usage:
@@ -147,7 +149,6 @@ function promptInstallTargetInteractive() {
     let selectedIndex = 0;
     let renderedLines = 0;
     const canUseRawMode = typeof process.stdin.setRawMode === "function";
-    const wasPaused = process.stdin.isPaused();
     let done = false;
 
     function cleanup() {
@@ -155,7 +156,7 @@ function promptInstallTargetInteractive() {
       done = true;
       process.stdin.off("keypress", onKeypress);
       if (canUseRawMode) process.stdin.setRawMode(false);
-      if (wasPaused) process.stdin.pause();
+      process.stdin.pause();
       process.stdout.write("\x1b[?25h");
     }
 
@@ -206,6 +207,16 @@ function normalizeScope(value) {
     throw new Error(`Unknown scope: ${scope}`);
   }
   return scope;
+}
+
+function timingStart() {
+  return performance.now();
+}
+
+function timingLog(label, startedAt) {
+  if (!debugTiming) return;
+  const elapsed = Math.round(performance.now() - startedAt);
+  console.error(`[give-me-job:timing] ${label}: ${elapsed}ms`);
 }
 
 async function exists(filePath) {
@@ -370,23 +381,34 @@ async function assertNoConflicts(plannedFiles, options, manifest) {
 }
 
 async function install(options) {
+  const totalStartedAt = timingStart();
+  let startedAt = timingStart();
   const chosenTargets = expandTargets(await resolveInstallTarget(options));
+  timingLog("resolve target", startedAt);
+
+  startedAt = timingStart();
   const scope = normalizeScope(options.scope);
   const sources = await readSkillSources();
   const version = await readPackageVersion();
   const manifest = await readManifest();
   const entries = [];
   const plannedFiles = [];
+  timingLog("read sources and manifest", startedAt);
 
+  startedAt = timingStart();
   for (const target of chosenTargets) {
     for (const source of await sourcesForTarget(target, scope, sources)) {
       const destination = destinationFor(target, scope, source);
       plannedFiles.push({ target, scope, kind: source.kind, skillName: source.skillName, path: destination, content: source.content });
     }
   }
+  timingLog("plan files", startedAt);
 
+  startedAt = timingStart();
   await assertNoConflicts(plannedFiles, options, manifest);
+  timingLog("check conflicts", startedAt);
 
+  startedAt = timingStart();
   for (const file of plannedFiles) {
       const result = await writeManagedFile(file.path, file.content, options, manifest);
       entries.push({
@@ -398,8 +420,10 @@ async function install(options) {
         action: result.action,
       });
   }
+  timingLog("write files", startedAt);
 
   if (!options.dryRun) {
+    startedAt = timingStart();
     const migrated = await removeLegacyOrchestratorSkillEntries(manifest, chosenTargets, scope, options);
     const nextEntries = migrated.manifest.entries.filter((entry) => {
       return !entries.some((candidate) => path.resolve(candidate.path) === path.resolve(entry.path));
@@ -416,9 +440,11 @@ async function install(options) {
       });
     }
     await writeManifest({ version: 1, packageVersion: version, entries: nextEntries });
+    timingLog("write manifest", startedAt);
   }
 
   printInstallSummary(entries, options.dryRun);
+  timingLog("total install", totalStartedAt);
 }
 
 function printInstallSummary(entries, dryRun) {
