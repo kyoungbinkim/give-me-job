@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-06-24
+
+### Added
+
+- Add OpenCode generated-tool policy validation so installed workflow tools must match their source allowlists.
+- Add Korean UTF-8 phrase validation for core docs and skills.
+- Add job-ranking regression checks for representative backend, rolling, expired, and business-planning fixtures.
+
+### Changed
+
+- Broaden job fit ranking from backend-only matching to job-function profiles for tech, business, support, creative, and operations roles.
+- Strengthen `cover-letter-writer` guidance for question relevance, company specificity, blind hiring, natural Korean phrasing, and company-name residue checks.
+
+### Fixed
+
+- Allow safe Saramin search flags in the generated OpenCode `fetch-jobs` tool policy.
+- Match `new-grad` resumes against Korean `신입` postings and `Seoul, Korea` preferences against `서울` job locations.
+
 ## [0.5.0] - 2026-06-15
 
 ### Added

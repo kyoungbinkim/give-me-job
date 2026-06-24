@@ -37,6 +37,21 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function assertSameItems(actual, expected, message) {
+  const actualSorted = [...actual].sort();
+  const expectedSorted = [...expected].sort();
+  assert(
+    JSON.stringify(actualSorted) === JSON.stringify(expectedSorted),
+    `${message}: expected ${expectedSorted.join(", ")} but got ${actualSorted.join(", ")}`,
+  );
+}
+
+function extractOpenCodeToolPolicy(text, file) {
+  const match = text.match(/const toolPolicy = (\{[\s\S]*?\});/);
+  assert(match, `OpenCode custom tool must embed tool policy: ${file}`);
+  return JSON.parse(match[1]);
+}
+
 function sha256(content) {
   return createHash("sha256").update(content).digest("hex");
 }
@@ -98,6 +113,12 @@ async function assertAgentInstall(target, scope, options) {
       assert(text.includes("function validateArgs"), `OpenCode custom tool must validate arguments: ${toolFile}`);
       assert(text.includes("blockedFlags"), `OpenCode custom tool must include blocked flag policy: ${toolFile}`);
       assert(text.includes("Path for ${flag} must stay inside the current workspace"), `OpenCode custom tool must restrict path flags: ${toolFile}`);
+      const toolSpec = workflowTools.find((tool) => tool.name === toolName);
+      const policy = extractOpenCodeToolPolicy(text, toolFile);
+      assertSameItems(policy.allowedFlags, toolSpec.allowedFlags ?? [], `${toolFile} allowed flags`);
+      assertSameItems(policy.allowedFlagPrefixes, toolSpec.allowedFlagPrefixes ?? [], `${toolFile} allowed flag prefixes`);
+      assertSameItems(policy.blockedFlags, toolSpec.blockedFlags ?? [], `${toolFile} blocked flags`);
+      assertSameItems(policy.pathFlags, toolSpec.pathFlags ?? [], `${toolFile} path flags`);
     }
   }
   assert(

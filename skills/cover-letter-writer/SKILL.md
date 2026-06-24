@@ -94,14 +94,19 @@ Outputs produced:
 11. Target 90-98% of the stated limit when a limit exists.
 12. Produce an evidence map that links key sentences to concrete `resume.md`
     evidence references.
-13. Review for unsupported claims, company-name leftovers, vague enthusiasm, and length limit.
+13. Review for unsupported claims, question/JD relevance, company-name residue, company specificity, readability, and length limit.
+14. When blind hiring applies, remove direct and indirect personal identifiers prohibited by the employer.
 
 ## Natural Korean Writing Rules
 
 - Prefer concrete actions over abstract claims.
 - Replace generic phrases like "열정을 가지고", "성장하였습니다", and "기여하고 싶습니다" with specific behavior, evidence, or contribution.
 - Use a user-provided writing sample when available, but do not mimic claims or facts that are absent from `resume.md`.
-- Avoid over-polished three-part boilerplate when the question calls for direct experience.
+- Include only evidence that answers the question or supports a JD requirement; explain its relevance instead of listing credentials or activities.
+- Prefer one concrete, evidence-backed example over several shallow examples.
+- Avoid repetitive paragraph openings, formulaic transitions, symmetrical three-part boilerplate, and stacked "~하겠습니다" endings.
+- Keep sentences focused and readable. Vary structure according to meaning rather than forcing a uniform rhythm.
+- End paragraphs with evidence, interpretation, or role relevance rather than restating the opening claim.
 - Keep the tone factual, specific, and interview-defensible.
 
 ## Hard Rules
@@ -112,6 +117,8 @@ Outputs produced:
 - Do not force every experience into 3C4P if the evidence does not support it.
 - Do not make a new grad sound like an experienced hire.
 - Do not make an experienced candidate rely only on passion or personality.
+- Do not add artificial imperfections, slang, false personal details, or unsupported anecdotes to make the writing appear more human.
+- Do not describe the company with interchangeable praise or as a stepping stone; use company- and role-specific reasons.
 
 Read `references/cover-letter-rules.md` for detailed writing and review rules.
 Read `references/3c4p-experience-framework.md` when decomposing an experience into a stronger cover letter angle.

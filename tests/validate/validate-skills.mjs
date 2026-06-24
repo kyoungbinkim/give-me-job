@@ -79,6 +79,15 @@ const mojibakePatterns = [
   "붴",
   "異쒕",
 ];
+const expectedKoreanSnippets = new Map([
+  ["README.md", ["자기소개서", "취업준비"]],
+  ["package.json", ["자기소개서", "취업준비"]],
+  ["agent.md", ["자소서", "공고"]],
+  ["docs/README-ko.md", ["자기소개서", "한국 채용", "제출"]],
+  ["skills/job-searcher/SKILL.md", ["한국 채용", "채용", "공고"]],
+  ["skills/cover-letter-writer/SKILL.md", ["자기소개서", "지원동기", "자소서"]],
+  ["skills/hr-reviewer/SKILL.md", ["자기소개서", "자소서", "제출"]],
+]);
 
 const errors = [];
 
@@ -262,6 +271,15 @@ async function main() {
     const hit = mojibakePatterns.find((pattern) => text.includes(pattern));
     if (hit) {
       errors.push(`${file}: contains likely mojibake text: ${hit}`);
+    }
+  }
+
+  for (const [file, snippets] of expectedKoreanSnippets.entries()) {
+    const text = await readFile(path.join(root, file), "utf8");
+    for (const snippet of snippets) {
+      if (!text.includes(snippet)) {
+        errors.push(`${file}: missing expected Korean UTF-8 text: ${snippet}`);
+      }
     }
   }
 

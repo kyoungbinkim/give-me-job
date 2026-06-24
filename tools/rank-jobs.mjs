@@ -3,27 +3,54 @@ import { readJobs, parseTargetList } from "./job-store.mjs";
 import { statusFor } from "./schedule-jobs.mjs";
 import { isMainModule } from "./platform.mjs";
 
-const TECH_TERMS = [
-  "java",
-  "spring",
-  "spring boot",
-  "mysql",
-  "api",
-  "backend",
-  "백엔드",
-  "sql",
-  "transaction",
-  "test",
-  "testing",
-  "테스트",
-  "reliability",
-  "consistency",
-  "data consistency",
-  "git",
-  "postman",
-  "kubernetes",
-  "sre",
+const JOB_FUNCTION_PROFILES = [
+  {
+    name: "tech",
+    rolePatterns: [/backend|백엔드|api|developer|개발|engineer|엔지니어|frontend|프론트엔드|data|데이터|sre|platform|플랫폼/i],
+    terms: [
+      "java",
+      "spring",
+      "spring boot",
+      "mysql",
+      "api",
+      "backend",
+      "백엔드",
+      "sql",
+      "transaction",
+      "test",
+      "testing",
+      "테스트",
+      "reliability",
+      "consistency",
+      "data consistency",
+      "git",
+      "postman",
+      "kubernetes",
+      "sre",
+    ],
+  },
+  {
+    name: "business",
+    rolePatterns: [/business|사업|기획|전략|pm|product manager|프로덕트|운영기획|서비스기획/i],
+    terms: ["market", "시장", "strategy", "전략", "planning", "기획", "analysis", "분석", "stakeholder", "project", "product", "service"],
+  },
+  {
+    name: "support",
+    rolePatterns: [/support|cs|customer|고객|상담|지원|운영지원/i],
+    terms: ["customer", "고객", "support", "cs", "상담", "crm", "issue", "문제", "communication", "응대", "operation", "운영"],
+  },
+  {
+    name: "creative",
+    rolePatterns: [/design|designer|디자인|content|콘텐츠|marketing|마케팅|brand|브랜드|creative|영상|카피/i],
+    terms: ["design", "디자인", "content", "콘텐츠", "campaign", "캠페인", "brand", "브랜드", "marketing", "마케팅", "copy", "portfolio"],
+  },
+  {
+    name: "operations",
+    rolePatterns: [/operations|operation|운영|물류|SCM|supply|구매|총무|관리|process|프로세스/i],
+    terms: ["operation", "operations", "운영", "process", "프로세스", "logistics", "물류", "scm", "supply", "구매", "vendor", "schedule"],
+  },
 ];
+const PROFILE_TERMS = [...new Set(JOB_FUNCTION_PROFILES.flatMap((profile) => profile.terms))];
 
 function parseArgs(argv) {
   const args = {};
@@ -55,6 +82,10 @@ function normalizeText(value) {
 
 function containsAny(text, terms) {
   return terms.filter((term) => text.includes(term.toLowerCase()));
+}
+
+function matchingProfiles(text) {
+  return JOB_FUNCTION_PROFILES.filter((profile) => profile.rolePatterns.some((pattern) => pattern.test(text)));
 }
 
 function metadataValue(resumeText, field) {
@@ -94,7 +125,8 @@ function locationMatches(jobLocation, resumeLocation) {
     remote: ["원격", "재택", "remote"],
     원격: ["원격", "재택", "remote"],
   };
-  const resumeAliases = aliases[resume] ?? [resume];
+  const resumeKey = Object.keys(aliases).find((key) => resume.includes(key));
+  const resumeAliases = aliases[resumeKey] ?? [resume];
   return resumeAliases.some((alias) => job.includes(alias));
 }
 
@@ -144,7 +176,7 @@ function extractResumeProfile(resumeText) {
     skills,
     competencies,
     evidenceIds,
-    terms: [...new Set(containsAny(lower, TECH_TERMS))],
+    terms: [...new Set(containsAny(lower, PROFILE_TERMS))],
   };
 }
 
@@ -193,9 +225,13 @@ function scoreJob(job, resume, today) {
   }
 
   const roleText = normalizeText(`${job.role} ${job.title}`);
-  if (/backend|백엔드|api/.test(roleText) && /backend|백엔드|api/i.test(`${resume.targetRoles} ${resume.skills} ${resume.competencies}`)) {
+  const resumeProfileText = normalizeText(`${resume.targetRoles} ${resume.skills} ${resume.competencies}`);
+  const jobProfiles = matchingProfiles(roleText);
+  const resumeProfiles = matchingProfiles(resumeProfileText);
+  const matchingProfile = jobProfiles.find((jobProfile) => resumeProfiles.some((resumeProfile) => resumeProfile.name === jobProfile.name));
+  if (matchingProfile) {
     score += 20;
-    strongMatches.push("Target role matches backend/API evidence");
+    strongMatches.push(`Target role matches ${matchingProfile.name} evidence`);
   } else {
     score -= 5;
     weakMatches.push("Role match is not direct");
@@ -203,10 +239,10 @@ function scoreJob(job, resume, today) {
 
   const careerText = normalizeText(job.careerLevel);
   const resumeCareer = normalizeText(resume.careerType);
-  if (/신입|new grad|0/.test(careerText) && /new grad|신입/i.test(resumeCareer)) {
+  if (/신입|new[- ]grad|0/.test(careerText) && /new[- ]grad|신입/i.test(resumeCareer)) {
     score += 15;
     strongMatches.push("Career level matches new-grad profile");
-  } else if (/경력/.test(careerText) && /new grad|신입/i.test(resumeCareer) && Number(job.experienceMin ?? 0) >= 2) {
+  } else if (/경력/.test(careerText) && /new[- ]grad|신입/i.test(resumeCareer) && Number(job.experienceMin ?? 0) >= 2) {
     score -= 20;
     risk.push("Career-level mismatch for new-grad profile");
   } else {
