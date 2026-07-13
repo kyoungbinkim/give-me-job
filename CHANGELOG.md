@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Removed
+
+- Remove the jobkorea, saramin, and work24 job-source adapters, their fixtures, and `validate-job-sources.mjs`. Automated job sourcing is now a TODO.
+
+### Changed
+
+- Turn `tools/fetch-jobs.mjs` into a placeholder with an empty source registry so a normalized adapter can be added later.
+- Rewrite the `job-searcher` skill to guide users to provide a JD or posting URL manually while automated search is unavailable.
+- Drop the removed job-source keys from `.env.example`; no API keys are required.
+
 ## [0.5.4] - 2026-06-24
 
 ### Added

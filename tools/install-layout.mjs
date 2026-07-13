@@ -12,10 +12,6 @@ export const supportFiles = [
   "support",
   "templates",
   "tools",
-  "tests/fixtures/saramin-job-search.json",
-  "tests/fixtures/work24-jobs.xml",
-  "tests/fixtures/work24-company-info.xml",
-  "tests/fixtures/jobkorea-jobs.xml",
   "tests/fixtures/resume-new-grad.md",
   "tests/fixtures/jobs-normalized",
 ];
@@ -27,7 +23,6 @@ export const requiredSupportFiles = [
   "agent.md",
   "tools/fetch-jobs.mjs",
   "tools/init-application.mjs",
-  "tools/job-sources/work24.mjs",
   "tools/normalize-job.mjs",
   "support/validate/validate-application.mjs",
   "templates/workflow-template.md",

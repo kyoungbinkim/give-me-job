@@ -1,11 +1,13 @@
 ---
 name: job-searcher
-description: 'Search Korean job postings and company information using the Work24 API. ALWAYS use this skill when the user mentions 채용, 취업, 공채, 이직, 구직, 인턴, 공고, 직무 찾기, 기업 정보 조회, 대기업/공기업/공공기관 지원, or any job-seeking intent in Korean — even when phrased indirectly like 어디 지원하면 좋을까, 취준 중인데, 삼성 들어가고 싶어. Also triggers for explicit keywords: 진행중인 공고, 채용 공고, 공채속보, 기업 정보, Work24 listings, 대기업 공채, 공공기관 채용, or role keywords like 데이터 사이언스 직무 찾아줘.'
+description: '한국 채용 공고 자동 검색 기능(job-source 연동)은 현재 준비 중(TODO)입니다. 사용자가 채용, 취업, 공채, 이직, 구직, 인턴, 공고, 직무 찾기, 기업 정보 조회, 대기업/공기업/공공기관 지원 등 채용 공고 검색을 요청하면 이 스킬로 안내하되, 자동 검색 대신 사용자가 직접 확보한 공고(JD)나 채용 URL을 받아 다음 단계로 연결합니다. 어디 지원하면 좋을까, 취준 중인데, 삼성 들어가고 싶어 같은 간접 표현도 포함합니다.'
 ---
 
-# Job Searcher
+# Job Searcher (준비 중 · TODO)
 
-Work24 API를 사용하여 한국 채용 공고 및 기업 정보를 검색하는 스킬입니다. 검색 및 선별 단계이며, 자동 지원 단계가 아닙니다.
+한국 채용 공고를 자동으로 검색하는 job-source 연동은 아직 구현되어 있지 않습니다. 이전 jobkorea / saramin / work24 어댑터는 제거되었고, 단일 정규화 어댑터로 다시 도입할 예정입니다.
+
+이 스킬은 자동 검색을 대신하지 않으며, 채용 공고 검색 의도를 받았을 때 사용자를 다음 단계로 연결하는 안내 역할만 합니다.
 
 ---
 
@@ -13,200 +15,49 @@ Work24 API를 사용하여 한국 채용 공고 및 기업 정보를 검색하�
 
 - 자동 지원, 사이트 로그인, CAPTCHA 우회
 - 이메일 발송 또는 개인정보 전송
-- API 실패 시 검색 결과 임의로 생성 (반드시 오류 메시지 그대로 안내)
-- 공고 결과를 요약하거나 재작성하여 사실 여부가 불확실한 내용 제공
+- 검색 결과를 임의로 생성하거나, 실제로 조회하지 않은 공고를 사실처럼 제시
+- 구현되지 않은 기능을 "검색했다"라고 표현
 
 ---
 
-## Dependencies
+## Inputs (입력)
 
-아래 항목이 모두 갖춰져 있어야 스킬이 작동합니다. 하나라도 없으면 실행 전에 사용자에게 안내하세요.
+사용자의 자연어에서 아래를 파악합니다.
 
-| 항목 | 확인 방법 |
-|---|---|
-| Node.js >= 18 | `node --version` |
-| `tools/fetch-jobs.mjs` | 아래 "도구 경로 확인" 절차로 파일 존재 여부 확인 |
-| `WORK24_AUTH_KEY` | 환경변수 또는 `.env` 파일 내 키 존재 여부 확인 |
-
-`WORK24_RECRUIT_API_URL` 및 `WORK24_COMPANY_API_URL`은 도구 내부에 기본값이 설정되어 있으므로 별도 설정 불필요합니다.
+- **채용 공고 검색 의도** — 예: `백엔드 공고 찾아줘`, `삼성 채용 알려줘`, `취준 중인데 어디 지원할까`
+- **이미 확보한 자료** — 사용자가 직접 가진 채용 공고(JD) 본문 또는 채용 URL
 
 ---
 
-## Inputs
+## Workflow (절차)
 
-사용자의 자연어에서 아래 검색 조건을 추출하세요.
+### Step 1: 현재 상태 안내
 
-**직무/키워드** — 예: `데이터 사이언스`, `백엔드`, `기획`, `영업`
+채용 공고 자동 검색(job-source 연동)이 아직 준비 중(TODO)임을 사용자에게 명확히 알립니다. 없는 결과를 만들어 내지 않습니다.
 
-**기업구분** (`--param.coClcd`)
+### Step 2: 대안 경로 제안
 
-| 자연어 | 코드 |
-|---|---|
-| 대기업 | 10 |
-| 공기업 | 20 |
-| 공공기관 | 30 |
-| 중견기업 | 40 |
-| 외국계 | 50 |
+자동 검색 대신 아래 중 하나로 진행할 수 있음을 안내합니다.
 
-**경력구분** (`--param.empWantedCareerCd`)
+- 지원하려는 공고의 JD 본문 또는 채용 URL을 직접 제공하면, `jd-analyzer` 스킬로 분석을 시작합니다.
+- 이미 저장된 정규화 공고(`data/jobs/`)가 있다면 `rank-jobs` / `schedule-jobs` 지원 도구로 우선순위와 마감일을 정리할 수 있습니다.
 
-| 자연어 | 코드 |
-|---|---|
-| 경력무관 | 10 |
-| 경력 | 20 |
-| 신입 | 30 |
-| 인턴 | 40 |
+### Step 3: 다음 단계 연결
 
-**고용형태** (`--param.empWantedTypeCd`)
-
-| 자연어 | 코드 |
-|---|---|
-| 정규직 | 10 |
-| 정규직전환 | 20 |
-| 비정규직 | 30 |
-| 기간제 | 40 |
-| 시간선택제 | 50 |
-| 기타 | 60 |
-
-**학력** (`--param.empWantedEduCd`)
-
-| 자연어 | 코드 |
-|---|---|
-| 고졸 | 10 |
-| 대졸 2-3년 | 20 |
-| 대졸 | 30 |
-| 석사 | 40 |
-| 박사 | 50 |
-| 학력무관 | 99 |
-
-**기타**
-- 결과 수: 명시하지 않으면 기본값 `10`
-- 공고 상태: `현재`, `진행중`, `마감 전` 또는 명시 없으면 활성 공고만 표시 (`--active-only`). 사용자가 명시적으로 전체 조회를 요청한 경우에만 해제
-- 의도 모호 시: 기업소개, 홈페이지, 로고, 사업자번호, 기업 정보 등을 명시적으로 요청하지 않는 한 채용공고 검색 우선
-- 회사명으로 보이는 키워드가 포함된 모집공고 요청(예: `엘지 모집공고`, `삼성 채용공고`)은 Work24 모집공고 API의 회사명 필터가 적용되지 않을 수 있으므로 `--match-keyword "<company>" --pages 30 --param.display 100`을 사용해 여러 페이지를 받은 뒤 회사명/공고명/URL을 로컬 필터링합니다.
+사용자가 공고나 URL을 제공하면 채용 준비 워크플로(JD 분석 → 자소서 작성 등)로 자연스럽게 이어 갑니다.
 
 ---
 
-## Workflow
+## Output (출력)
 
-### Step 1: 환경 확인
-
-#### 도구 경로 확인
-
-먼저 현재 작업 디렉터리의 `tools/fetch-jobs.mjs`를 확인합니다. 없으면 설치된 support bundle에서 찾습니다.
-
-설치 support bundle 기본 위치:
-
-| 대상 | user scope | project scope |
-|---|---|---|
-| Codex | `~/.codex/give-me-job/tools/fetch-jobs.mjs` | `.codex/give-me-job/tools/fetch-jobs.mjs` |
-| OpenCode | `~/.config/opencode/give-me-job/tools/fetch-jobs.mjs` | `.opencode/give-me-job/tools/fetch-jobs.mjs` |
-| Claude Code | `~/.claude/give-me-job/tools/fetch-jobs.mjs` | `.claude/give-me-job/tools/fetch-jobs.mjs` |
-
-Codex execution note:
-- Codex does not auto-register these `.mjs` files as MCP/custom tools.
-- Treat `fetch-jobs.mjs` as a support script invoked through the shell.
-- For Codex installs, resolve the script in this order: current repo `tools/fetch-jobs.mjs`, project `.codex/give-me-job/tools/fetch-jobs.mjs`, then user `~/.codex/give-me-job/tools/fetch-jobs.mjs`.
-- Run the resolved path explicitly, for example `node "<resolved-fetch-jobs.mjs>" --source work24 --dry-run --active-only --param.display 10`.
-- If the command fails, report the real stdout/stderr and exit code. Do not fabricate results.
-
-Claude Code execution note:
-- The Claude Code installer injects `allowed-tools: Bash, Read, Grep` into this skill so Claude can run the workflow script with its Bash tool while this skill is active.
-- Treat `fetch-jobs.mjs` as an allowlisted support script, not as an arbitrary script runner.
-- Resolve the script in this order: current repo `tools/fetch-jobs.mjs`, project `.claude/give-me-job/tools/fetch-jobs.mjs`, then user `~/.claude/give-me-job/tools/fetch-jobs.mjs`.
-- Run the resolved path explicitly with the Bash tool, for example `node "<resolved-fetch-jobs.mjs>" --source work24 --dry-run --active-only --param.display 10`.
-- If the command fails, report the real stdout/stderr and exit code. Do not fabricate results.
-
-도구가 여러 위치에 있으면 현재 프로젝트 루트의 파일을 우선 사용하고, 그다음 현재 에이전트 대상의 project scope, user scope 순서로 사용합니다.
-
-어느 위치에서도 `fetch-jobs.mjs`를 찾을 수 없으면 `give-me-job install --target <target>` 실행이 필요하다고 안내하고 중단합니다.
-
-### Step 2: Dry-run 검색 실행
-
-아래 예시는 저장소 루트에서 실행할 때의 명령입니다. 설치된 support bundle을 사용하는 경우 `node tools/fetch-jobs.mjs` 대신 확인한 절대 경로를 사용하세요.
-
-기본 명령어:
-
-```bash
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.display 10
-```
-
-사용자 요청에 따라 아래 필터를 추가합니다:
-
-```bash
-# 직무/제목 키워드
---param.empWantedTitle "<keyword>"
-
-# 회사명/브랜드 키워드로 모집공고 검색
---match-keyword "<company-or-brand>" --pages 30 --param.display 100
-
-# 기업구분
---param.coClcd <code>
-
-# 경력구분
---param.empWantedCareerCd <code>
-
-# 고용형태
---param.empWantedTypeCd <code>
-
-# 학력
---param.empWantedEduCd <code>
-
-# 직종 코드 (사용자가 명시한 경우에만)
---param.jobsCd <code>
-```
-
-### Step 3: 기업 정보 검색 (해당 시)
-
-사용자가 특정 기업 정보를 요청한 경우:
-
-```bash
-node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.display 10 --param.coNm "<company>"
-```
-
-### Step 4: 결과 출력
-
-검색에 사용된 조건을 먼저 명시한 뒤 아래 테이블 형식으로 결과를 출력합니다.
-
-**채용공고 테이블:**
-
-| 회사명 | 공고명 | 고용형태 | 기업구분 | 시작일 | 마감일 | URL |
-|---|---|---|---|---|---|---|
-| ... | ... | ... | ... | ... | ... | ... |
-
-**기업정보 테이블:**
-
-| 회사명 | 기업소개 | 기업구분 | 홈페이지 | URL |
-|---|---|---|---|---|
-| ... | ... | ... | ... | ... |
-
-**누락 필드 표기 규칙:**
-- 값이 없는 필드: `-` 로 표시
-- 마감일 없음: `상시채용` 으로 표기
-- 기업구분 없음: `-` 로 표시
-
-결과가 0건이면 사용된 필터를 정확히 나열하고, 경력/학력 필터 제거 등 구체적인 재시도 방법 한 가지를 제안합니다.
-
-### Step 5: 저장 여부 확인 (채용공고 검색만 해당)
-
-```txt
-이 결과를 data/jobs에 저장할까요?
-```
-
-- **저장 시**: `--dry-run` 없이 동일 명령어 재실행
-- **저장 안 함**: 결과를 대화에서만 참조하고 다음 단계(JD 분석, 지원서 작성 등)로 진행
-- **기업 정보(`--mode company`) 검색 결과는 저장하지 않음** — 참고용으로만 활용하며, JD 분석이나 지원서 패키지 작성 시 맥락 데이터로 사용
+- 자동 검색 미지원(TODO) 사실을 먼저 한 문장으로 명확히 전달합니다.
+- 이어서 사용자가 취할 수 있는 구체적 대안 한두 가지를 제안합니다.
+- 공고 목록을 표로 제시하지 않습니다(조회 기능이 없으므로 빈 표나 임의 데이터를 만들지 않습니다).
 
 ---
 
-## Fallback
+## Fallback (대안)
 
-**`WORK24_AUTH_KEY` 미설정 시:**
-환경변수 또는 `.env` 파일에 `WORK24_AUTH_KEY`를 설정해달라고 안내합니다. API URL은 별도 설정 불필요합니다.
-
-**Work24 API 인증 오류 시:**
-API 응답 메시지를 그대로 사용자에게 전달하고, 결과를 임의로 생성하지 않습니다.
-
-**요청 의도를 Work24 코드로 매핑할 수 없을 때:**
-- 직무 관련 표현이면 `--param.empWantedTitle`에 키워드로 전달
-- 의도를 추론할 수 없으면 질문 하나만 합니다 (예: "어떤 직무를 찾고 계신가요?")
+- **job-source 연동이 구현되면**: `tools/fetch-jobs.mjs`에 어댑터를 등록하고, 이 스킬을 검색 워크플로로 되돌립니다.
+- **사용자가 지금 당장 진행을 원할 때**: 공고 URL 또는 JD 본문을 요청하여 분석·작성 단계로 넘어갑니다.
+- **의도가 모호할 때**: 질문 하나만 합니다 (예: "지원하려는 공고 링크나 내용을 알려주실 수 있을까요?").

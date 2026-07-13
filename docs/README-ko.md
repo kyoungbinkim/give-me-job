@@ -19,7 +19,7 @@
 | [Safety Policy](safety.md) | 허용 작업, 금지 작업, blocker 예시 |
 | [Release Checklist](release-checklist.md) | 릴리스 전 검증 항목 |
 | [Competitive v1 Roadmap](competitive-v1-roadmap.md) | 한국 채용 시장 전용 제품 로드맵 |
-| [Job Source Integrations](integrations/job-sources.md) | Saramin, Work24, JobKorea 연동 |
+| [Job Source Integrations](integrations/job-sources.md) | 채용공고 소스 어댑터 상태 (TODO) |
 
 ## 설치 전 준비
 
@@ -226,42 +226,12 @@ applications/
 
 ## 채용공고 연동
 
-환경 파일을 준비합니다.
+채용 공고 자동 검색(job-source 연동)은 아직 준비 중(TODO)입니다. jobkorea /
+saramin / work24 어댑터는 제거되었고, `tools/fetch-jobs.mjs`는 등록된 소스가
+없는 상태로 동작하므로 별도의 API 키가 필요하지 않습니다. 당분간은 지원하려는
+공고 URL 또는 JD 본문을 직접 제공해 다음 단계로 진행합니다.
 
-PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-macOS/Linux:
-
-```bash
-cp .env.example .env
-```
-
-Saramin API 사용:
-
-```bash
-node tools/fetch-jobs.mjs --source saramin --keywords "백엔드 Java" --deadline tomorrow --count 20
-```
-
-Work24 API 사용. L21 공채속보와 L31 공채기업정보 URL은 도구에 기본값으로 들어 있으므로 환경변수 또는 `.env`에 `WORK24_AUTH_KEY`만 설정하면 됩니다.
-
-```bash
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --match-keyword "엘지" --pages 30 --param.display 100
-node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
-```
-
-fixture 기반 검증:
-
-```bash
-node support/validate/validate-job-sources.mjs
-```
-
-마감 일정과 적합도 랭킹:
+정규화된 공고가 `data/jobs/`에 있을 때 마감 일정과 적합도 랭킹:
 
 ```bash
 node tools/schedule-jobs.mjs --week --jobs data/jobs

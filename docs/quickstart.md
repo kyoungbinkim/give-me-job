@@ -93,19 +93,9 @@ Review the final text and checklist yourself. This project does not click submit
 
 ## Optional: Fetch Jobs
 
-Saramin live API:
-
-```bash
-node tools/fetch-jobs.mjs --source saramin --keywords "backend Java" --deadline tomorrow --count 20
-```
-
-Fixture-based validation without API keys:
-
-```bash
-node support/validate/validate-job-sources.mjs
-```
-
-See [integrations/job-sources.md](integrations/job-sources.md).
+Automated job-source adapters are a TODO — `tools/fetch-jobs.mjs` has no source
+registered yet. Provide a posting URL or JD manually for now. See
+[integrations/job-sources.md](integrations/job-sources.md).
 
 ## Optional: Prioritize Jobs
 

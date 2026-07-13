@@ -21,7 +21,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - HR review: check exaggeration, unsupported claims, company-name residue, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
-- Korean job-source tools: support Saramin, Work24, and JobKorea adapters plus natural-language job search guidance, deadline scheduling, and fit ranking.
+- Job-source tools: deadline scheduling and fit ranking over normalized jobs. Automated job-source adapters are a TODO (jobkorea/saramin/work24 were removed).
 
 ## Documentation
 
@@ -34,7 +34,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 | [Safety Policy](docs/safety.md) | Allowed actions, disallowed actions, and blocker examples |
 | [Release Checklist](docs/release-checklist.md) | Pre-release validation checklist |
 | [Competitive v1 Roadmap](docs/competitive-v1-roadmap.md) | Korea-only product roadmap |
-| [Job Source Integrations](docs/integrations/job-sources.md) | Saramin, Work24, and JobKorea setup |
+| [Job Source Integrations](docs/integrations/job-sources.md) | Job-source adapter status (TODO) |
 
 ## Requirements
 
@@ -283,46 +283,17 @@ Start with [`examples/demo-new-grad-backend/resume.md`](examples/demo-new-grad-b
 - `hr-reviewer`: checks application materials from an HR risk perspective.
 - `interview-prep`: prepares interview follow-up questions and answer points grounded in evidence.
 - `application-packager`: assembles the company-specific package and manual submission checklist.
-- `job-searcher`: searches Korean job postings and company information through Work24-backed tools.
+- `job-searcher`: guides users to provide a JD or posting URL manually while automated job-source search is a TODO.
 
 ## Job Sources And Prioritization
 
-Prepare an environment file.
+Automated job discovery is a **TODO**. The jobkorea, saramin, and work24
+adapters were removed, so `tools/fetch-jobs.mjs` currently ships with an empty
+source registry and no API keys are required. It normalizes and writes jobs but
+has no source to fetch from until one is registered.
 
-PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-macOS/Linux:
-
-```bash
-cp .env.example .env
-```
-
-With a Saramin API key, set `SARAMIN_ACCESS_KEY` in `.env` and fetch jobs:
-
-```bash
-node tools/fetch-jobs.mjs --source saramin --keywords "backend Java" --deadline tomorrow --count 20
-```
-
-With a Work24 API key, set `WORK24_AUTH_KEY` as an environment variable or in `.env` and search current public recruit notices. Work24 L21/L31 URLs are built into the tool by default:
-
-```bash
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.empWantedTitle "데이터 사이언스" --param.display 10
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.coClcd 10 --param.display 10
-node tools/fetch-jobs.mjs --source work24 --dry-run --active-only --match-keyword "엘지" --pages 30 --param.display 100
-node tools/fetch-jobs.mjs --source work24 --mode company --dry-run --param.coNm "삼성"
-```
-
-Run fixture-based validation without API keys:
-
-```bash
-node support/validate/validate-job-sources.mjs
-```
-
-After fetching jobs, check deadlines and fit ranking:
+Once normalized jobs exist under `data/jobs/` (for example from a future
+adapter), check deadlines and fit ranking:
 
 ```bash
 node tools/schedule-jobs.mjs --week --jobs data/jobs
@@ -343,7 +314,6 @@ Equivalent manual checks:
 
 ```bash
 node tests/validate/validate-skills.mjs
-node support/validate/validate-job-sources.mjs
 node support/validate/validate-job-schedule.mjs
 node support/validate/validate-job-ranking.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force

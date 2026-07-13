@@ -75,8 +75,11 @@ For OpenCode, the installer writes custom tool definitions under the official to
 Example command the Claude Code tool skill can run from the installed user bundle:
 
 ```bash
-node ~/.claude/give-me-job/tools/fetch-jobs.mjs --source work24 --dry-run --active-only --param.display 10
+node ~/.claude/give-me-job/tools/fetch-jobs.mjs --help
 ```
+
+(Automated job-source adapters are a TODO, so `fetch-jobs` currently reports
+that no sources are registered.)
 
 Project-scope install paths:
 
