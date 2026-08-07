@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Add `references/career-type-playbooks.md`, splitting cover-letter guidance into separate new-grad and experienced playbooks with an explicit career-type resolution step. Career type previously changed only two lines of drafting structure.
+- Add `Reason For Changing Jobs` and short-tenure guidance, plus a `Job Change` question type. 이직 사유 had no coverage anywhere in the project.
+- Add a `Failure And Exception Behavior` contract to `cover-letter-writer`, covering unresolvable career type, missing facts, ambiguous questions, and requests to overstate or criticize a former employer.
 - Add `Failure And Mistake Answers` guidance for 실패 경험 and 성장과정 questions, covering owned decisions, honest cause, and the change afterward.
 - Add `Sub-Role Awareness` guidance so answers target the narrowest role scope a posting names instead of the job family in its title.
 - Capture decision rationale during resume intake, and probe alternatives considered during interview prep, so decision quality survives into the package.
@@ -15,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Add HR-review blockers for wrong sub-role residue and disqualifying failure disclosures, plus warnings for blame-shifted causes, fake weaknesses, adjacent-domain evidence, and result-only answers to reasoning questions.
+- Add HR-review blockers for fabricated employment-history facts and previous-employer criticism, and review each draft through its career type's lens rather than one shared standard.
 
 ## [0.6.0] - 2026-08-07
 

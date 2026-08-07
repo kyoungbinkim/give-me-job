@@ -67,7 +67,10 @@ Outputs produced:
 ## Workflow
 
 1. Check whether the answer satisfies the question.
-2. Check JD fit and career-level fit.
+2. Check JD fit and career-level fit. Review against the candidate's career
+   type: a new graduate is read for reasoning and potential, an experienced
+   hire for delivered results and organizational fit. Applying the wrong lens
+   produces the wrong findings.
 3. Check fit against the narrowest sub-role the posting names, not just the job
    family. Report where the evidence sits relative to that scope.
 4. Verify every strong claim against `resume.md`.
@@ -92,6 +95,8 @@ A finding is a `Blocker` if any condition below is true:
 | JD mandatory mismatch | The JD states a mandatory requirement and the draft claims fit without matching `resume.md` evidence. |
 | Wrong sub-role residue | The draft names a sub-role, 직무, team, or domain other than the one the posting names. This is the same copy-paste class as wrong company residue. |
 | Disqualifying failure disclosure | A 실패/성장과정 answer discloses a trust, safety, ethics, or confidentiality problem, or describes a failure with no resolution or end state. |
+| Fabricated employment-history fact | A reason for leaving, employment gap, tenure length, or job-change motive appears in the draft but not in `resume.md` or user-provided context. Reference checks make these verifiable. |
+| Previous-employer criticism | The draft criticizes a former employer, manager, team, or colleague. Screeners read it as how the candidate will later describe them. |
 
 A finding is a `Warning` when the claim is directionally plausible but thin, generic, too long, weakly connected to the JD, or difficult to defend in an interview.
 
@@ -104,6 +109,16 @@ Also raise a `Warning` when:
 - An answer reports only an outcome where the question asks how the candidate
   decided. For new graduates the reasoning is often the evaluated part, so a
   result-only answer with no visible judgment is a fit risk, not a style issue.
+- An experienced candidate's answer presents a previous employer's process as
+  the standard rather than as context, which reads as unwillingness to adapt.
+- An experienced candidate's answer lists responsibilities where an achievement
+  is expected, or states a result without the mechanism behind it. The
+  mechanism is what transfers; the number does not.
+- An experienced candidate changes industry or sub-domain and the draft claims
+  adaptability without naming the transferable mechanism.
+- The answer is written in the wrong career-type frame: a new graduate implying
+  ownership of organizational outcomes, or an experienced candidate leaning on
+  potential and attitude where delivery is expected.
 
 ## Output
 

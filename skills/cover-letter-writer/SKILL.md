@@ -7,6 +7,12 @@ description: Write Korean job application cover letter drafts from a question, J
 
 Write cover letters from evidence, not imagination. Every important claim must be backed by `resume.md`.
 
+## Role
+
+- **Position**: Korean cover-letter drafter working from a fixed evidence base.
+- **Objective**: Turn `resume.md` evidence, the JD, and one cover-letter question into an answer the candidate can defend in an interview.
+- **Tone**: Factual, specific, and plain. Do not persuade beyond what the evidence supports.
+
 ## Trigger
 
 Use this skill after JD analysis and usable `resume.md` evidence exist, or when the user asks for Korean 자기소개서, 자소서, 지원동기, 입사 후 포부, 필살기, or evidence-based application answers.
@@ -72,18 +78,22 @@ Outputs produced:
 
 ## Workflow
 
-1. Analyze the question intent. Read `references/question-types.md` if needed.
-2. Analyze the JD requirements or use an existing JD analysis. Identify the
+1. Resolve `career_type` before anything else, then load the matching playbook
+   in `references/career-type-playbooks.md`. New graduates and experienced
+   hires are screened on different criteria, so this selection governs emphasis
+   and checks for the whole answer set. Do not blend the two.
+2. Analyze the question intent. Read `references/question-types.md` if needed.
+3. Analyze the JD requirements or use an existing JD analysis. Identify the
    narrowest sub-role the posting names, not the job family in its title, and
    select evidence against that scope. See `Sub-Role Awareness` in
    `references/question-types.md`.
-3. If company values are provided, use them as supporting context only.
-4. Select the strongest matching `resume.md` evidence references. Use
+4. If company values are provided, use them as supporting context only.
+5. Select the strongest matching `resume.md` evidence references. Use
    `Section > Entry Title > bullet N` for canonical resumes, or legacy IDs
    such as `EXP-001` only when they already exist.
-5. When the user needs a stronger `필살기`, asks for `3C4P`, or the experience feels vague, decompose the selected evidence with `references/3c4p-experience-framework.md`.
-6. If evidence is missing, ask follow-up questions before drafting.
-7. Classify each question before drafting:
+6. When the user needs a stronger `필살기`, asks for `3C4P`, or the experience feels vague, decompose the selected evidence with `references/3c4p-experience-framework.md`.
+7. If evidence is missing, ask follow-up questions before drafting.
+8. Classify each question before drafting:
    - 경험형: STAR or CAR.
    - 역량형: strength, evidence, role application.
    - 지원동기형: company/role understanding, personal connection, contribution plan.
@@ -92,16 +102,17 @@ Outputs produced:
    - 실패/성장과정형: use `Failure And Mistake Answers` in
      `references/question-types.md`. Own the decision, state the cause without
      shifting blame, and end on what changed afterward.
-8. Draft in a structure suitable for the user's career type:
+9. Draft using the resolved playbook's answer structure:
    - new grad: motivation, relevant project, learning, contribution
    - experienced: role fit, result, how it was achieved, reusable contribution
-9. Apply natural Korean writing rules.
-10. Count characters immediately after drafting. Include spaces unless the company or question states otherwise.
-11. Target 90-98% of the stated limit when a limit exists.
-12. Produce an evidence map that links key sentences to concrete `resume.md`
+10. Apply natural Korean writing rules.
+11. Count characters immediately after drafting. Include spaces unless the company or question states otherwise.
+12. Target 90-98% of the stated limit when a limit exists.
+13. Produce an evidence map that links key sentences to concrete `resume.md`
     evidence references.
-13. Review for unsupported claims, question/JD relevance, company-name residue, company specificity, readability, and length limit.
-14. When blind hiring applies, remove direct and indirect personal identifiers prohibited by the employer.
+14. Review for unsupported claims, question/JD relevance, company-name residue, company specificity, readability, and length limit.
+15. Apply the resolved playbook's `Do not` list as a final pass.
+16. When blind hiring applies, remove direct and indirect personal identifiers prohibited by the employer.
 
 ## Natural Korean Writing Rules
 
@@ -123,15 +134,24 @@ Outputs produced:
 - Do not force every experience into 3C4P if the evidence does not support it.
 - Do not make a new grad sound like an experienced hire.
 - Do not make an experienced candidate rely only on passion or personality.
+- Do not switch playbooks mid-answer set, or apply one career type's frame to the other.
+- Do not invent a reason for leaving a job, an employment gap, or a tenure length. Ask instead.
+- Do not criticize a previous employer, manager, team, or colleague.
 - Do not add artificial imperfections, slang, false personal details, or unsupported anecdotes to make the writing appear more human.
 - Do not describe the company with interchangeable praise or as a stepping stone; use company- and role-specific reasons.
 
+Read `references/career-type-playbooks.md` first to resolve the career type and load the matching playbook.
 Read `references/cover-letter-rules.md` for detailed writing and review rules.
+Read `references/question-types.md` to classify the question and for failure and sub-role handling.
 Read `references/3c4p-experience-framework.md` when decomposing an experience into a stronger cover letter angle.
 
 ## Output
 
 ```md
+## Career Type
+- Resolved: new-grad | experienced
+- Basis: resume.md metadata | stated work history | user answer
+
 ## Question
 
 ## Question Type
@@ -170,3 +190,17 @@ Include `3C4P Notes` only when the user asks for 3C4P, asks for a stronger 필�
 ## Fallback
 
 If the user has no `resume.md`, use `resume-intake` first. If the question or JD is missing, ask for it before drafting.
+
+## Failure And Exception Behavior
+
+Ask rather than assume. Every condition below halts drafting until it is resolved.
+
+| Condition | Behavior |
+| --- | --- |
+| `career_type` cannot be resolved | Ask one question. Do not default to `new-grad`. |
+| `resume.md` is missing or unreadable | Route to `resume-intake`. Do not draft from the JD alone. |
+| Question or JD is missing | Ask for it. Do not infer the question from the role title. |
+| Question is ambiguous or multi-part | Ask which part to answer. Do not answer a question the user did not ask. |
+| A required fact is missing (metric, reason for leaving, tenure, scope) | Ask for that specific fact. Do not reconstruct it. |
+| The user asks to overstate, invent, or criticize a former employer | Decline that element, say why in one sentence, and draft the supportable version. |
+| Length limit is stated but the counting rule is not | Count Korean characters including spaces and state the rule used. |

@@ -13,6 +13,10 @@ type to choose the answer frame, not to force keywords into the answer.
 | Problem Solving | problem, improvement, solution, cause | problem definition and execution quality | problem, diagnosis, action, result, prevention | problem, action, result, prevention |
 | Values | values, principle, responsibility, ethics | judgment and trust | principle, difficult choice, action, consequence | principle-based decisions, responsibility examples |
 | Future Plan | after joining, plan, growth, vision | realistic future contribution | near-term contribution, growth path, evidence basis | Target Role, Summary, strongest role-relevant evidence |
+| Job Change | 이직 사유, reason for leaving, career transition | career direction and retention risk | work the candidate wants to do, what this posting offers, consistency with history | Work Experience progression, Target Role |
+
+`Job Change` applies to experienced candidates only. See `Reason For Changing
+Jobs` in `career-type-playbooks.md` before drafting it.
 
 ## Failure And Mistake Answers
 

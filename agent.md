@@ -122,6 +122,12 @@ Do not block the workflow because company values are missing.
 
 Use `skills/cover-letter-writer/SKILL.md`.
 
+Resolve the candidate's career type first and apply the matching playbook in
+`skills/cover-letter-writer/references/career-type-playbooks.md`. New graduates
+and experienced hires are screened on different criteria, so this selection
+governs the whole answer set. Ask when the career type is ambiguous rather than
+defaulting.
+
 For each question:
 
 - identify question intent
