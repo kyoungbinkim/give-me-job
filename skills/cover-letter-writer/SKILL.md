@@ -73,7 +73,10 @@ Outputs produced:
 ## Workflow
 
 1. Analyze the question intent. Read `references/question-types.md` if needed.
-2. Analyze the JD requirements or use an existing JD analysis.
+2. Analyze the JD requirements or use an existing JD analysis. Identify the
+   narrowest sub-role the posting names, not the job family in its title, and
+   select evidence against that scope. See `Sub-Role Awareness` in
+   `references/question-types.md`.
 3. If company values are provided, use them as supporting context only.
 4. Select the strongest matching `resume.md` evidence references. Use
    `Section > Entry Title > bullet N` for canonical resumes, or legacy IDs
@@ -86,6 +89,9 @@ Outputs produced:
    - 지원동기형: company/role understanding, personal connection, contribution plan.
    - 직무형: role understanding, evidence mapping, growth or contribution plan.
    - 협업/문제해결/가치관/입사후포부: use the matching frame in `references/question-types.md`.
+   - 실패/성장과정형: use `Failure And Mistake Answers` in
+     `references/question-types.md`. Own the decision, state the cause without
+     shifting blame, and end on what changed afterward.
 8. Draft in a structure suitable for the user's career type:
    - new grad: motivation, relevant project, learning, contribution
    - experienced: role fit, result, how it was achieved, reusable contribution

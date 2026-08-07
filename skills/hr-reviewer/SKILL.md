@@ -68,12 +68,16 @@ Outputs produced:
 
 1. Check whether the answer satisfies the question.
 2. Check JD fit and career-level fit.
-3. Verify every strong claim against `resume.md`.
-4. Flag invented or unsupported achievements.
-5. Check company name, role name, and copy-paste residue.
-6. Check readability, sentence length, repetition, and vague claims.
-7. Generate 2-3 interview follow-up questions for each key claim.
-8. Recommend concrete revisions.
+3. Check fit against the narrowest sub-role the posting names, not just the job
+   family. Report where the evidence sits relative to that scope.
+4. Verify every strong claim against `resume.md`.
+5. Flag invented or unsupported achievements.
+6. Check company name, role name, sub-role name, and copy-paste residue.
+7. Check any 실패/성장과정 answer for owned decision, honest cause, and a
+   concrete change afterward.
+8. Check readability, sentence length, repetition, and vague claims.
+9. Generate 2-3 interview follow-up questions for each key claim.
+10. Recommend concrete revisions.
 
 ## Blocker Criteria
 
@@ -86,8 +90,20 @@ A finding is a `Blocker` if any condition below is true:
 | Fabricated tool | A technology, tool, certification, or platform appears in the draft but not in `resume.md` or the user-provided context. |
 | Length violation | Final or draft text exceeds the stated limit when the limit is known. |
 | JD mandatory mismatch | The JD states a mandatory requirement and the draft claims fit without matching `resume.md` evidence. |
+| Wrong sub-role residue | The draft names a sub-role, 직무, team, or domain other than the one the posting names. This is the same copy-paste class as wrong company residue. |
+| Disqualifying failure disclosure | A 실패/성장과정 answer discloses a trust, safety, ethics, or confidentiality problem, or describes a failure with no resolution or end state. |
 
 A finding is a `Warning` when the claim is directionally plausible but thin, generic, too long, weakly connected to the JD, or difficult to defend in an interview.
+
+Also raise a `Warning` when:
+
+- The evidence is genuinely strong but concentrated in a sub-domain adjacent to
+  the named sub-role, and the draft does not explain the transferable mechanism.
+- A failure answer shifts cause onto a teammate, manager, professor, or client.
+- A failure answer uses fake-weakness framing such as `너무 완벽주의라서`.
+- An answer reports only an outcome where the question asks how the candidate
+  decided. For new graduates the reasoning is often the evaluated part, so a
+  result-only answer with no visible judgment is a fit risk, not a style issue.
 
 ## Output
 

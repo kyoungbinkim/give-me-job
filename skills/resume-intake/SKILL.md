@@ -83,6 +83,13 @@ Outputs produced:
    - what was done
    - method, scale, or constraints
    - measurable or observable result
+
+   When the user states why they chose an approach, rejected an alternative, or
+   changed direction, capture that reasoning too. Cover-letter and interview
+   questions frequently ask how a candidate decided, and that judgment cannot be
+   recovered later from a result-only bullet. Ask for it when an entry is the
+   candidate's strongest evidence. Never reconstruct a rationale the user did
+   not give.
 8. End every work role and project entry with exactly one strength comment:
    `<!-- strength: High -->`, `<!-- strength: Medium -->`, or
    `<!-- strength: Low -->`.
@@ -99,6 +106,13 @@ collaboration, and job relevance. `Projects` is required even when work
 experience is absent. If metrics are weak, strengthen the explanation of
 process, decision making, and learning without pretending there was business
 impact.
+
+New-grad results are usually small, so the reasoning behind them carries most
+of the signal. Prefer capturing how the candidate framed a problem, what they
+tried first, and what they changed after it did not work, over inflating the
+outcome. Also capture mistakes the candidate owns and what they changed
+afterward: 실패 경험 and 성장과정 questions are common, and an honest, resolved
+mistake is usable evidence that a polished result-only bullet cannot supply.
 
 ## Experienced Focus
 

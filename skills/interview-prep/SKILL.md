@@ -64,9 +64,15 @@ Outputs produced:
 2. Match each claim to `evidence-map.md` and `resume.md`.
 3. Generate 2-3 follow-up questions for each core claim.
 4. Add verification questions for metrics, tools, role scope, collaboration, failure handling, and JD fit when relevant.
-5. Write answer points using only supported evidence.
-6. Mark missing or thin evidence clearly.
-7. Add a short preparation checklist for manual review before interview.
+5. For any claim whose strength rests on a decision, add a question about the
+   alternatives considered and why they were rejected. Interviewers probe the
+   reasoning behind a result more often than the result itself.
+6. For any 실패/성장과정 claim, add a question about what the candidate changed
+   afterward and where that change applied later. An answer that stops at the
+   lesson is the common weak point.
+7. Write answer points using only supported evidence.
+8. Mark missing or thin evidence clearly.
+9. Add a short preparation checklist for manual review before interview.
 
 ## Output
 
