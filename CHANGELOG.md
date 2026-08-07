@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-07
+
+Automated job discovery is removed in this release and job sourcing is now a
+TODO. `give-me-job` no longer requires an API key, access token, or any other
+issued credential, and no tool reads a `.env` file.
+
+Upgrading from `0.5.x`: `node tools/fetch-jobs.mjs --source saramin|work24|jobkorea`
+no longer works and exits with a TODO message, because no source is registered.
+Supply a posting URL or JD text manually instead. The rest of the workflow —
+resume intake, JD analysis, cover-letter drafting, HR review, interview prep,
+packaging, deadline scheduling, and fit ranking — is unchanged. Reinstalling
+removes the `.env.example` left in the support bundle by earlier versions.
+
 ### Removed
 
 - Remove the jobkorea, saramin, and work24 job-source adapters, their fixtures, and `validate-job-sources.mjs`. Automated job sourcing is now a TODO.
@@ -29,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Fail skill validation if `.env.example` or `tools/env.mjs` is reintroduced.
 - Remove a previously installed `.env.example` from the support bundle on upgrade, so a stale credential template does not linger. Locally modified copies are left untouched, as with other managed files.
+- Replace the release-checklist item for the nonexistent `skills.sh` with the `npm run test:install` gate that actually covers installation.
 
 ## [0.5.4] - 2026-06-24
 

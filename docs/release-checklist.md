@@ -19,7 +19,7 @@ Use this checklist before tagging a public release.
 - Each skill has valid `SKILL.md` frontmatter.
 - `node tests/validate/validate-skills.mjs` passes.
 - `npm test` passes.
-- Before public GitHub distribution, `skills.sh` installation has been manually checked from a clean project.
+- `npm run test:install` passes, covering install, upgrade, conflict, force, and uninstall from a clean profile.
 - `npm pack --dry-run` contains only intended repository files.
 - `package.json` does not contain `private: true` before npm publishing.
 
