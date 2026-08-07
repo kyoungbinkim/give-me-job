@@ -5,7 +5,7 @@
 ## What We Accept
 
 - Skill improvements under `skills/`
-- Korean job-source adapters, fixtures, and validation updates
+- Credential-free Korean job-source adapters, fixtures, and validation updates
 - Documentation that improves Korean hiring-market usage
 - Tests for existing tools and workflow behavior
 - Bug fixes that preserve evidence-grounded writing and safe submission boundaries
@@ -16,6 +16,7 @@
 - Automatic final submission or bulk applying
 - Claims, metrics, or sample content that invent applicant experience
 - Changes that require secrets, credentials, or private user data in the repository
+- Integrations gated behind an API key, access token, or approval process
 
 ## Development
 
@@ -29,7 +30,6 @@ For focused checks:
 
 ```bash
 node tests/validate/validate-skills.mjs
-node support/validate/validate-job-sources.mjs
 node support/validate/validate-job-schedule.mjs
 node support/validate/validate-job-ranking.mjs
 ```
@@ -44,4 +44,6 @@ node support/validate/validate-job-ranking.mjs
 
 ## Security And Privacy
 
-Do not include personal application data, API keys, access tokens, browser cookies, resumes from real third parties, or private company documents. If a contribution touches job-source access, document required environment variables in `.env.example` without real values.
+Do not include personal application data, API keys, access tokens, browser cookies, resumes from real third parties, or private company documents.
+
+This project runs without credentials, and contributions must keep it that way. Do not add a job source, tool, or workflow step that requires an API key, access token, membership approval, or any other issued credential. If a job source cannot be used without one, it is out of scope — support manual posting URL or JD intake instead.

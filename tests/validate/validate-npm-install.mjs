@@ -5,7 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
-import { workflowTools } from "../../tools/install-adapters.mjs";
+import { jobSearcherAllowedTools, workflowTools } from "../../tools/install-adapters.mjs";
 import {
   agentExtensionFor,
   agentRootFor,
@@ -87,8 +87,12 @@ async function assertAgentInstall(target, scope, options) {
   if (target === "claude-code") {
     const jobSearcher = await readFile(path.join(skillRootDir, "job-searcher", "SKILL.md"), "utf8");
     assert(
-      jobSearcher.includes("allowed-tools: Bash(node *fetch-jobs.mjs), Bash(node *fetch-jobs.mjs *), Read, Grep"),
-      "Claude Code job-searcher skill must restrict Bash to fetch-jobs",
+      jobSearcher.includes(`allowed-tools: ${jobSearcherAllowedTools}`),
+      "Claude Code job-searcher skill must declare its read-only tool allowlist",
+    );
+    assert(
+      !/allowed-tools:.*Bash/.test(jobSearcher),
+      "Claude Code job-searcher skill must not be granted Bash access",
     );
     const agent = await readFile(path.join(agentRootFor(target, scope, options), `give-me-job.${agentExtensionFor(target)}`), "utf8");
     assert(!agent.includes("tools: Read, Write, Edit, Bash"), "Claude Code agent must not grant unrestricted Bash access");

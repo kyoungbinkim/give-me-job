@@ -24,8 +24,6 @@ const requiredReleaseFiles = [
   "templates/workflow-template.md",
   "templates/company-values-empty-template.md",
   "templates/interview-prep-template.md",
-  ".env.example",
-  "tools/env.mjs",
   "tools/platform.mjs",
   "tools/normalize-job.mjs",
   "tools/job-store.mjs",
@@ -53,6 +51,9 @@ const requiredReleaseFiles = [
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/interview-prep.md",
   "examples/demo-new-grad-backend/applications/demo-cloud-backend/cover-letter-final.md",
 ];
+// This project must not require an API key, access token, or any other issued
+// credential. These files existed only to configure them.
+const forbiddenReleaseFiles = [".env.example", "tools/env.mjs"];
 const coreTextFiles = [
   "README.md",
   "AGENTS.md",
@@ -278,6 +279,12 @@ async function main() {
   for (const file of requiredReleaseFiles) {
     if (!(await exists(path.join(root, file)))) {
       errors.push(`missing release file: ${file}`);
+    }
+  }
+
+  for (const file of forbiddenReleaseFiles) {
+    if (await exists(path.join(root, file))) {
+      errors.push(`credential configuration file must not be reintroduced: ${file}`);
     }
   }
 

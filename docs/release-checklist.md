@@ -10,6 +10,7 @@ Use this checklist before tagging a public release.
 - `README.md` quickstart, skills list, and install goal are aligned with `docs/README-ko.md`.
 - `docs/safety.md` lists allowed and disallowed actions.
 - `docs/platform-support.md` documents Windows, Ubuntu/Linux, and macOS validation.
+- The release runs with no API key, access token, or other issued credential, and no doc instructs the user to obtain one.
 
 ## Agent Compatibility
 
@@ -26,7 +27,6 @@ Use this checklist before tagging a public release.
 
 - `node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force` creates a package.
 - `node support/validate/validate-application.mjs .tmp-release-check/demo-backend` passes.
-- `node support/validate/validate-job-sources.mjs` passes.
 - `node support/validate/validate-job-schedule.mjs` passes.
 - `node support/validate/validate-job-ranking.mjs` passes.
 - Generated user packages remain ignored by Git.

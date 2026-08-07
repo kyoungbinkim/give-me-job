@@ -21,7 +21,8 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - HR review: check exaggeration, unsupported claims, company-name residue, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
-- Job-source tools: deadline scheduling and fit ranking over normalized jobs. Automated job-source adapters are a TODO (jobkorea/saramin/work24 were removed).
+- Job-source tools: deadline scheduling and fit ranking over normalized jobs. Automated job-source adapters are a TODO.
+- No credentials: nothing here needs an API key, access token, or approved API access.
 
 ## Documentation
 
@@ -287,10 +288,12 @@ Start with [`examples/demo-new-grad-backend/resume.md`](examples/demo-new-grad-b
 
 ## Job Sources And Prioritization
 
-Automated job discovery is a **TODO**. The jobkorea, saramin, and work24
-adapters were removed, so `tools/fetch-jobs.mjs` currently ships with an empty
-source registry and no API keys are required. It normalizes and writes jobs but
-has no source to fetch from until one is registered.
+Automated job discovery is a **TODO**. `tools/fetch-jobs.mjs` ships with an
+empty source registry: it normalizes and writes jobs but has no source to fetch
+from until one is registered. Provide a posting URL or JD text manually for now.
+
+`give-me-job` requires no API key, access token, or other issued credential, and
+none of its tools read one. Any future job source must work the same way.
 
 Once normalized jobs exist under `data/jobs/` (for example from a future
 adapter), check deadlines and fit ranking:
@@ -327,6 +330,7 @@ node support/validate/validate-application.mjs examples/demo-new-grad-backend/ap
 .
 |-- AGENTS.md
 |-- agent.md
+|-- bin/
 |-- docs/
 |   |-- assets/
 |   |-- competitive-v1-roadmap.md
@@ -344,7 +348,9 @@ node support/validate/validate-application.mjs examples/demo-new-grad-backend/ap
 |   |-- cover-letter-writer/
 |   |-- hr-reviewer/
 |   |-- interview-prep/
-|   `-- application-packager/
+|   |-- application-packager/
+|   `-- job-searcher/
+|-- support/
 |-- templates/
 |-- tests/
 |-- tools/

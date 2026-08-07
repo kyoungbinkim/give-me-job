@@ -424,7 +424,7 @@ async function install(options) {
 
   if (!options.dryRun) {
     startedAt = timingStart();
-    const migrated = await removeLegacyOrchestratorSkillEntries(manifest, chosenTargets, scope, options);
+    const migrated = await removeRetiredManagedEntries(manifest, chosenTargets, scope, options);
     const nextEntries = migrated.manifest.entries.filter((entry) => {
       return !entries.some((candidate) => path.resolve(candidate.path) === path.resolve(entry.path));
     });
@@ -487,11 +487,25 @@ function isLegacyOrchestratorSkillEntry(entry) {
   return entry.skill === orchestratorSkillName && path.basename(entry.path) === "SKILL.md";
 }
 
-async function removeLegacyOrchestratorSkillEntries(manifest, chosenTargets, scope, options) {
+// Files an earlier release installed into the support bundle and no longer
+// ships. `.env.example` configured job-source credentials, which this project
+// no longer uses at all, so leaving a stale copy on disk is misleading.
+const retiredSupportFiles = new Set([".env.example"]);
+
+function isRetiredSupportFileEntry(entry) {
+  if (entry.skill !== orchestratorSkillName) return false;
+  const supportRoot = path.resolve(supportRootFor(entry.target, entry.scope));
+  const relative = path.relative(supportRoot, path.resolve(entry.path));
+  if (relative.startsWith("..") || path.isAbsolute(relative)) return false;
+  return retiredSupportFiles.has(toPosixPath(relative));
+}
+
+async function removeRetiredManagedEntries(manifest, chosenTargets, scope, options) {
   const keep = [];
   const removed = [];
   for (const entry of manifest.entries) {
-    const selected = chosenTargets.includes(entry.target) && entry.scope === scope && isLegacyOrchestratorSkillEntry(entry);
+    const retired = isLegacyOrchestratorSkillEntry(entry) || isRetiredSupportFileEntry(entry);
+    const selected = chosenTargets.includes(entry.target) && entry.scope === scope && retired;
     if (!selected) {
       keep.push(entry);
       continue;
@@ -509,8 +523,11 @@ async function removeLegacyOrchestratorSkillEntries(manifest, chosenTargets, sco
     }
 
     if (!options.dryRun) {
+      const stopDir = isRetiredSupportFileEntry(entry)
+        ? supportRootFor(entry.target, entry.scope)
+        : skillRootFor(entry.target, entry.scope);
       await rm(entry.path);
-      await removeEmptyParents(path.dirname(entry.path), skillRootFor(entry.target, entry.scope));
+      await removeEmptyParents(path.dirname(entry.path), stopDir);
     }
     removed.push({ ...entry, action: options.dryRun ? "would-remove" : "removed" });
   }

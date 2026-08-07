@@ -68,7 +68,7 @@ OpenCode:   ~/.config/opencode/give-me-job/
 Claude Code: ~/.claude/give-me-job/
 ```
 
-For Claude Code, the installer writes tool-shaped skills such as `give-me-job-fetch-jobs` and injects `allowed-tools: Bash, Read, Grep`. That lets Claude Code use its Bash tool to run allowlisted `.mjs` workflow scripts without a separate MCP registration step.
+For Claude Code, the installer writes tool-shaped skills such as `give-me-job-fetch-jobs`. Each one declares a scoped `allowed-tools` line that permits Bash only for its own script, for example `allowed-tools: Bash(node *fetch-jobs.mjs), Bash(node *fetch-jobs.mjs *), Read, Grep`. That lets Claude Code run one allowlisted `.mjs` workflow script without a separate MCP registration step and without granting general Bash access.
 
 For OpenCode, the installer writes custom tool definitions under the official tools directory. Each tool definition invokes the installed support script and returns structured stdout/stderr JSON.
 

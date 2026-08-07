@@ -37,7 +37,6 @@ Equivalent manual checks:
 node tests/validate/validate-skills.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
 node support/validate/validate-application.mjs .tmp-release-check/demo-backend
-node support/validate/validate-job-sources.mjs
 node support/validate/validate-job-schedule.mjs
 node support/validate/validate-job-ranking.mjs
 ```

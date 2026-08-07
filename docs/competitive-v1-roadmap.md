@@ -13,46 +13,49 @@ Competitive products such as Simplify, Teal, Rezi, and LazyApply are strong in b
 - Korean cover-letter question handling: 지원동기, 입사 후 포부, 성장과정, 협업, 문제해결, 직무역량, 가치관.
 - `resume.md` evidence-first writing: every strong claim maps to a concrete user-provided experience.
 - HR risk review for Korean applications: company-name residue, unsupported metrics, character limits, interview defense risk, and overclaiming.
-- Korean platform integrations: 사람인, 고용24, 잡코리아.
+- Credential-free operation: the whole workflow runs without an API key, access token, or approved API access.
 - Quality-first application strategy: recommend suitable jobs and reject weak-fit jobs instead of maximizing raw application count.
 
-## 2. Korea-First Platform Strategy
+## 2. Korea-First Job Intake Strategy
 
-### Priority 1: Saramin
+### Constraint: no credentials
 
-Implement Saramin first because its Job Search API is public and has a clear request model.
+`give-me-job` requires no API key, access token, membership approval, or other
+issued credential, and no roadmap item may introduce one. Korean job-board APIs
+are gated behind key issuance and manual review, so they are out of scope. An
+earlier release shipped credentialed adapters; they were removed for this
+reason, and the tooling that read them is gone.
 
-- Endpoint: `GET https://oapi.saramin.co.kr/job-search`
-- Requires `access-key`.
-- Supports JSON/XML response via `Accept` header.
-- Supports keyword, location, industry, job code, employment type, education, deadline, publication date, sorting, and pagination.
-- Response includes company name, posting URL, active status, posting date, opening timestamp, expiration timestamp, close type, job title, location, industry, job code, experience level, education level, and keywords.
-- `count` defaults to 10 and has a documented maximum of 110.
+This is a product constraint, not a temporary gap. A user should be able to
+clone the repository and run the full workflow immediately.
 
-Source: https://oapi.saramin.co.kr/guide/job-search
+### Priority 1: Manual posting intake
 
-### Priority 2: Work24
+Make user-supplied postings first-class instead of a fallback.
 
-Implement Work24 second because it adds public-sector and government-backed job data.
+- Accept a posting URL or pasted JD text as the entry point.
+- Normalize it into the common job schema so scheduling and ranking work the
+  same way for one manually added posting as for a bulk-fetched one.
+- Keep the intake path lossless: capture deadline, company, role, and location
+  when the user provides them, and mark what is unknown rather than guessing.
 
-- Open API is HTTP/XML UTF-8 based.
-- Requires membership, API key application, review, and approval.
-- Major API groups include 채용정보, 채용행사, 공채속보, 공채기업정보, 직무정보, and 공통코드.
-- Because approval is required, implement the adapter behind explicit configuration and provide fixture-based tests first.
+### Priority 2: Local job store
 
-Source: https://www.work24.go.kr/cm/e/a/0110/selectOpenApiIntro.do
+Make a growing personal job list useful without any remote source.
 
-### Priority 3: JobKorea
+- Let the user add, update, and close postings in `data/jobs/` over time.
+- Preserve deadline and status fields so `schedule-jobs` and `rank-jobs` stay
+  the primary prioritization surface.
 
-Implement JobKorea after API access is confirmed.
+### Priority 3: Credential-free adapters
 
-- Provides 채용정보 API and 신입공채 API.
-- JobKorea documents up to 500 postings and 2-hour update cadence for the relevant API categories.
-- API access is primarily provided to public institutions and schools; companies or individuals may be rejected after internal review.
-- Detailed posting content and application actions still require navigating to JobKorea detail pages.
-- Until approval exists, support manual posting URL intake and browser parsing fallback instead of pretending API access is guaranteed.
+Add automated discovery only where it works without an issued credential.
 
-Source: https://www.jobkorea.co.kr/service/api
+- A source qualifies only if it can be read without a key, token, or approval.
+- If no source qualifies, automated discovery stays a TODO. Shipping a broken
+  or credential-gated adapter is worse than shipping none.
+- Register any qualifying adapter in `JOB_SOURCES` in `tools/fetch-jobs.mjs`
+  and cover it with fixtures.
 
 ## 3. Target Architecture
 
@@ -70,14 +73,7 @@ give-me-job/
 │   ├── schedule-jobs.mjs
 │   ├── prepare-application.mjs
 │   ├── apply-browser.mjs
-│   ├── job-sources/
-│   │   ├── saramin.mjs
-│   │   ├── work24.mjs
-│   │   └── jobkorea.mjs
-│   └── apply-adapters/
-│       ├── saramin-apply.mjs
-│       ├── work24-apply.mjs
-│       └── jobkorea-apply.mjs
+│   └── job-sources/          # empty today; credential-free adapters only
 ├── data/
 │   ├── jobs/
 │   ├── companies/
@@ -96,7 +92,7 @@ All job-source adapters should normalize into this minimum schema:
 
 ```json
 {
-  "source": "saramin",
+  "source": "manual",
   "sourceId": "",
   "url": "",
   "company": "",
@@ -127,26 +123,27 @@ Root `data/` should be ignored by Git by default because it may contain personal
 
 ## 5. Roadmap
 
-### v0.2: Saramin Job Discovery
+### v0.2: Job Discovery
 
-Status: Implemented in `v0.2.0`.
+Status: Reverted. The credentialed adapters shipped in `v0.2.0` were removed
+because they required issued API keys. Automated discovery is a TODO again.
 
-Goal: make job discovery real.
+Goal: make job intake real without credentials.
 
-- Add `tools/job-sources/saramin.mjs`.
-- Add `tools/fetch-jobs.mjs`.
-- Add configuration-based Work24 and JobKorea source adapters for approved API access.
-- Add job normalization into the common schema.
-- Save fetched postings under `data/jobs/`.
-- Support keyword, location, job code, career level, deadline, sort, and count.
-- Add `.env.example` for `SARAMIN_ACCESS_KEY`.
-- Add fixture tests without requiring real API keys.
+- Keep `tools/fetch-jobs.mjs` as the registry and normalization entry point.
+- Keep job normalization into the common schema.
+- Save postings under `data/jobs/`.
+- Add manual posting URL and JD intake as the supported path.
+- Register a credential-free adapter in `JOB_SOURCES` if one becomes available.
 
 Acceptance:
 
-- With a valid key, `node tools/fetch-jobs.mjs --source saramin --keywords "백엔드 Java" --deadline tomorrow` stores normalized jobs.
-- Without a key, the tool fails with clear setup guidance.
-- Fixture tests validate Saramin JSON, Work24 XML, JobKorea XML parsing, normalization, and deadline fields.
+- A user-supplied posting URL or JD becomes a normalized job file under
+  `data/jobs/` with usable deadline fields.
+- `node tools/fetch-jobs.mjs --source <name>` exits with clear guidance while no
+  source is registered.
+- Fixture tests validate normalization and deadline fields with no network
+  access and no credentials.
 
 ### v0.3: Deadline And Fit Ranking
 
@@ -183,20 +180,21 @@ Acceptance:
 - Final text is blocked when evidence map is missing or HR blockers remain.
 - Character/byte count violations are reported before manual submission.
 
-### v0.5: Saramin Browser Autofill
+### v0.5: Browser Autofill
 
 Goal: automate repetitive application entry without unsafe submission.
 
 - Add Playwright-based `tools/apply-browser.mjs`.
-- Add `tools/apply-adapters/saramin-apply.mjs`.
-- Use the user's browser session; do not store passwords.
+- Add per-site fill adapters under `tools/apply-adapters/`.
+- Drive the user's own already-signed-in browser session. Never ask for, store, or read credentials.
 - Support fill-only mode first.
 - Detect login, CAPTCHA, sensitive personal information prompts, missing fields, and unsupported page layouts.
 - Save screenshots and fill logs under the application package.
 
 Acceptance:
 
-- `node tools/apply-browser.mjs --application applications/<company-role> --platform saramin --mode fill` fills supported fields and stops before submit.
+- `node tools/apply-browser.mjs --application applications/<company-role> --mode fill` fills supported fields and stops before submit.
+- A login prompt stops the run and hands control back to the user.
 - CAPTCHA or sensitive information prompts stop the run.
 - Failure produces manual submission notes.
 
@@ -216,18 +214,19 @@ Acceptance:
 - Submission logs are written only after the platform confirms completion or the user confirms manual submission.
 - The agent never marks submitted without confirmation.
 
-### v0.7: Work24 And JobKorea Expansion
+### v0.7: Job Coverage Expansion
 
-Goal: expand Korean job coverage.
+Goal: expand Korean job coverage without introducing a credential.
 
-- Add Work24 adapter behind API key configuration and XML parsing.
-- Add JobKorea adapter only after approved access; before approval, support manual URL intake and browser extraction fallback.
+- Broaden manual URL intake and page extraction so more posting layouts parse cleanly.
+- Add a credential-free adapter only if a qualifying source exists.
 - Add source-specific capability flags so unsupported automation is visible.
 
 Acceptance:
 
 - Source adapters report their capabilities: search, detail, deadline, apply-url, autofill, submit-after-confirm.
-- Unsupported API access fails clearly and does not imply official integration.
+- No source requires an API key, access token, or approval process.
+- An unsupported posting layout fails clearly and falls back to manual intake instead of implying an official integration.
 
 ### v1.0: Korea-First Application Console
 
@@ -272,8 +271,9 @@ Rules:
 
 Required test groups:
 
-- Job source fixtures: Saramin JSON, Work24 XML, JobKorea fixture or manual URL fixture.
+- Job intake fixtures: manual URL and pasted JD fixtures, plus a fixture per registered adapter.
 - Normalization tests: source fields map into the common job schema.
+- Credential tests: no tool reads an API key, access token, or `.env` file.
 - Deadline tests: today, tomorrow, this week, always-open, rolling, expired.
 - Ranking tests: strong fit, weak fit, missing evidence, career-level mismatch.
 - Application package tests: final blocked without evidence map, final blocked with HR blocker, manual submission reminder required.
@@ -284,18 +284,17 @@ Required test groups:
 
 Build in this order:
 
-1. `tools/job-sources/saramin.mjs`
-2. `tools/fetch-jobs.mjs`
-3. `docs/integrations/saramin.md`
-4. `tools/normalize-job.mjs`
-5. `tools/schedule-jobs.mjs` - implemented
-6. `tools/rank-jobs.mjs` - implemented
-7. `tools/prepare-application.mjs`
-8. `tools/apply-browser.mjs`
-9. `tools/apply-adapters/saramin-apply.mjs`
-10. Work24 and JobKorea adapters
+1. `tools/normalize-job.mjs` - implemented
+2. `tools/fetch-jobs.mjs` - registry in place, no source registered
+3. `tools/schedule-jobs.mjs` - implemented
+4. `tools/rank-jobs.mjs` - implemented
+5. Manual posting URL and JD intake into the common job schema
+6. `tools/prepare-application.mjs`
+7. `tools/apply-browser.mjs`
+8. `tools/apply-adapters/`
+9. A credential-free job-source adapter, if a qualifying source exists
 
-Do not start browser submit automation before job discovery, scheduling, and fit ranking are reliable.
+Do not start browser submit automation before job intake, scheduling, and fit ranking are reliable.
 
 ## 9. Success Metrics
 
@@ -304,7 +303,7 @@ Competitive v1 should be measured by:
 - Time from job discovery to ready-to-review application package.
 - Percentage of final answers with complete evidence map coverage.
 - Number of HR blockers caught before submission.
-- Autofill success rate on supported Saramin applications.
+- Autofill success rate on supported application forms.
 - Deadline miss rate.
 - Interview callback rate tracked manually by the user.
 - User-reported Korean cover-letter quality compared with generic AI drafts.
@@ -313,13 +312,13 @@ Competitive v1 should be measured by:
 
 Ship v1 only when:
 
-- Saramin job discovery works with real API keys and fixtures.
+- The full workflow runs with no API key, access token, or other issued credential.
+- Job intake works from a user-supplied posting URL or JD, verified by fixtures.
 - Deadline management works for daily and weekly planning.
 - Fit score can prioritize and reject jobs.
 - Application preparation works from normalized job JSON.
 - Korean cover-letter validation includes character/byte limits.
-- Saramin autofill works in fill-only mode.
+- Autofill works in fill-only mode on at least one supported form.
 - User-approved submit is guarded by explicit confirmation.
 - Submission logs and screenshots are saved.
-- Work24 or JobKorea has at least one implemented discovery path or documented fallback.
 - Safety docs clearly exclude unattended bulk auto-apply.

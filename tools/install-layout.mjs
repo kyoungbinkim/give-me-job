@@ -6,7 +6,6 @@ export const targets = ["codex", "opencode", "claude-code"];
 export const scopes = ["user", "project"];
 
 export const supportFiles = [
-  ".env.example",
   "AGENTS.md",
   "agent.md",
   "support",

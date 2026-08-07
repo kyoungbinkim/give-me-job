@@ -59,6 +59,10 @@ export const workflowTools = [
   },
 ];
 
+// `job-searcher` guides the user to supply a JD or posting URL; it runs no
+// script of its own, so it gets read-only tools and no Bash access.
+export const jobSearcherAllowedTools = "Read, Grep";
+
 export function sourceForTarget(target, source) {
   if (target !== "claude-code" || source.kind !== "domain-skill" || source.skillName !== "job-searcher" || source.relativePath !== "SKILL.md") {
     return source;
@@ -66,7 +70,7 @@ export function sourceForTarget(target, source) {
 
   const text = source.content.toString("utf8");
   if (text.includes("\nallowed-tools:")) return source;
-  const content = text.replace(/^---\r?\n/, "---\nallowed-tools: Bash(node *fetch-jobs.mjs), Bash(node *fetch-jobs.mjs *), Read, Grep\n");
+  const content = text.replace(/^---\r?\n/, `---\nallowed-tools: ${jobSearcherAllowedTools}\n`);
   return { ...source, content: Buffer.from(content, "utf8") };
 }
 

@@ -9,12 +9,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Removed
 
 - Remove the jobkorea, saramin, and work24 job-source adapters, their fixtures, and `validate-job-sources.mjs`. Automated job sourcing is now a TODO.
+- Remove `.env.example` and `tools/env.mjs`. The project no longer reads a `.env` file or any API key, access token, or other issued credential.
+- Remove the Bash grant the installer injected into the Claude Code `job-searcher` skill. The skill only guides intake, so it now installs with `allowed-tools: Read, Grep`.
 
 ### Changed
 
 - Turn `tools/fetch-jobs.mjs` into a placeholder with an empty source registry so a normalized adapter can be added later.
 - Rewrite the `job-searcher` skill to guide users to provide a JD or posting URL manually while automated search is unavailable.
-- Drop the removed job-source keys from `.env.example`; no API keys are required.
+- Rewrite the credentialed sections of the competitive v1 roadmap around credential-free job intake, and mark the `v0.2` adapter milestone as reverted.
+- Document the no-credential rule as a contribution and release requirement.
+
+### Fixed
+
+- Drop references to the deleted `support/validate/validate-job-sources.mjs` from `AGENTS.md`, `CONTRIBUTING.md`, `docs/platform-support.md`, and `docs/release-checklist.md`.
+- Correct the `docs/npm-install.md` description of the generated Claude Code `allowed-tools` line, which is scoped per script rather than a blanket `Bash` grant.
+- List `job-searcher`, `support/`, and `bin/` in the README repository structure, and align the Korean README install paths with the English README.
+
+### Added
+
+- Fail skill validation if `.env.example` or `tools/env.mjs` is reintroduced.
+- Remove a previously installed `.env.example` from the support bundle on upgrade, so a stale credential template does not linger. Locally modified copies are left untouched, as with other managed files.
 
 ## [0.5.4] - 2026-06-24
 

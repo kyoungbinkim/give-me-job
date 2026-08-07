@@ -31,7 +31,6 @@
     "give-me-job": "bin/give-me-job.js"
   },
   "files": [
-    ".env.example",
     "AGENTS.md",
     "agent.md",
     "CHANGELOG.md",

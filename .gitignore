@@ -6,10 +6,9 @@ Thumbs.db
 .codex-remote-attachments/
 .omo/
 
-# Local env
+# Local env (no credentials are used by this project; keep stray files out anyway)
 .env
 .env.*
-!.env.example
 
 # Generated files
 *.tmp

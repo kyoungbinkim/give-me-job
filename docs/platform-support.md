@@ -37,7 +37,6 @@ Equivalent manual commands:
 
 ```bash
 node tests/validate/validate-skills.mjs
-node support/validate/validate-job-sources.mjs
 node support/validate/validate-job-schedule.mjs
 node support/validate/validate-job-ranking.mjs
 node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force
@@ -45,18 +44,8 @@ node support/validate/validate-application.mjs .tmp-release-check/demo-backend
 node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend
 ```
 
-## Environment File
+## Configuration
 
-Copy `.env.example` to `.env`.
-
-PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-macOS/Linux:
-
-```bash
-cp .env.example .env
-```
+No configuration file or environment setup is required. The workflow tools read
+no API keys, access tokens, or other issued credentials, so there is nothing to
+copy or fill in before running `npm test`.

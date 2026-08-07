@@ -1,15 +1,16 @@
 import path from "node:path";
-import { loadDotEnv } from "./env.mjs";
 import { summarizeJobs, writeJobs } from "./normalize-job.mjs";
 import { relativeDisplayPath } from "./platform.mjs";
 
 // TODO: Register job-source adapters here.
 //
-// The jobkorea / saramin / work24 adapters were removed. Job-source
-// integrations are intentionally left as a TODO so a single normalized
-// adapter can be added later. Each adapter is an async function that takes
-// the parsed `options` object and returns an array of jobs already shaped by
-// `normalizeJob` from ./normalize-job.mjs.
+// Job-source integrations are intentionally left as a TODO so a single
+// normalized adapter can be added later. Each adapter is an async function
+// that takes the parsed `options` object and returns an array of jobs already
+// shaped by `normalizeJob` from ./normalize-job.mjs.
+//
+// An adapter must not require an API key, access token, or any other issued
+// credential. This tool reads no credentials and loads no `.env` file.
 //
 // Example:
 //   import { fetchExampleJobs } from "./job-sources/example.mjs";
@@ -84,8 +85,6 @@ async function fetchBySource(source, options) {
 }
 
 async function main() {
-  await loadDotEnv();
-
   const args = parseArgs(process.argv.slice(2));
   const source = String(args.source ?? "").toLowerCase();
   if (!source || args.help) {

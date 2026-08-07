@@ -132,9 +132,11 @@ Codex:       ~/.codex/give-me-job/
 
 OpenCode:    ~/.config/opencode/skills/<domain-skill>/SKILL.md
 OpenCode:    ~/.config/opencode/agents/give-me-job.md
+OpenCode:    ~/.config/opencode/tools/give_me_job_<tool>.js
 OpenCode:    ~/.config/opencode/give-me-job/
 
 Claude Code: ~/.claude/skills/<domain-skill>/SKILL.md
+Claude Code: ~/.claude/skills/give-me-job-<tool>/SKILL.md
 Claude Code: ~/.claude/agents/give-me-job.md
 Claude Code: ~/.claude/give-me-job/
 ```
@@ -146,7 +148,9 @@ Codex:       .agents/skills/<skill>/SKILL.md
 Codex:       .codex/agents/give-me-job.toml
 OpenCode:    .opencode/skills/<domain-skill>/SKILL.md
 OpenCode:    .opencode/agents/give-me-job.md
+OpenCode:    .opencode/tools/give_me_job_<tool>.js
 Claude Code: .claude/skills/<domain-skill>/SKILL.md
+Claude Code: .claude/skills/give-me-job-<tool>/SKILL.md
 Claude Code: .claude/agents/give-me-job.md
 ```
 
@@ -226,10 +230,13 @@ applications/
 
 ## 채용공고 연동
 
-채용 공고 자동 검색(job-source 연동)은 아직 준비 중(TODO)입니다. jobkorea /
-saramin / work24 어댑터는 제거되었고, `tools/fetch-jobs.mjs`는 등록된 소스가
-없는 상태로 동작하므로 별도의 API 키가 필요하지 않습니다. 당분간은 지원하려는
-공고 URL 또는 JD 본문을 직접 제공해 다음 단계로 진행합니다.
+채용 공고 자동 검색(job-source 연동)은 아직 준비 중(TODO)입니다.
+`tools/fetch-jobs.mjs`는 등록된 소스가 없는 상태로 동작합니다. 당분간은
+지원하려는 공고 URL 또는 JD 본문을 직접 제공해 다음 단계로 진행합니다.
+
+이 프로젝트는 API 키, 액세스 토큰 등 별도로 발급받아야 하는 인증 정보를
+전혀 사용하지 않습니다. 앞으로 추가될 job-source 어댑터도 인증 정보 없이
+동작해야 합니다.
 
 정규화된 공고가 `data/jobs/`에 있을 때 마감 일정과 적합도 랭킹:
 
