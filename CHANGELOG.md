@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-07
+
+Cover-letter guidance is now split by career type. New graduates and
+experienced hires are screened on different questions, and career type
+previously changed only two lines of drafting structure. Answers for
+experienced candidates also gain 이직 사유 handling, which the project did not
+cover at all.
+
+No CLI, installer, or tool behavior changes. Reinstall to pick up the updated
+skills.
+
 ### Added
 
 - Add `references/career-type-playbooks.md`, splitting cover-letter guidance into separate new-grad and experienced playbooks with an explicit career-type resolution step. Career type previously changed only two lines of drafting structure.
@@ -19,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Add HR-review blockers for wrong sub-role residue and disqualifying failure disclosures, plus warnings for blame-shifted causes, fake weaknesses, adjacent-domain evidence, and result-only answers to reasoning questions.
 - Add HR-review blockers for fabricated employment-history facts and previous-employer criticism, and review each draft through its career type's lens rather than one shared standard.
+- Document the development loop, the real command set, and the six validator-enforced constraints in `AGENTS.md`, and record that terminal output outranks a conflicting document.
 
 ## [0.6.0] - 2026-08-07
 
