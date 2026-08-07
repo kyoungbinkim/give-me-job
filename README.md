@@ -18,7 +18,8 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - JD analysis: extract role requirements, evaluation criteria, keywords, gaps, and risks from Korean job posts.
 - Company-values analysis: use optional mission, culture, values, or talent-profile material for positioning.
 - Korean cover-letter drafting: write answers grounded in `resume.md`, JD analysis, and optional company context.
-- HR review: check exaggeration, unsupported claims, company-name residue, and pre-submission blockers.
+- Career-type playbooks: new graduates and experienced hires are drafted and reviewed against different criteria, including 이직 사유 and short-tenure handling for experienced candidates.
+- HR review: check exaggeration, unsupported claims, company-name residue, wrong sub-role targeting, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
 - Job-source tools: deadline scheduling and fit ranking over normalized jobs. Automated job-source adapters are a TODO.
@@ -280,8 +281,8 @@ Start with [`examples/demo-new-grad-backend/resume.md`](examples/demo-new-grad-b
 - `resume-intake`: converts raw career facts into structured `resume.md` evidence.
 - `jd-analyzer`: analyzes job descriptions for requirements, evaluation criteria, keywords, and gaps.
 - `company-values-analyzer`: analyzes optional company values, culture, mission, or talent-profile material.
-- `cover-letter-writer`: drafts Korean cover-letter answers grounded in evidence.
-- `hr-reviewer`: checks application materials from an HR risk perspective.
+- `cover-letter-writer`: drafts Korean cover-letter answers grounded in evidence, using the new-grad or experienced playbook for the candidate's career type.
+- `hr-reviewer`: checks application materials from an HR risk perspective, applying the criteria that match the candidate's career type.
 - `interview-prep`: prepares interview follow-up questions and answer points grounded in evidence.
 - `application-packager`: assembles the company-specific package and manual submission checklist.
 - `job-searcher`: guides users to provide a JD or posting URL manually while automated job-source search is a TODO.

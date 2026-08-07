@@ -31,6 +31,7 @@ skills.
 - Add HR-review blockers for wrong sub-role residue and disqualifying failure disclosures, plus warnings for blame-shifted causes, fake weaknesses, adjacent-domain evidence, and result-only answers to reasoning questions.
 - Add HR-review blockers for fabricated employment-history facts and previous-employer criticism, and review each draft through its career type's lens rather than one shared standard.
 - Document the development loop, the real command set, and the six validator-enforced constraints in `AGENTS.md`, and record that terminal output outranks a conflicting document.
+- Describe career-type handling in `README.md` and add a `경력 유형별 작성` section to `docs/README-ko.md`. Neither README mentioned new-grad or experienced handling at all.
 
 ## [0.6.0] - 2026-08-07
 
