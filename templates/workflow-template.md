@@ -3,6 +3,7 @@
 - Company: {{company}}
 - Role: {{role}}
 - Job Function: unknown
+- Career Type: unknown
 - Source:
 - Status: intake
 - Deadline:

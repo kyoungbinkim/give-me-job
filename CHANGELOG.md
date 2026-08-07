@@ -32,6 +32,8 @@ skills.
 - Add HR-review blockers for fabricated employment-history facts and previous-employer criticism, and review each draft through its career type's lens rather than one shared standard.
 - Document the development loop, the real command set, and the six validator-enforced constraints in `AGENTS.md`, and record that terminal output outranks a conflicting document.
 - Describe career-type handling in `README.md` and add a `경력 유형별 작성` section to `docs/README-ko.md`. Neither README mentioned new-grad or experienced handling at all.
+- Record `Career Type` in `workflow.md` and the cover-letter template, and validate the value in `validate-application.mjs` the same way `Status` and `Job Function` are validated.
+- Add the new blocker classes to `docs/safety.md`, and note career-type resolution in the quickstart, the release checklist, and the demo example.
 
 ## [0.6.0] - 2026-08-07
 

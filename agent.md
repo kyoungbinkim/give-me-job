@@ -233,6 +233,7 @@ Maintain `workflow.md` as a short status log:
 - Company:
 - Role:
 - Job Function:
+- Career Type:
 - Source:
 - Status:
 - Missing Inputs:

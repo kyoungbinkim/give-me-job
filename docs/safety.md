@@ -15,6 +15,8 @@
 ## Not Allowed
 
 - Invent experience, metrics, responsibilities, awards, tools, or company names.
+- Invent a reason for leaving a job, an employment gap, or a tenure length. These are verifiable through reference checks.
+- Criticize a former employer, manager, team, or colleague in application text.
 - Copy company values text verbatim into cover letters.
 - Create final text when HR blockers remain unresolved.
 - Click final submit or send buttons.
@@ -26,6 +28,9 @@
 
 - A final answer claims a metric that does not exist in `resume.md`.
 - A cover letter contains another company name.
+- A cover letter targets a sub-role, 직무, or team other than the one the posting names.
+- A 이직 사유 answer states a reason the candidate never gave.
+- A 실패 경험 answer discloses a trust, safety, ethics, or confidentiality problem, or describes a failure with no resolution.
 - A JD requires a qualification that the candidate cannot support.
 - The next requested action would submit the application.
 

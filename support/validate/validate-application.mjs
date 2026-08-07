@@ -33,6 +33,11 @@ const validJobFunctions = new Set([
   "operations",
   "unknown",
 ]);
+const validCareerTypes = new Set([
+  "new-grad",
+  "experienced",
+  "unknown",
+]);
 
 async function exists(filePath) {
   try {
@@ -160,6 +165,10 @@ async function main() {
   const status = parseField(workflow, "Status");
   if (status && !validWorkflowStatuses.has(status)) {
     errors.push(`workflow.md has unsupported Status value: ${status}`);
+  }
+  const careerType = parseField(workflow, "Career Type");
+  if (careerType && !validCareerTypes.has(careerType)) {
+    errors.push(`workflow.md has unsupported Career Type value: ${careerType}`);
   }
   const jobFunction = parseField(workflow, "Job Function");
   if (jobFunction && !validJobFunctions.has(jobFunction)) {

@@ -1,6 +1,6 @@
 # Demo: New Grad Backend Application
 
-This demo shows the expected package shape for a Korean new-grad backend application.
+This demo shows the expected package shape for a Korean new-grad backend application. It follows the new-grad playbook, which leads with project reasoning rather than business impact. An experienced candidate's package would lead with delivered results and include 이직 사유.
 
 Inputs:
 

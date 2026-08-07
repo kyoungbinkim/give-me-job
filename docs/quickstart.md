@@ -51,6 +51,11 @@ Use resume.md as the only evidence source and jd.md as the job description.
 Do not invent experience, do not submit anything, and stop if evidence is missing.
 ```
 
+The agent resolves your career type first, because new graduates and experienced
+hires are drafted and reviewed against different criteria. If your `resume.md`
+does not make it obvious, the agent asks rather than guessing. The resolved
+value is recorded in `workflow.md`.
+
 The agent should fill:
 
 - `workflow.md`

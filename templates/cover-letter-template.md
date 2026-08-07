@@ -1,3 +1,7 @@
+## Career Type
+- Resolved:
+- Basis:
+
 ## Question
 
 ## Question Type

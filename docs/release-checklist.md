@@ -35,6 +35,7 @@ Use this checklist before tagging a public release.
 ## Quality Gate
 
 - Final cover letters require evidence-map rows.
+- Career type is resolved and recorded in `workflow.md`, and drafting and review use the matching playbook.
 - HR `Blocker` lines prevent final text validation.
 - Manual submission reminders are present.
 - The workflow never claims an application was submitted without user confirmation.
