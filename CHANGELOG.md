@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Add `SECURITY.md` with a private reporting path, a threat model scoped to the local CLI and personal data, and the guardrails the validation suite enforces.
+- Add `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` so Claude Code users can install the domain skills with `/plugin marketplace add` instead of npm.
+- Validate the plugin manifests: both must parse, `plugin.json` name and version must match `package.json`, and each marketplace entry's source must contain `skills/`.
+
+### Fixed
+
+- Document that OpenCode also scans `~/.claude/skills` and `~/.agents/skills`, so the install targets are not isolated and `--target all` exposes each skill to OpenCode under three roots.
+
 ## [0.6.1] - 2026-08-07
 
 Cover-letter guidance is now split by career type. New graduates and

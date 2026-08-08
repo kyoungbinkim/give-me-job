@@ -35,6 +35,8 @@
     "agent.md",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
+    "SECURITY.md",
+    ".claude-plugin/",
     "bin/",
     "docs/",
     "examples/demo-new-grad-backend/README.md",

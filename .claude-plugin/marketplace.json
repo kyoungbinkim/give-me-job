@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "give-me-job",
+  "description": "Korean job application skills: JD analysis, evidence-grounded 자기소개서 drafting, HR risk review, and interview preparation.",
+  "owner": {
+    "name": "kyoungbinkim",
+    "url": "https://github.com/kyoungbinkim"
+  },
+  "plugins": [
+    {
+      "name": "give-me-job",
+      "description": "Prepares a Korean job application package from resume.md and a job posting, grounded in user-provided evidence. Review and submission stay manual.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

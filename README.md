@@ -78,6 +78,18 @@ npm i -g give-me-job
 give-me-job install
 ```
 
+Claude Code users can add the domain skills as a plugin instead, without npm:
+
+```txt
+/plugin marketplace add kyoungbinkim/give-me-job
+/plugin install give-me-job
+```
+
+The plugin route installs the domain skills only. The npm installer additionally
+writes the `give-me-job` orchestrator agent, the tool-shaped workflow skills,
+and the support bundle (`agent.md`, `tools/`, `templates/`, fixtures), which the
+full workflow needs. Use `npx give-me-job install` for the complete setup.
+
 Without `--target`, the installer asks which AI agent to install to. Use the arrow keys to choose `codex`, `claude`, `opencode`, or `all`.
 
 Install every supported target:

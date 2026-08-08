@@ -24,6 +24,9 @@ const requiredReleaseFiles = [
   "templates/workflow-template.md",
   "templates/company-values-empty-template.md",
   "templates/interview-prep-template.md",
+  "SECURITY.md",
+  ".claude-plugin/plugin.json",
+  ".claude-plugin/marketplace.json",
   "tools/platform.mjs",
   "tools/normalize-job.mjs",
   "tools/job-store.mjs",
@@ -255,9 +258,52 @@ async function validateReleasePackaging() {
   }
 }
 
+// The Claude Code plugin manifests restate the package version and point at the
+// skill root. Both drift silently, so check them rather than trusting them.
+async function validatePluginManifests() {
+  const pluginDir = path.join(root, ".claude-plugin");
+  const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+
+  let plugin;
+  let marketplace;
+  for (const [name, assign] of [
+    ["plugin.json", (value) => (plugin = value)],
+    ["marketplace.json", (value) => (marketplace = value)],
+  ]) {
+    const file = path.join(pluginDir, name);
+    if (!(await exists(file))) {
+      errors.push(`missing plugin manifest: .claude-plugin/${name}`);
+      continue;
+    }
+    try {
+      assign(JSON.parse(await readFile(file, "utf8")));
+    } catch (error) {
+      errors.push(`.claude-plugin/${name}: invalid JSON: ${error.message}`);
+    }
+  }
+
+  if (plugin && plugin.version !== packageJson.version) {
+    errors.push(
+      `.claude-plugin/plugin.json version ${plugin.version} does not match package.json ${packageJson.version}`,
+    );
+  }
+  if (plugin && plugin.name !== packageJson.name) {
+    errors.push(`.claude-plugin/plugin.json name must match package.json name: ${packageJson.name}`);
+  }
+
+  // `source` is relative to the repository root, not to .claude-plugin/.
+  for (const entry of marketplace?.plugins ?? []) {
+    const source = path.resolve(root, entry.source ?? "");
+    if (!(await exists(path.join(source, "skills")))) {
+      errors.push(`.claude-plugin/marketplace.json plugin "${entry.name}" source has no skills/: ${entry.source}`);
+    }
+  }
+}
+
 async function main() {
   await validateAgent();
   await validateReleasePackaging();
+  await validatePluginManifests();
 
   for (const file of coreTextFiles) {
     const text = await readFile(path.join(root, file), "utf8");

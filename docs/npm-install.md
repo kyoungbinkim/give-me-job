@@ -47,6 +47,24 @@ The installer uses the official filesystem discovery locations for each supporte
 - OpenCode agents: user `~/.config/opencode/agents`, project `.opencode/agents`.
 - OpenCode custom tools: user `~/.config/opencode/tools`, project `.opencode/tools`.
 
+## Cross-Target Skill Discovery
+
+These targets are not fully isolated. OpenCode scans `~/.claude/skills` and
+`~/.agents/skills` in addition to its own config directory, so skills installed
+for Claude Code or Codex are also visible to OpenCode.
+
+Two consequences:
+
+- Installing only `--target codex` or `--target claude-code` already makes the
+  domain skills available in OpenCode.
+- Installing `--target all` means OpenCode sees the same skill under three
+  roots. OpenCode keys skills by name, so this resolves to one skill rather
+  than an error, but the copy it picks is not guaranteed to be the OpenCode one.
+
+Install one target if you use one agent. `--target all` is for genuinely using
+several. Only the OpenCode install writes the custom tool definitions under
+`~/.config/opencode/tools`, so those are not covered by the other targets.
+
 User-scope install paths:
 
 ```txt

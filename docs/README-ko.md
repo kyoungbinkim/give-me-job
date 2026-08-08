@@ -59,6 +59,17 @@ npm i -g give-me-job
 give-me-job install
 ```
 
+Claude Code는 npm 없이 플러그인으로 설치할 수도 있습니다.
+
+```txt
+/plugin marketplace add kyoungbinkim/give-me-job
+/plugin install give-me-job
+```
+
+단, 플러그인 경로는 도메인 Skill만 설치합니다. 오케스트레이터 Agent, 워크플로
+도구 Skill, support bundle(`agent.md`, `tools/`, `templates/`, fixture)은
+포함되지 않으므로 전체 워크플로를 쓰려면 `npx give-me-job install`을 사용하세요.
+
 전체 대상 설치:
 
 ```bash
