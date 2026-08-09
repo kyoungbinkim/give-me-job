@@ -1,6 +1,6 @@
 ---
 name: company-values-analyzer
-description: Analyze an optional company talent, values, culture, or recruitment page and turn it into cover letter positioning guidance. Use when the user provides a company values URL/text, asks to match a cover letter to company culture, or wants talent-profile keywords connected to resume.md evidence.
+description: Analyze an optional company talent, values, culture, or recruitment page and turn it into cover letter positioning guidance. Use when the user provides a company values URL/text, asks to match a cover letter to company culture, or wants talent-profile keywords connected to resume.md evidence. 한국어 요청도 포함합니다 - 인재상 분석, 기업 가치관, 회사 문화, 채용 홈페이지 분석, 기업 분석, 인재상에 맞춰서, 회사가 원하는 인재.
 ---
 
 # Company Values Analyzer

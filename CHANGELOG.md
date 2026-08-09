@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Add Korean trigger phrases to the `resume-intake`, `jd-analyzer`, and `company-values-analyzer` descriptions, and fail validation on an English-only description. A Korea-only product's skills could not be triggered by Korean requests such as `이력서 정리해줘` or `공고 분석해줘`.
 - Document that OpenCode also scans `~/.claude/skills` and `~/.agents/skills`, so the install targets are not isolated and `--target all` exposes each skill to OpenCode under three roots.
 
 ## [0.6.1] - 2026-08-07

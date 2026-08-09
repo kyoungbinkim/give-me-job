@@ -147,6 +147,12 @@ async function validateSkill(skillName) {
   if (!frontmatter.description || frontmatter.description.length < 120) {
     errors.push(`${skillName}/SKILL.md: description must be specific enough for triggering`);
   }
+  // Users of a Korea-only product type Korean. The description is what the
+  // agent matches a request against, so an English-only one will not trigger
+  // on a request like "이력서 정리해줘".
+  if (frontmatter.description && !/[가-힣]/.test(frontmatter.description)) {
+    errors.push(`${skillName}/SKILL.md: description must include Korean trigger phrases`);
+  }
   const keys = Object.keys(frontmatter);
   for (const key of keys) {
     if (!["name", "description"].includes(key)) {

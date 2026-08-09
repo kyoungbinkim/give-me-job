@@ -1,6 +1,6 @@
 ---
 name: jd-analyzer
-description: Analyze a job description, hiring post, or recruitment page for role requirements, evaluation criteria, keywords, risks, and resume or cover letter angles. Use when the user provides a JD URL/text, asks what a company is looking for, wants JD-resume gap analysis, or needs inputs for a tailored cover letter.
+description: Analyze a job description, hiring post, or recruitment page for role requirements, evaluation criteria, keywords, risks, and resume or cover letter angles. Use when the user provides a JD URL/text, asks what a company is looking for, wants JD-resume gap analysis, or needs inputs for a tailored cover letter. 한국어 요청도 포함합니다 - 채용공고 분석, 공고 분석, JD 분석, 직무기술서 분석, 자격요건, 우대사항, 이 공고 뭘 원하는지, 공고랑 내 경력 비교.
 ---
 
 # JD Analyzer

@@ -1,6 +1,6 @@
 ---
 name: resume-intake
-description: Build or improve a job seeker's resume.md source file from conversational career input. Use when the user wants to create resume.md, organize new-grad or experienced career history, convert raw experiences into STAR/CAR evidence, add missing metrics, or prepare reusable career evidence for cover letters and job applications.
+description: Build or improve a job seeker's resume.md source file from conversational career input. Use when the user wants to create resume.md, organize new-grad or experienced career history, convert raw experiences into STAR/CAR evidence, add missing metrics, or prepare reusable career evidence for cover letters and job applications. 한국어 요청도 포함합니다 - 이력서 작성, 이력서 정리, 경력기술서, 경력 정리, 커리어 정리, 자소서 소재 정리, 내 경험 정리해줘, 신입 이력서, 경력직 이력서.
 ---
 
 # Resume Intake
