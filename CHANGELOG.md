@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-10
+
+Claude Code users can now install the domain skills as a plugin without npm.
+This release also fixes a triggering defect: three skills in a Korea-only
+product had English-only descriptions, so Korean requests did not reliably
+reach them.
+
+No breaking changes. The npm installer, CLI flags, and install paths are
+unchanged.
+
 ### Added
 
 - Add `SECURITY.md` with a private reporting path, a threat model scoped to the local CLI and personal data, and the guardrails the validation suite enforces.

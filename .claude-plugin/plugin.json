@@ -1,6 +1,6 @@
 {
   "name": "give-me-job",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Korea-only job application agent skills. Turns resume.md, a Korean job post, and optional company context into an evidence-grounded application package. Never submits, logs in, or transmits personal information.",
   "author": {
     "name": "kyoungbinkim",
