@@ -10,11 +10,12 @@ export const workflowTools = [
   {
     name: "fetch-jobs",
     script: "tools/fetch-jobs.mjs",
-    description: "Fetch and normalize job postings through give-me-job job-source adapters. TODO: no sources are registered yet.",
-    hint: "--source <source> [--fixture <path>] [--dry-run]",
+    description: "Fetch and normalize a user-supplied public posting URL or jobs from registered give-me-job source adapters.",
+    hint: "--source url --url <posting-url> [--dry-run]",
     allowedFlags: [
       "--help",
       "--source",
+      "--url",
       "--fixture",
       "--out",
       "--date",
@@ -59,8 +60,8 @@ export const workflowTools = [
   },
 ];
 
-// `job-searcher` guides the user to supply a JD or posting URL; it runs no
-// script of its own, so it gets read-only tools and no Bash access.
+// The generated fetch-jobs workflow tool owns script execution. The domain
+// skill itself remains read-only and never receives general Bash access.
 export const jobSearcherAllowedTools = "Read, Grep";
 
 export function sourceForTarget(target, source) {
@@ -74,9 +75,9 @@ export function sourceForTarget(target, source) {
   return { ...source, content: Buffer.from(content, "utf8") };
 }
 
-export function claudeAllowedTools(toolSpec) {
-  const scriptName = path.basename(toolSpec.script);
-  return `Bash(node *${scriptName}), Bash(node *${scriptName} *), Read, Grep`;
+export function claudeAllowedTools(toolSpec, scriptPath) {
+  const quotedPath = JSON.stringify(scriptPath);
+  return `Bash(node ${quotedPath}), Bash(node ${quotedPath} *), Read, Grep`;
 }
 
 function claudeToolSkillContent(toolSpec, scriptPath) {
@@ -84,9 +85,9 @@ function claudeToolSkillContent(toolSpec, scriptPath) {
     "---",
     `name: give-me-job-${toolSpec.name}`,
     `description: ${toolSpec.description}`,
-    `allowed-tools: ${claudeAllowedTools(toolSpec)}`,
+    `allowed-tools: ${claudeAllowedTools(toolSpec, scriptPath)}`,
     `argument-hint: ${JSON.stringify(toolSpec.hint)}`,
-    "disable-model-invocation: true",
+    ...(toolSpec.name === "fetch-jobs" ? [] : ["disable-model-invocation: true"]),
     "---",
     "",
     `# give-me-job ${toolSpec.name}`,

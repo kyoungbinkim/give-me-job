@@ -5,7 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { skillNames as expectedSkills } from "../../tools/skill-registry.mjs";
-import { jobSearcherAllowedTools, workflowTools } from "../../tools/install-adapters.mjs";
+import { claudeAllowedTools, jobSearcherAllowedTools, workflowTools } from "../../tools/install-adapters.mjs";
 import {
   agentExtensionFor,
   agentRootFor,
@@ -100,11 +100,17 @@ async function assertAgentInstall(target, scope, options) {
       const toolSkill = path.join(skillRootDir, `give-me-job-${toolName}`, "SKILL.md");
       assert(await exists(toolSkill), `missing Claude Code tool skill: ${toolSkill}`);
       const text = await readFile(toolSkill, "utf8");
-      const scriptName = workflowTools.find((tool) => tool.name === toolName).script.split("/").at(-1);
+      const toolSpec = workflowTools.find((tool) => tool.name === toolName);
+      const scriptPath = path.join(configRootDir, "give-me-job", toolSpec.script);
       assert(
-        text.includes(`allowed-tools: Bash(node *${scriptName}), Bash(node *${scriptName} *), Read, Grep`),
-        `Claude Code tool skill must restrict Bash to ${scriptName}: ${toolSkill}`,
+        text.includes(`allowed-tools: ${claudeAllowedTools(toolSpec, scriptPath)}`),
+        `Claude Code tool skill must restrict Bash to ${scriptPath}: ${toolSkill}`,
       );
+      if (toolName === "fetch-jobs") {
+        assert(!text.includes("disable-model-invocation: true"), "Claude Code fetch-jobs tool must be model-invocable for URL intake");
+      } else {
+        assert(text.includes("disable-model-invocation: true"), `Claude Code ${toolName} tool must remain user-invoked`);
+      }
     }
   }
   if (target === "opencode") {

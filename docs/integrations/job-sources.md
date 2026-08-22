@@ -1,46 +1,58 @@
-# Job Source Integrations (TODO)
+# Job Source Integrations
 
-Automated job discovery is **not implemented yet**. The earlier adapters were
-removed so that job sourcing can be reintroduced later through a single
-normalized adapter.
+Automated job discovery is **not implemented yet**. User-supplied public
+posting URLs are supported as a separate, credential-free intake path.
 
-Until then, `tools/fetch-jobs.mjs` ships as a placeholder with an empty source
-registry. Running it without a registered source exits with a clear TODO
-message instead of fetching anything.
+## Manual URL intake
 
-## No credentials
+```bash
+node tools/fetch-jobs.mjs --source url --url "<posting-url>"
+```
 
-`give-me-job` requires no API key, access token, or other issued credential,
-and none of its tools read one. A future adapter must keep it that way: a job
-source that cannot be used without a credential or an approval process is out
-of scope. Provide a posting URL or JD text manually instead.
+Supported detail pages:
 
-## Current state
+- JobKorea (`jobkorea.co.kr`)
+- Linkareer (`linkareer.com`)
+- SK Careers (`skcareers.com`)
+- LG Careers (`careers.lg.com`)
 
-- `tools/fetch-jobs.mjs` — normalizes and writes jobs, but no sources are
-  registered (`JOB_SOURCES = {}`).
-- `tools/normalize-job.mjs` — the common job schema and `writeJobs` helper are
-  unchanged and reused by any future adapter.
-- `skills/job-searcher/SKILL.md` — guides users to provide a JD or posting URL
-  manually while automated search is unavailable.
-
-## Adding a job source later
-
-1. Confirm the source is usable without a credential. If it is not, stop here.
-2. Create an adapter under `tools/job-sources/<source>.mjs` that exports an
-   async function returning jobs shaped by `normalizeJob`.
-3. Register it in the `JOB_SOURCES` map in `tools/fetch-jobs.mjs`.
-4. Add any required flags to the `fetch-jobs` entry in
-   `tools/install-adapters.mjs`.
-5. Add a fixture-based validation script and wire it into `package.json`.
-
-## Output
-
-When a source exists, fetched jobs are normalized into the common job schema
-and saved under:
+The normalized record is saved under:
 
 ```txt
 data/jobs/YYYY-MM-DD/<source>-<sourceId>.json
 ```
 
-`data/` is ignored by Git because it may contain personal job-search data.
+The common job fields contain company, title, role, career level, location,
+employment type, dates, and keywords when public. The `raw` object also keeps:
+
+- `postingText`
+- `positions`
+- `questions`
+- `attachments`
+- `applyUrl`
+- `extractionWarnings`
+
+Public pages do not always expose a single role, application questions, length
+limits, or the contents of attached PDFs and images. Those cases are reported
+as missing inputs; the workflow does not infer them from another role.
+
+## No credentials
+
+`give-me-job` requires no API key, access token, login cookie, or approved API
+access. URL intake reads only public posting responses and never applies,
+submits, logs in, or bypasses CAPTCHA.
+
+Unsupported hosts fail clearly and fall back to pasted JD text. The tool
+accepts HTTPS URLs only and does not accept credentials in a URL.
+
+## Automated discovery
+
+Search and bulk discovery remain a TODO. A future search adapter must work
+without issued credentials and return jobs shaped by `normalizeJob`.
+
+To add one:
+
+1. Create an adapter under `tools/job-sources/<source>.mjs`.
+2. Register it in `JOB_SOURCES` in `tools/fetch-jobs.mjs`.
+3. Add its flags to `tools/install-adapters.mjs`.
+4. Add fixture validation with no live network dependency.

@@ -11,6 +11,7 @@ Run this agent when the user asks for any of the following:
 - "전체 워크플로우 실행"
 - "지원 패키지 만들어줘"
 - "공고 보고 자소서/지원서 패키지까지 준비해줘"
+- "give me job <공고 URL>"
 - one Korea-market company-specific application package from a JD, resume, and optional company values input
 
 Do not run this agent for final submission, automatic sending, or bulk applying.
@@ -80,6 +81,27 @@ Collect or infer:
 - missing inputs
 
 If the company or role is unknown, ask before creating the package directory.
+
+When the input is a public JobKorea, Linkareer, SK Careers, or LG Careers
+posting URL, run the installed `fetch-jobs` workflow tool with:
+
+```txt
+--source url --url <posting-url>
+```
+
+Read the normalized JSON written under `data/jobs/` and use its `raw` fields as
+the JD source. In particular, inspect `postingText`, `positions`, `questions`,
+`attachments`, `applyUrl`, and `extractionWarnings` before continuing.
+
+- If `positions` contains multiple roles or `role` is empty, ask the user to
+  choose the exact role before creating an application package.
+- If the public page omits required application questions or length limits,
+  ask only for those missing fields. Do not infer them from another role.
+- If an attachment contains the detailed JD but its contents cannot be read,
+  ask the user to provide the relevant text or file.
+- Process one target company-role package at a time. Multiple URLs are separate
+  applications unless the user explicitly identifies them as sources for the
+  same posting.
 
 ### 2. Resume Source
 
@@ -273,6 +295,12 @@ When running in an automated or non-interactive context, do not wait for open-en
 - If `resume.md` is missing or too thin, write `workflow.md` with `Status: resume-needed`, list missing evidence under `Missing Inputs`, and halt.
 - If the JD or target role is missing, write `workflow.md` with `Status: intake`, list the missing JD or role fields, and halt.
 - If a JD URL cannot be reached, write `workflow.md` with `Status: paused`, include the URL and error type, and halt.
+- If URL extraction reports multiple positions and no target role is available,
+  write `workflow.md` with `Status: intake`, list the role choice under
+  `Missing Inputs`, and halt.
+- If no public application question is available, write `workflow.md` with
+  `Status: intake`, list the missing questions or length limits, and halt before
+  drafting.
 - If HR review finds a blocker, write `hr-review.md`, set `workflow.md` to `Status: review-blocked`, do not write substantive final text, and halt.
 - If the next action would submit, send, log in, bypass CAPTCHA, or transmit personal information, set `Status: paused`, record the manual action needed, and halt.
 

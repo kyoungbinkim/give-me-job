@@ -19,7 +19,7 @@
 | [Safety Policy](safety.md) | 허용 작업, 금지 작업, blocker 예시 |
 | [Release Checklist](release-checklist.md) | 릴리스 전 검증 항목 |
 | [Competitive v1 Roadmap](competitive-v1-roadmap.md) | 한국 채용 시장 전용 제품 로드맵 |
-| [Job Source Integrations](integrations/job-sources.md) | 채용공고 소스 어댑터 상태 (TODO) |
+| [Job Source Integrations](integrations/job-sources.md) | 공개 공고 URL 수집 지원과 자동 검색 상태 |
 
 ## 설치 전 준비
 
@@ -258,8 +258,17 @@ applications/
 ## 채용공고 연동
 
 채용 공고 자동 검색(job-source 연동)은 아직 준비 중(TODO)입니다.
-`tools/fetch-jobs.mjs`는 등록된 소스가 없는 상태로 동작합니다. 당분간은
-지원하려는 공고 URL 또는 JD 본문을 직접 제공해 다음 단계로 진행합니다.
+다만 사용자가 직접 제공한 잡코리아, 링커리어, SK Careers, LG Careers의
+공개 상세 URL은 자격증명 없이 정규화할 수 있습니다.
+
+```bash
+node tools/fetch-jobs.mjs --source url --url "https://careers.lg.com/apply/detail?id=1002029"
+```
+
+결과는 `data/jobs/YYYY-MM-DD/`에 저장됩니다. 통합 공채처럼 직무가 여러
+개이거나 자소서 문항·글자 수가 공개되지 않은 경우에는 임의로 추정하지 않고
+해당 정보만 사용자에게 확인합니다. 첨부 PDF나 이미지에만 상세 JD가 있으면
+관련 파일 또는 본문이 추가로 필요할 수 있습니다.
 
 이 프로젝트는 API 키, 액세스 토큰 등 별도로 발급받아야 하는 인증 정보를
 전혀 사용하지 않습니다. 앞으로 추가될 job-source 어댑터도 인증 정보 없이

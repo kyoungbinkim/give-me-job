@@ -21,6 +21,7 @@ export const supportPackageEntries = supportFiles.map((entry) => (supportDirecto
 export const requiredSupportFiles = [
   "agent.md",
   "tools/fetch-jobs.mjs",
+  "tools/job-sources/manual-url.mjs",
   "tools/init-application.mjs",
   "tools/normalize-job.mjs",
   "support/validate/validate-application.mjs",

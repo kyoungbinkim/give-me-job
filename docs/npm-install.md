@@ -86,18 +86,18 @@ OpenCode:   ~/.config/opencode/give-me-job/
 Claude Code: ~/.claude/give-me-job/
 ```
 
-For Claude Code, the installer writes tool-shaped skills such as `give-me-job-fetch-jobs`. Each one declares a scoped `allowed-tools` line that permits Bash only for its own script, for example `allowed-tools: Bash(node *fetch-jobs.mjs), Bash(node *fetch-jobs.mjs *), Read, Grep`. That lets Claude Code run one allowlisted `.mjs` workflow script without a separate MCP registration step and without granting general Bash access.
+For Claude Code, the installer writes tool-shaped skills such as `give-me-job-fetch-jobs`. Each one declares a scoped `allowed-tools` line containing the exact installed script path. That lets Claude Code run one allowlisted `.mjs` workflow script without a separate MCP registration step and without granting general Bash access.
 
 For OpenCode, the installer writes custom tool definitions under the official tools directory. Each tool definition invokes the installed support script and returns structured stdout/stderr JSON.
 
 Example command the Claude Code tool skill can run from the installed user bundle:
 
 ```bash
-node ~/.claude/give-me-job/tools/fetch-jobs.mjs --help
+node ~/.claude/give-me-job/tools/fetch-jobs.mjs --source url --url "<posting-url>"
 ```
 
-(Automated job-source adapters are a TODO, so `fetch-jobs` currently reports
-that no sources are registered.)
+This normalizes a user-supplied public JobKorea, Linkareer, SK Careers, or LG
+Careers detail URL. Automated discovery remains a TODO.
 
 Project-scope install paths:
 

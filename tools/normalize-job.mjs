@@ -71,6 +71,9 @@ export async function writeJobs(jobs, options = {}) {
   const root = options.root ?? process.cwd();
   const out = options.out ?? "data/jobs";
   const date = options.date ?? dateStamp();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error("Job output date must use YYYY-MM-DD format.");
+  }
   const targetDir = path.resolve(root, out, date);
   await mkdir(targetDir, { recursive: true });
 

@@ -96,10 +96,16 @@ examples/demo-new-grad-backend/applications/demo-cloud-backend/
 
 Review the final text and checklist yourself. This project does not click submit, send email, bypass CAPTCHA, log in, or transmit personal information.
 
-## Optional: Fetch Jobs
+## Optional: Normalize A Posting URL
 
-Automated job-source adapters are a TODO — `tools/fetch-jobs.mjs` has no source
-registered yet. Provide a posting URL or JD manually for now. See
+Automated discovery is a TODO, but a supported public posting URL can be saved
+without credentials:
+
+```bash
+node tools/fetch-jobs.mjs --source url --url "<posting-url>"
+```
+
+JobKorea, Linkareer, SK Careers, and LG Careers detail URLs are supported. See
 [integrations/job-sources.md](integrations/job-sources.md).
 
 ## Optional: Prioritize Jobs

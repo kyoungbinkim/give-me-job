@@ -1,6 +1,6 @@
 {
   "name": "give-me-job",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": false,
   "license": "MIT",
   "description": "Korea-only job application agent skills and workflow tools.",
@@ -57,11 +57,11 @@
     "node": ">=18.17"
   },
   "scripts": {
-    "test": "node tests/validate/validate-skills.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node support/validate/validate-application.mjs .tmp-release-check/demo-backend && node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend && node tests/validate/validate-lg-electronics-workflow.mjs && node tests/validate/validate-codex-agent-workflow.mjs",
+    "test": "node tests/validate/validate-skills.mjs && node tests/validate/validate-manual-url-intake.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs && node tools/init-application.mjs --company demo --role backend --out .tmp-release-check --force && node support/validate/validate-application.mjs .tmp-release-check/demo-backend && node support/validate/validate-application.mjs examples/demo-new-grad-backend/applications/demo-cloud-backend && node tests/validate/validate-lg-electronics-workflow.mjs && node tests/validate/validate-codex-agent-workflow.mjs",
     "test:workflow": "node tests/validate/validate-lg-electronics-workflow.mjs && node tests/validate/validate-codex-agent-workflow.mjs",
     "test:install": "node tests/validate/validate-npm-install.mjs",
     "test:skills": "node tests/validate/validate-skills.mjs",
-    "test:jobs": "node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs",
+    "test:jobs": "node tests/validate/validate-manual-url-intake.mjs && node support/validate/validate-job-schedule.mjs && node support/validate/validate-job-ranking.mjs",
     "test:release": "npm test && npm run test:install",
     "prepublishOnly": "npm run test:release"
   }

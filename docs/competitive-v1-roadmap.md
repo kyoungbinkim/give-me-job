@@ -73,7 +73,7 @@ give-me-job/
 │   ├── schedule-jobs.mjs
 │   ├── prepare-application.mjs
 │   ├── apply-browser.mjs
-│   └── job-sources/          # empty today; credential-free adapters only
+│   └── job-sources/          # manual URL adapter; credential-free only
 ├── data/
 │   ├── jobs/
 │   ├── companies/
@@ -285,10 +285,10 @@ Required test groups:
 Build in this order:
 
 1. `tools/normalize-job.mjs` - implemented
-2. `tools/fetch-jobs.mjs` - registry in place, no source registered
+2. `tools/fetch-jobs.mjs` - manual URL source implemented; discovery sources pending
 3. `tools/schedule-jobs.mjs` - implemented
 4. `tools/rank-jobs.mjs` - implemented
-5. Manual posting URL and JD intake into the common job schema
+5. Manual posting URL intake into the common job schema - implemented for four public sites
 6. `tools/prepare-application.mjs`
 7. `tools/apply-browser.mjs`
 8. `tools/apply-adapters/`

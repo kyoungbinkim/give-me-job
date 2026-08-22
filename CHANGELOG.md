@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-22
+
+User-supplied public posting URLs can now enter the application workflow
+without an API key, login, or browser automation. Automated job discovery and
+application submission remain out of scope.
+
+No breaking changes. Reinstall to pick up the URL intake adapter and updated
+agent tools.
+
+### Added
+
+- Normalize user-supplied public JobKorea, Linkareer, SK Careers, and LG Careers detail URLs through `fetch-jobs --source url --url <posting-url>` without credentials.
+- Preserve extracted posting text, positions, application questions, attachments, application URL, and extraction warnings in the normalized job's `raw` fields.
+- Add fixture validation for all four supported posting layouts.
+
+### Changed
+
+- Route supported posting URLs through the full agent workflow and stop for an exact role, missing application questions, or unreadable attachment content instead of guessing.
+
 ## [0.7.0] - 2026-08-10
 
 Claude Code users can now install the domain skills as a plugin without npm.

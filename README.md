@@ -22,7 +22,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - HR review: check exaggeration, unsupported claims, company-name residue, wrong sub-role targeting, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
-- Job-source tools: deadline scheduling and fit ranking over normalized jobs. Automated job-source adapters are a TODO.
+- Job-source tools: normalize user-supplied public JobKorea, Linkareer, SK Careers, and LG Careers URLs, then schedule or rank the saved jobs. Automated discovery remains a TODO.
 - No credentials: nothing here needs an API key, access token, or approved API access.
 
 ## Documentation
@@ -36,7 +36,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 | [Safety Policy](docs/safety.md) | Allowed actions, disallowed actions, and blocker examples |
 | [Release Checklist](docs/release-checklist.md) | Pre-release validation checklist |
 | [Competitive v1 Roadmap](docs/competitive-v1-roadmap.md) | Korea-only product roadmap |
-| [Job Source Integrations](docs/integrations/job-sources.md) | Job-source adapter status (TODO) |
+| [Job Source Integrations](docs/integrations/job-sources.md) | Manual URL intake support and automated discovery status |
 
 ## Requirements
 
@@ -297,19 +297,26 @@ Start with [`examples/demo-new-grad-backend/resume.md`](examples/demo-new-grad-b
 - `hr-reviewer`: checks application materials from an HR risk perspective, applying the criteria that match the candidate's career type.
 - `interview-prep`: prepares interview follow-up questions and answer points grounded in evidence.
 - `application-packager`: assembles the company-specific package and manual submission checklist.
-- `job-searcher`: guides users to provide a JD or posting URL manually while automated job-source search is a TODO.
+- `job-searcher`: normalizes supported public posting URLs and guides manual intake while automated discovery remains a TODO.
 
 ## Job Sources And Prioritization
 
-Automated job discovery is a **TODO**. `tools/fetch-jobs.mjs` ships with an
-empty source registry: it normalizes and writes jobs but has no source to fetch
-from until one is registered. Provide a posting URL or JD text manually for now.
+Automated job discovery is a **TODO**, but a user-supplied public posting URL can
+be normalized without credentials:
+
+```bash
+node tools/fetch-jobs.mjs --source url --url "https://careers.lg.com/apply/detail?id=1002029"
+```
+
+The URL source supports JobKorea, Linkareer, SK Careers, and LG Careers detail
+pages. It saves the normalized record under `data/jobs/YYYY-MM-DD/`. Public
+pages often omit application questions or put detailed duties in an attachment;
+the agent stops and asks for those missing inputs instead of guessing.
 
 `give-me-job` requires no API key, access token, or other issued credential, and
 none of its tools read one. Any future job source must work the same way.
 
-Once normalized jobs exist under `data/jobs/` (for example from a future
-adapter), check deadlines and fit ranking:
+Once normalized jobs exist under `data/jobs/`, check deadlines and fit ranking:
 
 ```bash
 node tools/schedule-jobs.mjs --week --jobs data/jobs
