@@ -12,6 +12,23 @@ Korean search keywords: 자기소개서, 취업준비, 한국 취업, 취업 에
 
 Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository-level agent instructions are in [`AGENTS.md`](AGENTS.md). Korean documentation is available at [`docs/README-ko.md`](docs/README-ko.md).
 
+**See the output before you install** — a complete demo application package is committed to this repository:
+[`examples/demo-new-grad-backend/applications/demo-cloud-backend/`](examples/demo-new-grad-backend/applications/demo-cloud-backend/)
+
+## Is This For You?
+
+**A good fit**
+
+- You are applying to Korean companies and already use a coding agent (Claude Code, Codex, or OpenCode).
+- You have a resume or portfolio, and the hard part is turning it into 자기소개서 sentences you can defend.
+- You want the cover letter reviewed before submission, not written faster.
+
+**Not a fit yet**
+
+- You do not use a terminal. This currently needs Node.js `18.17`+ and a coding agent. A desktop app is planned but not released.
+- You want automated mass applying. This toolkit refuses to submit, log in, send email, or bypass CAPTCHA by design.
+- You want the agent to fill gaps in your experience. It stops and asks instead of inventing.
+
 ## Features
 
 - Resume evidence intake: structure user-provided career facts into reusable `resume.md` evidence.

@@ -6,10 +6,14 @@ This guide walks through the real local flow: prepare `resume.md`, provide a Kor
 
 ```bash
 npx give-me-job install --target codex
-give-me-job doctor --target codex
+npx give-me-job doctor --target codex
 ```
 
 Use `--target claude-code` or `--target opencode` if that is your coding agent.
+
+`npx` does not put a `give-me-job` binary on your `PATH`, so keep the `npx` prefix
+on every command. If you prefer a bare `give-me-job` command, install the CLI
+globally first with `npm i -g give-me-job`.
 
 ## 2. Prepare Inputs
 
