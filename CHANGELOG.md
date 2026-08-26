@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-08-26
+
+Documentation fix release. The packaged quickstart told users to run a bare
+`give-me-job doctor` immediately after `npx give-me-job install`, which fails
+because `npx` does not put a `give-me-job` binary on `PATH`. Anyone following
+the quickstart hit `command not found` on their second command.
+
+No code, API, or install-behavior changes. Reinstall only if you want the
+corrected packaged documentation.
+
+### Fixed
+
+- Prefix the `doctor` command in `docs/quickstart.md` with `npx`, and explain that `npx` provides no `PATH` binary while `npm i -g give-me-job` does.
+
+### Added
+
+- Add an "Is This For You?" section to `README.md` and matching "왜 만들었나" and "이런 분께 맞습니다" sections to `docs/README-ko.md`, stating the Node.js and coding-agent requirement before install rather than after it.
+- Link the checked-in demo application package near the top of both READMEs so output can be reviewed before installing.
+
 ## [0.8.0] - 2026-08-22
 
 User-supplied public posting URLs can now enter the application workflow
