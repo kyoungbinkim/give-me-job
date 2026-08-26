@@ -26,6 +26,13 @@ node_modules/
 /.tmp-npm-cache/
 /data/
 
+# Unpublished planning notes
+/give-me-job-app.md
+
+# Local agent session history and internal campaign notes
+/.specstory/
+/.claude/
+
 # Python
 __pycache__/
 .pytest_cache/
