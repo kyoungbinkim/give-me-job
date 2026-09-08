@@ -25,7 +25,7 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 
 **Not a fit yet**
 
-- You do not use a terminal. This currently needs Node.js `18.17`+ and a coding agent. A desktop app is planned but not released.
+- You cannot run local Node.js tools. The CLI, TUI, and local dashboard require Node.js `18.17`+; AI drafting still runs in your existing coding agent.
 - You want automated mass applying. This toolkit refuses to submit, log in, send email, or bypass CAPTCHA by design.
 - You want the agent to fill gaps in your experience. It stops and asks instead of inventing.
 
@@ -39,7 +39,11 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - HR review: check exaggeration, unsupported claims, company-name residue, wrong sub-role targeting, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
-- Job-source tools: normalize user-supplied public JobKorea, Linkareer, SK Careers, and LG Careers URLs, then schedule or rank the saved jobs. Automated discovery remains a TODO.
+- Job operations: import CSV, URL lists, or pasted JD text; track observations, changes, duplicate candidates, deadlines, and preferences.
+- Resumable validation: separate template structure checks from readiness checks tied to resume, JD, question, answer, evidence, final-text, and HR-review hashes.
+- Recruitment tracking: record user-confirmed submissions, arbitrary stages, Seoul-time schedules, interview debriefs, and confirmed outcomes.
+- Shared surfaces: operate the same local data and validation through the agent, CLI, keyboard TUI, or a `127.0.0.1` web dashboard.
+- Job-source tools: normalize user-supplied public JobKorea, Linkareer, SK Careers, and LG Careers URLs. Automated discovery remains outside the product scope.
 - No credentials: nothing here needs an API key, access token, or approved API access.
 
 ## Documentation
@@ -54,6 +58,8 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 | [Release Checklist](docs/release-checklist.md) | Pre-release validation checklist |
 | [Competitive v1 Roadmap](docs/competitive-v1-roadmap.md) | Korea-only product roadmap |
 | [Job Source Integrations](docs/integrations/job-sources.md) | Manual URL intake support and automated discovery status |
+| [Integrated Workflow](docs/integrated-workflow.md) | Jobs, readiness, tracking, TUI, dashboard, and agent-request commands |
+| [Agent Evaluation](docs/agent-evaluation.md) | Fictional new-grad, experienced, and non-technical verification scenarios |
 
 ## Requirements
 

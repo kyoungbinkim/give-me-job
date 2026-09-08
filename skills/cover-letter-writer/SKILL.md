@@ -88,9 +88,9 @@ Outputs produced:
    select evidence against that scope. See `Sub-Role Awareness` in
    `references/question-types.md`.
 4. If company values are provided, use them as supporting context only.
-5. Select the strongest matching `resume.md` evidence references. Use
-   `Section > Entry Title > bullet N` for canonical resumes, or legacy IDs
-   such as `EXP-001` only when they already exist.
+5. Select the strongest matching `resume.md` evidence references. Use stable
+   IDs such as `EXP-001` together with `Section > Entry Title > bullet N` and
+   source locations. Ask resume-intake to add missing IDs without changing facts.
 6. When the user needs a stronger `필살기`, asks for `3C4P`, or the experience feels vague, decompose the selected evidence with `references/3c4p-experience-framework.md`.
 7. If evidence is missing, ask follow-up questions before drafting.
 8. Classify each question before drafting:
@@ -106,13 +106,19 @@ Outputs produced:
    - new grad: motivation, relevant project, learning, contribution
    - experienced: role fit, result, how it was achieved, reusable contribution
 10. Apply natural Korean writing rules.
-11. Count characters immediately after drafting. Include spaces unless the company or question states otherwise.
+11. Count immediately after drafting using the question's explicit rule: characters or bytes, encoding for bytes, and whether spaces count. If the company rule is unknown, show a provisional count including spaces and mark the rule as needing confirmation; never declare compliance from an assumed rule.
 12. Target 90-98% of the stated limit when a limit exists.
 13. Produce an evidence map that links key sentences to concrete `resume.md`
     evidence references.
 14. Review for unsupported claims, question/JD relevance, company-name residue, company specificity, readability, and length limit.
 15. Apply the resolved playbook's `Do not` list as a final pass.
 16. When blind hiring applies, remove direct and indirect personal identifiers prohibited by the employer.
+
+Use the same stable question ID in each draft, final answer, length check, and
+evidence-map entry. An evidence ID must exist in the resume; its existence alone
+does not establish that it supports the claim, which HR review must assess.
+Never write a new claim back into `resume.md`. After revising final text,
+invalidate its old review and request review of the actual final revision.
 
 ## Natural Korean Writing Rules
 

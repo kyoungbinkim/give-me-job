@@ -39,7 +39,7 @@ AI로 자소서를 쓰면 문장은 잘 나옵니다. 문제는 그다음입니�
 
 **아직 맞지 않는 경우**
 
-- 터미널을 쓰지 않으시는 분 — 현재는 Node.js `18.17` 이상과 코딩 에이전트가 필요합니다. 데스크톱 앱은 계획 중이며 아직 출시되지 않았습니다
+- 로컬 Node.js 도구를 실행할 수 없는 분 — CLI, TUI, 로컬 웹 대시보드는 Node.js `18.17` 이상이 필요하고 AI 작성은 기존 코딩 에이전트에서 실행합니다
 - 자동 대량 지원을 원하시는 분 — 이 도구는 설계상 제출, 로그인, 이메일 발송, CAPTCHA 우회를 하지 않습니다
 - 부족한 경험을 채워주길 원하시는 분 — 지어내지 않고 멈춰서 물어봅니다
 
@@ -55,6 +55,8 @@ AI로 자소서를 쓰면 문장은 잘 나옵니다. 문제는 그다음입니�
 | [Release Checklist](release-checklist.md) | 릴리스 전 검증 항목 |
 | [Competitive v1 Roadmap](competitive-v1-roadmap.md) | 한국 채용 시장 전용 제품 로드맵 |
 | [Job Source Integrations](integrations/job-sources.md) | 공개 공고 URL 수집 지원과 자동 검색 상태 |
+| [통합 워크플로](integrated-workflow.md) | 공고, 준비 완료 검증, 전형 추적, TUI, 웹 대시보드 명령 |
+| [에이전트 평가](agent-evaluation.md) | 가상 신입·경력·비개발 시나리오 검증 절차 |
 
 ## 설치 전 준비
 

@@ -77,6 +77,22 @@ Outputs produced:
 5. Check company name, role name, file names, length limits, and required attachments.
 6. Prepare manual submission snippets or email draft text when requested.
 7. Record submission status only after the user confirms what happened.
+8. Run structure validation for newly initialized templates. Run ready validation
+   for completed answers, checking required questions, length rules, evidence
+   references, completed current final review, and unresolved blockers. Only
+   successful ready validation records `ready-for-user-review`.
+
+Use `state.json` as the machine-readable preparation state and generate the
+`workflow.md` status summary from it. Keep recruitment progress in the tracker.
+Record interruption reasons and next actions; reuse completed steps only while
+their reviewed input hashes remain current. Legacy packages without current
+review metadata require revalidation and remain readable without overwriting
+their existing prose. User risk acceptance never waives unresolved blockers.
+
+An AI request from CLI, TUI, or dashboard is a prepared prompt, not a completed
+package. Execute it in the existing agent, save the requested files, validate,
+and reload the interface. Installation, upgrade, and uninstall must not touch
+resume facts, saved jobs, tracking data, or application packages.
 
 ## Hard Rules
 

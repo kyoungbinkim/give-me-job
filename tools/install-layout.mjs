@@ -24,6 +24,7 @@ export const requiredSupportFiles = [
   "tools/job-sources/manual-url.mjs",
   "tools/init-application.mjs",
   "tools/normalize-job.mjs",
+  "tools/workspace-cli.mjs",
   "support/validate/validate-application.mjs",
   "templates/workflow-template.md",
   "tests/fixtures/resume-new-grad.md",
