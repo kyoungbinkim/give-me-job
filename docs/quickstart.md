@@ -5,15 +5,16 @@ This guide walks through the real local flow: prepare `resume.md`, provide a Kor
 ## 1. Install The Agent
 
 ```bash
-npx give-me-job install --target codex
-npx give-me-job doctor --target codex
+npx give-me-job@latest install --target codex
+npx give-me-job@latest doctor --target codex
 ```
 
 Use `--target claude-code` or `--target opencode` if that is your coding agent.
 
-`npx` does not put a `give-me-job` binary on your `PATH`, so keep the `npx` prefix
-on every command. If you prefer a bare `give-me-job` command, install the CLI
-globally first with `npm i -g give-me-job`.
+`npx` does not put a `give-me-job` binary on your `PATH`, so keep the
+`npx give-me-job@latest` prefix on every command. If you prefer a bare
+`give-me-job` command, install the CLI globally first with
+`npm i -g give-me-job`.
 
 ## 2. Prepare Inputs
 
@@ -31,23 +32,52 @@ cp examples/demo-new-grad-backend/jd.md jd.md
 
 For a real application, replace both files with your own career facts and the actual job post. Keep `resume.md` factual because every strong cover-letter claim should map back to it.
 
-## 3. Create A Package Folder
+## 3. Register The Job
+
+Save the supplied JD as `job-import.json`:
+
+```json
+{
+  "kind": "text",
+  "input": "Paste the complete job description here.",
+  "metadata": {
+    "company": "Kakao",
+    "title": "Backend Developer",
+    "role": "backend"
+  }
+}
+```
+
+Import it, then copy the returned `jobId`:
 
 ```bash
-node tools/init-application.mjs --company kakao --role backend
+npx give-me-job@latest jobs import --workspace . --input job-import.json
+npx give-me-job@latest jobs list --workspace . --format json
 ```
 
-This creates:
+CSV and URL-list input shapes are documented in
+[Integrated Workflow](integrated-workflow.md).
 
-```txt
-applications/kakao-backend/
+## 4. Prepare The Package And Ask Your Agent
+
+Create a package linked to the selected posting:
+
+```bash
+npx give-me-job@latest application prepare --workspace . --job-id "JOB_ID_FROM_PREVIOUS_COMMAND" --role backend
 ```
 
-The `applications/` directory is ignored by Git because it may contain personal application data.
+The command prints a generated path such as
+`applications/application-19ecc434a76ef3f45132`. Copy its `packagePath` value
+for later commands. The `applications/` directory is ignored by Git because it
+may contain personal application data.
 
-## 4. Ask Your Agent To Run The Workflow
+Generate an assessment prompt:
 
-Prompt your coding agent:
+```bash
+npx give-me-job@latest request --workspace . --task assess --job-id "JOB_ID_FROM_PREVIOUS_COMMAND"
+```
+
+Run the generated prompt in your coding agent. You can also ask directly:
 
 ```txt
 Read agent.md and prepare the full Korean application package in applications/kakao-backend.
@@ -75,10 +105,13 @@ The agent should fill:
 ## 5. Validate The Package
 
 ```bash
-node support/validate/validate-application.mjs applications/kakao-backend
+npx give-me-job@latest application validate --workspace . --package-path "PACKAGE_PATH_FROM_PREVIOUS_COMMAND" --mode structure
+npx give-me-job@latest application validate --workspace . --package-path "PACKAGE_PATH_FROM_PREVIOUS_COMMAND" --mode ready
 ```
 
-Validation checks required files, evidence map presence, HR blockers, and manual submission reminders.
+`structure` checks the package shape. `ready` additionally checks required
+answers, known length rules, resume evidence IDs, HR blockers, review hashes,
+and whether the final text changed after review.
 
 ## 6. Review The Output
 
@@ -99,6 +132,16 @@ examples/demo-new-grad-backend/applications/demo-cloud-backend/
 ## 7. Submit Manually
 
 Review the final text and checklist yourself. This project does not click submit, send email, bypass CAPTCHA, log in, or transmit personal information.
+
+## Optional: Open The Local Interfaces
+
+```bash
+npx give-me-job@latest tui --workspace .
+npx give-me-job@latest dashboard --workspace .
+```
+
+The dashboard binds only to `127.0.0.1` and stops with `Ctrl+C`. Both interfaces
+use the same data and validation logic as the CLI.
 
 ## Optional: Normalize A Posting URL
 

@@ -2,6 +2,10 @@
 
 ![give-me-job banner](docs/assets/give-me-job-banner.jpg)
 
+[![npm version](https://img.shields.io/npm/v/give-me-job.svg)](https://www.npmjs.com/package/give-me-job)
+[![CI](https://github.com/kyoungbinkim/give-me-job/actions/workflows/ci.yml/badge.svg)](https://github.com/kyoungbinkim/give-me-job/actions/workflows/ci.yml)
+[![Node.js 18.17+](https://img.shields.io/badge/Node.js-18.17%2B-339933?logo=node.js&logoColor=white)](docs/platform-support.md)
+
 `give-me-job` is an AI agent toolkit for Korean job applications. It helps you turn scattered career notes, a Korean job post, and company context into a focused application package: JD analysis, evidence-grounded 자기소개서 drafts, HR risk review, interview defense, and a manual submission checklist.
 
 Most job-application tools optimize for speed. `give-me-job` optimizes for confidence: every strong claim should trace back to your `resume.md`, every risky sentence gets reviewed before final use, and every final answer should be something you can defend in an interview.
@@ -89,8 +93,11 @@ npm test
 The simplest install path is `npx`:
 
 ```bash
-npx give-me-job install
+npx give-me-job@latest install
 ```
+
+Keep the `npx give-me-job@latest` prefix for later commands. If you want the
+shorter `give-me-job` command, install the CLI globally as shown below.
 
 This installs the eight domain skills plus the `give-me-job` orchestrator agent for supported coding agents in your user profile. The support bundle includes `agent.md`, `tools/`, `templates/`, and validation fixtures. Claude Code also gets tool-shaped skills such as `give-me-job-fetch-jobs`; OpenCode also gets custom tool definitions under its tools directory.
 
@@ -111,7 +118,7 @@ Claude Code users can add the domain skills as a plugin instead, without npm:
 The plugin route installs the domain skills only. The npm installer additionally
 writes the `give-me-job` orchestrator agent, the tool-shaped workflow skills,
 and the support bundle (`agent.md`, `tools/`, `templates/`, fixtures), which the
-full workflow needs. Use `npx give-me-job install` for the complete setup.
+full workflow needs. Use `npx give-me-job@latest install` for the complete setup.
 
 Without `--target`, the installer asks which AI agent to install to. Use the arrow keys to choose `codex`, `claude`, `opencode`, or `all`.
 
@@ -200,37 +207,53 @@ Claude Code: .claude/agents/give-me-job.md
 
 ## Quickstart
 
-Validate the repository:
+Create a workspace and add your factual resume:
 
 ```bash
-npm test
+mkdir my-job-search
+cd my-job-search
+# Create resume.md here, or copy your existing resume.md into this folder.
 ```
 
-Create one company-specific package folder:
+Save one supplied JD as `job-import.json`:
+
+```json
+{
+  "kind": "text",
+  "input": "Paste the complete job description here.",
+  "metadata": {
+    "company": "Kakao",
+    "title": "Backend Developer",
+    "role": "backend"
+  }
+}
+```
+
+Import it and copy the returned `jobId`:
 
 ```bash
-node tools/init-application.mjs --company kakao --role backend
+npx give-me-job@latest jobs import --workspace . --input job-import.json
+npx give-me-job@latest jobs list --workspace . --format json
 ```
 
-This creates:
-
-```txt
-applications/kakao-backend/
-```
-
-Then ask your coding agent:
-
-```txt
-Read agent.md and complete the package in applications/kakao-backend using my resume.md and this JD.
-```
-
-Validate the completed package:
+Prepare the linked package and generate the agent prompt:
 
 ```bash
-node support/validate/validate-application.mjs applications/kakao-backend
+npx give-me-job@latest application prepare --workspace . --job-id "JOB_ID_FROM_PREVIOUS_COMMAND" --role backend
+npx give-me-job@latest request --workspace . --task assess --job-id "JOB_ID_FROM_PREVIOUS_COMMAND"
 ```
 
-For a complete runnable walkthrough, see [Quickstart](docs/quickstart.md).
+Run that prompt in Codex, Claude Code, or OpenCode. After the agent writes and
+reviews the package, run readiness validation and open the local dashboard:
+
+```bash
+npx give-me-job@latest application validate --workspace . --package-path "PACKAGE_PATH_FROM_PREVIOUS_COMMAND" --mode ready
+npx give-me-job@latest dashboard --workspace .
+```
+
+The dashboard opens only on `127.0.0.1`; stop it with `Ctrl+C`. For CSV and URL
+imports, tracking, TUI use, and exact validation states, see
+[Quickstart](docs/quickstart.md) and [Integrated Workflow](docs/integrated-workflow.md).
 
 ## Workflow
 

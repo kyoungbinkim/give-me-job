@@ -2,6 +2,9 @@
 
 ![give-me-job banner](assets/give-me-job-banner.jpg)
 
+[![npm version](https://img.shields.io/npm/v/give-me-job.svg)](https://www.npmjs.com/package/give-me-job)
+[![CI](https://github.com/kyoungbinkim/give-me-job/actions/workflows/ci.yml/badge.svg)](https://github.com/kyoungbinkim/give-me-job/actions/workflows/ci.yml)
+
 `give-me-job`은 한국 채용 시장 전용 취업 지원 패키지 생성기입니다. Codex CLI, Claude Code, OpenCode 같은 코딩 에이전트가 `resume.md`와 채용공고(JD)를 읽고 회사별 지원 패키지를 만들 수 있도록 설계되었습니다.
 
 이 프로젝트는 자동 지원이나 자동 제출 도구가 아닙니다. 결과물은 사용자가 직접 검토하고 제출하는 문서 패키지입니다.
@@ -86,8 +89,10 @@ npm test
 가장 간단한 방법:
 
 ```bash
-npx give-me-job install
+npx give-me-job@latest install
 ```
+
+전역 설치를 하지 않았다면 이후 명령에도 `npx give-me-job@latest`를 붙입니다.
 
 전역 CLI 설치:
 
@@ -105,7 +110,7 @@ Claude Code는 npm 없이 플러그인으로 설치할 수도 있습니다.
 
 단, 플러그인 경로는 도메인 Skill만 설치합니다. 오케스트레이터 Agent, 워크플로
 도구 Skill, support bundle(`agent.md`, `tools/`, `templates/`, fixture)은
-포함되지 않으므로 전체 워크플로를 쓰려면 `npx give-me-job install`을 사용하세요.
+포함되지 않으므로 전체 워크플로를 쓰려면 `npx give-me-job@latest install`을 사용하세요.
 
 전체 대상 설치:
 
@@ -206,31 +211,50 @@ Claude Code: .claude/agents/give-me-job.md
 
 ## 빠른 시작
 
-1. 저장소를 검증합니다.
+1. 작업 폴더를 만들고 사실만 기록한 `resume.md`를 넣습니다.
 
 ```bash
-npm test
+mkdir my-job-search
+cd my-job-search
 ```
 
-2. 회사별 지원 패키지 폴더를 만듭니다.
+2. 제공받은 공고를 `job-import.json`으로 저장합니다.
+
+```json
+{
+  "kind": "text",
+  "input": "채용공고 전체 본문을 붙여 넣습니다.",
+  "metadata": {
+    "company": "카카오",
+    "title": "백엔드 개발자",
+    "role": "백엔드"
+  }
+}
+```
+
+3. 공고를 등록하고 출력된 `jobId`를 확인합니다.
 
 ```bash
-node tools/init-application.mjs --company kakao --role backend
+npx give-me-job@latest jobs import --workspace . --input job-import.json
+npx give-me-job@latest jobs list --workspace . --format json
 ```
 
-3. 코딩 에이전트에게 다음처럼 요청합니다.
-
-```txt
-agent.md를 읽고, resume.md와 이 JD를 사용해서 applications/kakao-backend 지원 패키지를 완성해줘.
-```
-
-4. 결과 패키지를 검증합니다.
+4. 패키지를 준비하고 기존 에이전트에서 실행할 프롬프트를 만듭니다.
 
 ```bash
-node support/validate/validate-application.mjs applications/kakao-backend
+npx give-me-job@latest application prepare --workspace . --job-id "이전_명령에서_확인한_JOB_ID" --role 백엔드
+npx give-me-job@latest request --workspace . --task assess --job-id "이전_명령에서_확인한_JOB_ID"
 ```
 
-5. 최종 제출은 사용자가 직접 합니다.
+5. Codex·Claude Code·OpenCode에서 프롬프트를 실행한 뒤 준비 완료 상태를 검사합니다.
+
+```bash
+npx give-me-job@latest application validate --workspace . --package-path "이전_명령에서_확인한_PACKAGE_PATH" --mode ready
+npx give-me-job@latest dashboard --workspace .
+```
+
+대시보드는 `127.0.0.1`에서만 열리며 `Ctrl+C`로 종료합니다. 최종 제출은
+사용자가 직접 합니다. CSV·URL 등록과 전형 추적은 [통합 워크플로](integrated-workflow.md)를 참고하세요.
 
 ## 전체 워크플로우
 

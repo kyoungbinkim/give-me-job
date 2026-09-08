@@ -5,7 +5,7 @@ Install `give-me-job` as reusable agent skills for Codex, OpenCode, and Claude C
 ## Quick Install
 
 ```bash
-npx give-me-job install
+npx give-me-job@latest install
 ```
 
 This installs the eight domain skills plus the `give-me-job` orchestrator agent for all supported agents in your user profile. The support bundle also includes `agent.md`, `tools/`, `templates/`, and validation fixtures so the local workflow tools are available after installation.
@@ -16,6 +16,40 @@ You can also install the CLI globally:
 npm i -g give-me-job
 give-me-job install
 ```
+
+`npx` does not add a permanent command to `PATH`. Keep the full
+`npx give-me-job@latest` prefix for workspace commands, or use the global
+installation when you want the shorter `give-me-job` command.
+
+Upgrade an existing installation by running the installer again. Changed local
+files are preserved unless you explicitly choose `--force`:
+
+```bash
+npx give-me-job@latest install --target codex
+npx give-me-job@latest doctor --target codex
+```
+
+When working inside a clone of this repository, use
+`node bin/give-me-job.js <command>`. Running `npx give-me-job` from the package's
+own root can make npm reuse the local package without creating a command shim.
+
+## Workspace Commands
+
+The npm package includes the CLI, TUI, dashboard, shared validation logic, and
+support bundle. These commands all read and write the workspace selected by
+`--workspace`:
+
+```bash
+npx give-me-job@latest jobs list --workspace . --format json
+npx give-me-job@latest profile show --workspace . --format json
+npx give-me-job@latest digest --workspace .
+npx give-me-job@latest tui --workspace .
+npx give-me-job@latest dashboard --workspace .
+```
+
+AI work remains in Codex, Claude Code, or OpenCode. The `request` command only
+prepares a prompt and input references; it does not call a model or mark the
+work complete.
 
 Without `--target`, the installer asks which AI agent to install to. Use the arrow keys to choose `codex`, `claude`, `opencode`, or `all`.
 
