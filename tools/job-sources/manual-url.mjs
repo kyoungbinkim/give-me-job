@@ -362,7 +362,8 @@ export function validatePostingUrl(value) {
 
 async function fetchResponse(url, options = {}) {
   let currentUrl = new URL(url);
-  let requestOptions = { ...options };
+  const { timeoutMs = 30_000, ...fetchOptions } = options;
+  let requestOptions = { ...fetchOptions };
   let response;
   for (let redirects = 0; redirects <= 5; redirects += 1) {
     response = await fetch(currentUrl, {
@@ -372,7 +373,7 @@ async function fetchResponse(url, options = {}) {
         ...(requestOptions.headers ?? {}),
       },
       redirect: "manual",
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
     if (![301, 302, 303, 307, 308].includes(response.status)) break;
     if (redirects === 5) throw new Error("Posting request exceeded 5 redirects.");
@@ -427,16 +428,17 @@ export async function fetchManualUrlJobs(options = {}) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ jobNoticeId: Number(id) }),
+          timeoutMs: options.timeout ?? 30_000,
         }));
     return [usableJob(parseLgCareers(payload, url.href))];
   }
 
-  const html = options.fixture ? await readFile(options.fixture, "utf8") : await fetchResponse(url);
+  const html = options.fixture ? await readFile(options.fixture, "utf8") : await fetchResponse(url, { timeoutMs: options.timeout ?? 30_000 });
   if (source === "linkareer") return [usableJob(parseLinkareer(html, url.href))];
   if (source === "skcareers") return [usableJob(parseSkCareers(html, url.href))];
 
   let detailHtml = "";
   const detailPath = jobKoreaDetailPath(html);
-  if (detailPath && !options.fixture) detailHtml = await fetchResponse(new URL(detailPath, url));
+  if (detailPath && !options.fixture) detailHtml = await fetchResponse(new URL(detailPath, url), { timeoutMs: options.timeout ?? 30_000 });
   return [usableJob(parseJobKorea(html, url.href, detailHtml))];
 }

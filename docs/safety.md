@@ -34,4 +34,9 @@
 - A JD requires a qualification that the candidate cannot support.
 - The next requested action would submit the application.
 
-When a blocker appears, stop and ask the user for missing evidence, a correction, or explicit risk acceptance.
+When a blocker appears, stop the affected finalization step and ask for missing evidence or a correction. User risk acceptance cannot waive factual errors or unresolved blockers. Keep warnings separate from blockers.
+
+Only a successful ready validation of the current final revision can mark a
+package `ready-for-user-review`. A structure check, an empty review, or an
+expired review never grants approval. Preparation status is separate from
+actual recruitment progress; record submission only on user confirmation.

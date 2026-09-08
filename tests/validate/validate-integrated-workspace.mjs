@@ -1,0 +1,91 @@
+import assert from "node:assert/strict";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import { PassThrough } from "node:stream";
+import os from "node:os";
+import path from "node:path";
+import { executeAction } from "../../tools/workspace-service.mjs";
+import { importJobs, parseCsv } from "../../tools/jobs-workspace.mjs";
+import { startDashboard } from "../../tools/dashboard.mjs";
+import { runTui } from "../../tools/tui.mjs";
+
+const root = await mkdtemp(path.join(os.tmpdir(), "gmj-workspace-"));
+try {
+  await writeFile(path.join(root, "resume.md"), "# Resume\n## Projects\n### EXP-001 예약 API\n- 동시성 문제를 해결했다.\n");
+  const csv = 'source,sourceId,company,title,role,location,postingText\nmanual,demo-1,"예시, 주식회사","백엔드\n개발자",백엔드,서울,"API를 개발합니다."\n불완전\n';
+  assert.equal(parseCsv(csv)[1].row, 2);
+  const imported = await importJobs({ root, kind: "csv", input: csv, mapping: { source: "source", sourceId: "sourceId", company: "company", title: "title", role: "role", location: "location", postingText: "postingText" } });
+  assert.deepEqual(imported.counts, { new: 1, updated: 0, duplicate: 0, "needs-confirmation": 0, failed: 1 });
+  assert.equal(imported.results[0].row, 2);
+  const jobId = imported.results[0].jobId;
+  const duplicate = await executeAction(root, "jobs.import", { kind: "text", input: "API를 개발합니다.", metadata: { source: "manual", sourceId: "demo-1", company: "예시, 주식회사", title: "백엔드\n개발자", role: "백엔드" } });
+  assert.equal(duplicate.counts.duplicate, 1);
+  await executeAction(root, "profile.set", { roles: ["백엔드"], locations: ["서울"], employmentTypes: [], exclude: [] });
+  const ranked = await executeAction(root, "jobs.rank", {});
+  assert.equal(ranked[0].eligibility, "확인 필요");
+  assert.equal(ranked[0].status, "needs-analysis");
+  const prepared = await executeAction(root, "application.prepare", { jobId, role: "백엔드" });
+  assert.equal(prepared.reused, false);
+  assert.equal((await executeAction(root, "application.prepare", { jobId, role: "백엔드" })).reused, true);
+  assert.equal((await executeAction(root, "application.validate", { packagePath: prepared.packagePath, mode: "structure" })).ok, true);
+  assert.equal((await executeAction(root, "application.validate", { packagePath: prepared.packagePath, mode: "ready" })).ok, false);
+  const changed = await executeAction(root, "jobs.import", { kind: "text", input: "필수 자격과 문항이 변경되었습니다.", metadata: { source: "manual", sourceId: "demo-1", company: "예시, 주식회사", title: "백엔드\n개발자", role: "백엔드" } });
+  assert.equal(changed.counts.updated, 1);
+  assert.equal(JSON.parse(await readFile(path.join(root, prepared.packagePath, "state.json"), "utf8")).status, "review-blocked");
+  const request = await executeAction(root, "request", { task: "assess", jobId });
+  assert.equal(request.status, "prepared");
+  assert.match(request.prompt, /지원 자격/);
+  await assert.rejects(executeAction(root, "tracker.update", { applicationId: prepared.packagePath, stage: "서류", status: "submitted" }), /confirmation/);
+  await executeAction(root, "tracker.update", { applicationId: prepared.packagePath, stage: "서류", status: "submitted", confirmed: true, source: "user", events: [{ kind: "interview", title: "1차 면접", at: "2099-01-02T10:00:00+09:00" }] });
+  assert.equal((await executeAction(root, "tracker.list", {})).length, 1);
+  assert.equal((await executeAction(root, "digest", {})).reviewRequired.length, 1);
+  await assert.rejects(executeAction(root, "file.read", { path: "../outside.md" }), /workspace/);
+
+  const server = await startDashboard(root, { port: 0 });
+  try {
+    const address = server.address();
+    const origin = `http://127.0.0.1:${address.port}`;
+    const page = await fetch(origin);
+    assert.equal(page.status, 200);
+    assert.match(await page.text(), /지원 작업공간/);
+    const response = await fetch(`${origin}/api/action`, { method: "POST", headers: { Origin: origin, "Content-Type": "application/json", "X-Give-Me-Job": "workspace" }, body: JSON.stringify({ action: "jobs.list", input: {} }) });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).result.length, 1);
+    const blocked = await fetch(`${origin}/api/action`, { method: "POST", headers: { Origin: "https://evil.example", "Content-Type": "application/json", "X-Give-Me-Job": "workspace" }, body: JSON.stringify({ action: "jobs.list", input: {} }) });
+    assert.equal(blocked.status, 403);
+  } finally { await new Promise((resolve) => server.close(resolve)); }
+
+  const input = new PassThrough(); const output = new PassThrough(); input.isTTY = false; output.isTTY = false;
+  let tuiText = ""; output.on("data", (chunk) => { tuiText += chunk; });
+  await runTui(root, { input, output });
+  assert.match(tuiText, /digest/);
+  const ttyInput = new PassThrough(); const ttyOutput = new PassThrough();
+  ttyInput.isTTY = true; ttyInput.isRaw = false; ttyInput.setRawMode = () => {}; ttyOutput.isTTY = true; ttyOutput.columns = 80; ttyOutput.rows = 24;
+  let ttyText = ""; ttyOutput.on("data", (chunk) => { ttyText += chunk; });
+  process.nextTick(() => ttyInput.write("q"));
+  await runTui(root, { input: ttyInput, output: ttyOutput });
+  assert.match(ttyText, /지원 작업공간/);
+  assert.deepEqual((await import("../../tools/tui.mjs")).terminalLines("👩‍💻개발", 4), ["👩‍💻개", "발"]);
+  const plainTty = ttyText.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, "");
+  assert(plainTty.split(/\r?\n/).every((line) => [...line].reduce((width, char) => width + (/\p{Mark}/u.test(char) ? 0 : char.codePointAt(0) >= 0x1100 ? 2 : 1), 0) <= 80));
+
+  const cliPath = path.resolve("bin/give-me-job.js");
+  const runCli = (...args) => spawnSync(process.execPath, [cliPath, ...args, "--workspace", root, "--format", "json"], { encoding: "utf8" });
+  const cli = runCli("jobs", "list");
+  assert.equal(cli.status, 0, cli.stderr);
+  assert.equal(JSON.parse(cli.stdout).length, 1);
+  const cliProfile = runCli("profile", "show");
+  assert.equal(cliProfile.status, 0, cliProfile.stderr);
+  assert.deepEqual(JSON.parse(cliProfile.stdout).roles, ["백엔드"]);
+  const cliRequest = runCli("request", "--task", "review", "--package-path", prepared.packagePath);
+  assert.equal(cliRequest.status, 0, cliRequest.stderr);
+  assert.equal(JSON.parse(cliRequest.stdout).status, "prepared");
+  const cliTracker = runCli("tracker", "list");
+  assert.equal(cliTracker.status, 0, cliTracker.stderr);
+  assert.equal(JSON.parse(cliTracker.stdout)[0].status, "submitted");
+  const cliDigest = runCli("digest");
+  assert.equal(cliDigest.status, 0, cliDigest.stderr);
+  assert.equal(JSON.parse(cliDigest.stdout).reviewRequired.length, 1);
+  assert.equal(JSON.parse(await readFile(path.join(root, "data/jobs/workspace.json"), "utf8")).length, 1);
+  console.log("Integrated CLI, jobs, package, tracker, TUI and dashboard validation passed");
+} finally { await rm(root, { recursive: true, force: true }); }

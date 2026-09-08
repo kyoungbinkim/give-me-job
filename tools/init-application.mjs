@@ -1,5 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createApplicationState } from "./application-state.mjs";
 import { relativeDisplayPath } from "./platform.mjs";
 
 const root = process.cwd();
@@ -38,7 +40,7 @@ function slugify(value) {
 }
 
 async function readTemplate(name) {
-  return readFile(path.join(root, "templates", name), "utf8");
+  return readFile(path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "templates", name), "utf8");
 }
 
 function render(template, values) {
@@ -58,8 +60,7 @@ async function writeNew(filePath, content, force) {
   await writeFile(filePath, content, "utf8");
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
+export async function initializeApplication(args) {
   const company = String(args.company ?? "").trim();
   const role = String(args.role ?? "").trim();
   const out = String(args.out ?? "applications").trim();
@@ -67,11 +68,11 @@ async function main() {
 
   if (!company || !role) {
     console.error(usage());
-    process.exit(1);
+    throw new Error(usage());
   }
 
   const slug = slugify(`${company}-${role}`) || `application-${Date.now()}`;
-  const packageDir = path.resolve(root, out, slug);
+  const packageDir = args.exactDirectory ? path.resolve(root, out) : path.resolve(root, out, slug);
   await mkdir(packageDir, { recursive: true });
 
   const values = { company, role, slug, packagePath: relativeDisplayPath(root, packageDir) };
@@ -79,6 +80,10 @@ async function main() {
   const companyValues = render(await readTemplate("company-values-empty-template.md"), values);
 
   const files = new Map([
+    ["state.json", `${JSON.stringify(createApplicationState(), null, 2)}
+`],
+    ["questions.json", JSON.stringify({ questions: [] })],
+    ["answers.json", JSON.stringify({ answers: [] })],
     ["workflow.md", workflow],
     ["jd-analysis.md", render(await readTemplate("jd-analysis-template.md"), values)],
     ["company-values.md", companyValues],
@@ -94,10 +99,11 @@ async function main() {
     await writeNew(path.join(packageDir, fileName), content, force);
   }
 
-  console.log(`Created application package: ${relativeDisplayPath(root, packageDir)}`);
+  return packageDir;
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  initializeApplication(parseArgs(process.argv.slice(2))).then((packageDir) => {
+    console.log(`Created application package: ${relativeDisplayPath(root, packageDir)}`);
+  }).catch((error) => { console.error(error.message); process.exitCode = 1; });
+}

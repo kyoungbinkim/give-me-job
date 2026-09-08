@@ -105,6 +105,9 @@ the JD source. In particular, inspect `postingText`, `positions`, `questions`,
 
 ### 2. Resume Source
 
+First perform the JD-only requirement extraction described in step 3 and fix
+requirement importance. Only then read the resume and perform evidence mapping.
+
 If `resume.md` exists, read it and treat it as the evidence source.
 
 If `resume.md` does not exist or is too thin, use `skills/resume-intake/SKILL.md`:
@@ -190,7 +193,7 @@ Save:
 applications/<company-role>/hr-review.md
 ```
 
-If the HR review includes any `Blocker`, do not write `cover-letter-final.md` until the blocker is resolved or the user explicitly accepts the risk.
+If the HR review includes any `Blocker`, do not write substantive final text until the blocker is resolved. User risk acceptance cannot waive a factual error or an unresolved blocker.
 
 ### 7. Final Text
 
@@ -202,6 +205,10 @@ The final text must:
 - remove unsupported claims
 - match the requested company and role
 - remain explainable in an interview
+
+Review the actual final revision again. A draft review does not approve changed
+final text. Bind review results to the current resume, JD, questions, answers,
+and evidence-map hashes; changes invalidate that review.
 
 ### 8. Interview Prep
 
@@ -249,6 +256,9 @@ The checklist must include:
 
 Maintain `workflow.md` as a short status log:
 
+For integrated packages, generate this summary from `state.json`; do not maintain
+an independent approval decision in Markdown.
+
 ```md
 # Application Workflow
 
@@ -276,6 +286,40 @@ Status values:
 - `paused`
 
 Only mark `submitted-by-user` when the user explicitly says they submitted.
+
+## Integrated Local Workflow
+
+Use the shared CLI for saved jobs, preferences, application preparation,
+tracking, digests, and AI requests. See `docs/integrated-workflow.md` for the
+command groups and handoff contract. Existing individual scripts remain usable.
+
+Before reading the resume for matching, extract requirements and fix their
+importance from the JD alone. Then map evidence, keeping eligibility separate
+from fit and preparation effort. A high fit score cannot offset a missing
+mandatory qualification. Analyze selected jobs deeply; use deterministic
+filters and deadlines for the rest.
+
+Use stable evidence IDs with original resume locations, and the same question
+IDs across answers, length checks, and evidence maps. Generated wording never
+becomes a new resume fact. Show user-provided factual changes before applying
+them to the resume and related materials.
+
+`state.json` is the machine-readable preparation authority. Generate the
+`workflow.md` status summary from that state; keep actual recruitment progress
+in the tracker. Store interruption reasons and next actions, and reuse only
+completed stages whose input hashes remain valid. Old packages without current
+review metadata need revalidation; do not overwrite their existing prose.
+
+Run structure validation for initialized templates and ready validation for
+completed packages. Only successful ready validation may record
+`ready-for-user-review`. Empty reviews, unresolved blockers, missing answers,
+unknown counting rules, missing evidence IDs, and stale reviews cannot pass.
+
+TUI and dashboard AI actions prepare prompts for the existing agent. A prepared
+request is not completed work. Run the requested skill here, save its outputs,
+validate, then reload the interface. No separate model server or API key is
+required. External schedulers may invoke the same CLI to refresh explicitly
+registered jobs; they must not discover new jobs or submit applications.
 
 ## Stop Conditions
 

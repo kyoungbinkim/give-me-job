@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { toPosixPath } from "./platform.mjs";
 import { orchestratorSkillName, skillNames } from "./skill-registry.mjs";
 import { agentName, generatedSourcesForTarget, readAgentSource, sourceForTarget, workflowTools } from "./install-adapters.mjs";
+import { directWorkflowCommands, parseArgs, runWorkflowCommand, workflowGroups, workspaceUsage } from "./workspace-cli.mjs";
 import {
   agentExtensionFor,
   agentRootFor,
@@ -45,32 +46,9 @@ function usage() {
 give-me-job install [--target all|codex|opencode|claude-code] [--scope user|project] [--force] [--dry-run]
 give-me-job uninstall [--target all|codex|opencode|claude-code] [--scope user|project] [--dry-run]
 give-me-job doctor [--target all|codex|opencode|claude-code] [--scope user|project]
-
+${workspaceUsage().replace(/^Usage:\n/, "")}
 Defaults: install prompts for --target and uses --scope user
 `;
-}
-
-function parseArgs(argv) {
-  const args = { _: [] };
-  for (let i = 0; i < argv.length; i += 1) {
-    const current = argv[i];
-    if (!current.startsWith("--")) {
-      args._.push(current);
-      continue;
-    }
-
-    const [rawKey, inlineValue] = current.slice(2).split("=", 2);
-    const next = argv[i + 1];
-    if (inlineValue !== undefined) {
-      args[rawKey] = inlineValue;
-    } else if (!next || next.startsWith("--")) {
-      args[rawKey] = true;
-    } else {
-      args[rawKey] = next;
-      i += 1;
-    }
-  }
-  return args;
 }
 
 function expandTargets(value) {
@@ -640,6 +618,11 @@ async function main() {
 
   if (args.help || args.h) {
     console.log(usage());
+    return;
+  }
+
+  if (workflowGroups.has(command) || directWorkflowCommands.has(command)) {
+    await runWorkflowCommand(args);
     return;
   }
 

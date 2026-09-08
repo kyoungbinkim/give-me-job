@@ -8,6 +8,19 @@ export const agentDescription =
 
 export const workflowTools = [
   {
+    name: "workspace",
+    // Deliberately not give-me-job-cli.mjs: that entry also exposes install and
+    // uninstall, and the flag allowlist below does not constrain positional
+    // subcommands. This script can only run workspace actions.
+    script: "tools/workspace-cli.mjs",
+    description: "Operate the local give-me-job workspace through the shared jobs, profile, application, tracker, digest, request, TUI, and dashboard commands.",
+    hint: "jobs list --workspace . --format json",
+    allowedFlags: ["--help", "--workspace", "--format", "--input", "--data", "--port", "--timeout", "--kind", "--file", "--encoding", "--retry", "--role", "--location", "--status", "--search", "--query", "--sort", "--job-id", "--package-path", "--resume-path", "--mode", "--task", "--application-id", "--stage", "--confirmed", "--source", "--note"],
+    allowedFlagPrefixes: [],
+    blockedFlags: [],
+    pathFlags: ["--workspace", "--input", "--file", "--package-path", "--resume-path"],
+  },
+  {
     name: "fetch-jobs",
     script: "tools/fetch-jobs.mjs",
     description: "Fetch and normalize a user-supplied public posting URL or jobs from registered give-me-job source adapters.",

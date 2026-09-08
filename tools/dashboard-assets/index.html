@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="내 공고, 지원 자료와 전형 일정을 함께 관리하는 로컬 채용 작업공간">
+  <title>지원 작업공간 · give-me-job</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 이동</a>
+  <header><strong>give-me-job</strong><span>나의 지원 작업공간</span><span class="local">로컬 저장</span></header>
+  <div class="shell">
+    <nav aria-label="작업 메뉴" id="navigation"></nav>
+    <main id="main">
+      <div class="heading"><div><p class="eyebrow">CAREER WORKSPACE</p><h1 id="title">오늘의 작업</h1></div><button id="reload" type="button">새로고침</button></div>
+      <p class="intro">등록한 공고부터 다음 전형까지, 확인된 정보로 준비하세요.</p>
+      <form id="action-form"></form>
+      <p id="status" role="status" aria-live="polite"></p>
+      <section id="results" aria-label="작업 결과"></section>
+    </main>
+  </div>
+</body>
+</html>

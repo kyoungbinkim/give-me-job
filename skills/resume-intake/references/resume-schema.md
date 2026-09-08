@@ -186,15 +186,15 @@ Every work and project entry must end with one comment:
 
 ## Evidence References
 
-The canonical schema does not require stable `EXP-001` IDs. Downstream skills
-should reference evidence by section and entry title, plus bullet number when
-needed, for example:
+Assign stable `EXP-001` IDs to evidence units. Preserve existing IDs across
+reordering and edits, and record the original section and entry title plus the
+current line or bullet location, for example:
 
 ```txt
-Projects > Reservation API Consistency Project > bullet 1
-Work Experience > Backend Engineer - FixturePay > bullet 2
+EXP-001: Projects > Reservation API Consistency Project > bullet 1
+EXP-002: Work Experience > Backend Engineer - FixturePay > bullet 2
 ```
 
-If an older resume still contains `EXP-001` IDs, downstream skills may use them
-for backward compatibility, but new intake should not create an `Experience
-Bank` section.
+An older resume without IDs remains readable. Add identifiers before ready
+validation without changing its facts. Do not create an `Experience Bank`
+section or treat generated application language as new source evidence.

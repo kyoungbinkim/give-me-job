@@ -59,7 +59,7 @@ Outputs produced:
    `unknown`.
 3. Read an existing `resume.md` if present. Preserve valid facts, but migrate
    old `Profile`, `Core Summary`, `Experience Bank`, or `Work History`
-   structures into the canonical sections.
+structures into the canonical sections.
 4. Create or update the metadata block:
    - `last-updated`: today's date
    - `career-type`: `new-grad` or `experienced`
@@ -123,10 +123,20 @@ impact, cross-functional work, decision making, and repeatable contribution.
 ## Schema Decisions
 
 Adopt the canonical resume-style structure in `references/resume-schema.md`.
-Do not create a separate `Experience Bank` for new intake. Existing downstream
-skills can cite evidence by section, entry title, and bullet number. If an old
-resume already has stable IDs such as `EXP-001`, preserve them only as legacy
-references while migrating the content into `Work Experience` or `Projects`.
+Do not create a separate `Experience Bank` for new intake. Assign stable IDs
+such as `EXP-001` to evidence in `Work Experience` or `Projects`, preserving
+existing IDs. Record the source section, entry title, and current line/bullet
+location alongside each ID. Never renumber IDs when entries move.
+
+For each experience capture situation, the candidate's role, action, result,
+learning, and suitable question types. Keep company/question reuse and related
+follow-up questions as usage notes, separate from career facts. Rewrite reused
+evidence for the selected company, role, and question purpose.
+
+Never copy a newly generated number or claim from a cover letter into the
+resume. When the user provides a new fact, show the proposed factual change
+before updating the resume and related materials. Changed source facts require
+revalidation of packages that used them.
 
 Treat missing contact fields and profile links as intake gaps. Ask for them or
 mark them clearly as missing; do not fabricate placeholder URLs, phone numbers,

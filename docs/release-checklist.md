@@ -20,6 +20,7 @@ Use this checklist before tagging a public release.
 - `node tests/validate/validate-skills.mjs` passes.
 - `npm test` passes.
 - `npm run test:install` passes, covering install, upgrade, conflict, force, and uninstall from a clean profile.
+- `npm test` passes on Ubuntu/Linux and macOS at least once for the release commit.
 - `npm pack --dry-run` contains only intended repository files.
 - `package.json` does not contain `private: true` before npm publishing.
 

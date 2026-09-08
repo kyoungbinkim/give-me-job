@@ -82,6 +82,26 @@ Outputs produced:
 9. Generate 2-3 interview follow-up questions for each key claim.
 10. Recommend concrete revisions.
 
+## Review Completion And Freshness
+
+Review the final answer revision as well as the draft. Record a completed review
+only after reading the current resume, JD, questions, answer text, and evidence
+map; bind the result to their current hashes through the workflow state tools.
+Changing any reviewed input invalidates the corresponding review. Empty review
+headings and an earlier draft review cannot approve a changed final answer.
+
+Record blockers with explicit statuses. `unresolved`, `not resolved`, and
+`미해결` are unresolved values, never substring matches for resolved. Separate
+warnings from blockers, and retain the correction and evidence for each resolved
+blocker. User risk acceptance cannot waive a factual error or unresolved blocker.
+
+Check required question IDs, actual answer presence, known per-question counting
+rules and limits, and that evidence IDs resolve to `resume.md`. Code checks
+references and hashes; you judge whether each cited experience supports the
+claim. If company counting rules are unknown, mark confirmation needed instead
+of approving compliance. Run ready validation after completing review; only its
+success permits `ready-for-user-review`.
+
 ## Blocker Criteria
 
 A finding is a `Blocker` if any condition below is true:

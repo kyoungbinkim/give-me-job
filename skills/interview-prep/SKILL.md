@@ -11,7 +11,7 @@ Use this skill to turn a cover letter package into interview preparation that th
 
 Use this skill after `cover-letter-draft.md` or `cover-letter-final.md` exists and an evidence map is available.
 
-Use it when the user asks for 면접 준비, 꼬리질문, 예상 질문, 답변 포인트, or interview defense based on a Korean application package.
+Use it when the user asks for 면접 준비, 꼬리질문, 예상 질문, 답변 포인트, 모의면접, 면접 복기, 결과 분석, or interview defense based on a Korean application package.
 
 ## Do Not Trigger
 
@@ -73,6 +73,30 @@ Outputs produced:
 7. Write answer points using only supported evidence.
 8. Mark missing or thin evidence clearly.
 9. Add a short preparation checklist for manual review before interview.
+
+## Practice, Debrief, And Results
+
+For a submitted application, use the exact company-specific answers the user
+confirms they submitted, together with their evidence IDs. Do not silently
+substitute a later edited answer. If that snapshot is unavailable, ask for it or
+label the preparation as based on an unconfirmed version.
+
+In mock interviews ask one question, wait for the user's answer, then give
+feedback on evidence, logic, and personal contribution before the next question.
+Distinguish the user's answer from suggested wording. Do not supply facts that
+the user did not provide or promote practice answers into resume evidence.
+
+For an actual interview debrief, record only user-provided questions, answers,
+and impressions, retaining the distinction between recalled facts and feelings.
+Link recurring improvement points to their debriefs and evidence. Aggregate only
+confirmed recruitment outcomes; exclude unknown or inferred outcomes from result
+counts. Never infer rejection causes or predict acceptance probabilities.
+
+Recruitment stages come from the posting and user input, with no forced ordering
+of document screening, tests, assignments, and interviews. Track separate
+deadline, assignment, and interview dates with `Asia/Seoul` as the default time
+zone. State changes need timestamp, source, and notes; submission requires user
+confirmation. Preparation status and recruitment progress remain separate.
 
 ## Output
 

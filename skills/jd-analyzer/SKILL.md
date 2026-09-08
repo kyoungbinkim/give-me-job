@@ -62,11 +62,20 @@ Outputs produced:
    - deadline
    - required documents
    - cover letter questions and length limits
-3. Analyze explicit requirements and inferred evaluation criteria in separate sections.
-4. Gap map the JD against `resume.md` when resume evidence is available.
+3. Analyze explicit requirements and inferred evaluation criteria in separate sections. Read the JD alone first; fix mandatory, core, and preferred importance and source excerpts before reading the resume. Do not adjust importance to suit the candidate.
+4. Gap map the JD against `resume.md` when resume evidence is available. Link each requirement to stable evidence IDs and original locations; classify it as met, partially met, unmet, or needs confirmation.
 5. Identify the likely evidence needed from `resume.md`.
 6. Mark gaps where the resume evidence appears weak or missing.
 7. Keep inference conservative. Label inferred criteria as inferred.
+
+Report employment type, location, selected sub-role, stated recruitment stages,
+questions, counting rules, attachments, missing source text, and contradictions.
+Keep eligibility, fit, and preparation effort distinct. Evaluate graduation
+timing, career length, certificate or language validity only when the JD demands
+them. An unmet mandatory qualification cannot be offset by a high fit score.
+Recommend starting writing, supplying information, or holding, with reasons.
+For multi-role postings, retain posting identity separately from the selected
+application role. Never use another role's questions or qualifications.
 
 ## Output
 
