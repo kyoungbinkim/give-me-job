@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-09
+
+The job search now lives in the same local workspace as the application
+packages. Postings, the application package, submission tracking, and the
+prompts handed back to the coding agent share one data directory and one
+validation path, reachable from the CLI, a keyboard TUI, or a loopback web
+dashboard. No API key, login, or automated submission is involved.
+
+No breaking changes. `0.8.1` was never published to npm, so upgrading from
+`0.8.0` also picks up that release's documentation fixes.
+
+### Added
+
+- Add the workspace commands `jobs import|list|refresh|rank`, `profile show|set`, `application prepare|validate`, `tracker list|update`, `digest`, `request`, `tui`, and `dashboard` to the `give-me-job` CLI, all operating on the same local data with `--workspace`, `--format json`, and `--input`/`--data`.
+- Register postings from CSV, a URL list, or supplied JD text, keep every observation, and flag duplicate candidates and changed fields; a posting change marks the linked application package `review-blocked`.
+- Add machine-readable package state (`state.json`, `review.json`) and a `ready` validation mode that ties each answer to resume evidence IDs, the evidence map, a completed HR review, input hashes, and the confirmed length rule before a package can reach `ready-for-user-review`.
+- Add stage, schedule, and user-confirmed outcome tracking, plus a digest of new, changed, closing, and re-review items.
+- Add a keyboard TUI and a local web dashboard bound to `127.0.0.1` with an Origin check on every action.
+- Add the `workspace` workflow tool for installed agents. It runs `tools/workspace-cli.mjs`, which dispatches workspace actions only and cannot reach `install` or `uninstall`.
+- Add `dashboard --timeout <ms>` so a non-interactive caller is not blocked waiting for a signal it cannot send.
+- Add `docs/integrated-workflow.md` and `docs/agent-evaluation.md`, and the `test:workspace` suite covering package state, tracking, and the integrated CLI, TUI, and dashboard.
+
+### Changed
+
+- `support/validate/validate-application.mjs` now delegates to `validateApplication` with an explicit `structure` or `ready` mode. Structure mode keeps the package consistency gate: final text requires a non-empty HR review, evidence rows, and no unresolved blockers, and `workflow.md` field values must be supported.
+- Workspace commands exit non-zero when validation reports a failure, so a script gating on the exit code no longer treats a blocked package as validated.
+- `jobs refresh` skips manually entered postings that have no public URL instead of marking them unverifiable, and an import keeps the other columns a CSV row supplied for a fetched posting.
+- Reading the job store tolerates a malformed stored URL, and "latest wins" is decided by observation timestamp alone.
+
 ## [0.8.1] - 2026-08-26
 
 Documentation fix release. The packaged quickstart told users to run a bare

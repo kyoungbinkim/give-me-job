@@ -26,9 +26,12 @@ CLI와 TUI·로컬 웹은 같은 저장 데이터와 검증 로직을 사용합�
 | `digest` | 신규·변경·마감 임박·재검토·예정 전형 |
 | `request` | 기존 에이전트에서 실행할 입력 묶음과 프롬프트 |
 | `tui` | 키보드로 사용하는 터미널 화면 |
-| `dashboard` | 로컬 웹 서버 실행 |
+| `dashboard` | 로컬 웹 서버 실행 (`--port`, `--timeout <밀리초>`) |
 
 기존 `install`, `uninstall`, `doctor` 및 개별 도구 스크립트 호출은 유지됩니다.
+`dashboard`는 `Ctrl+C`로 종료하며, 스크립트나 에이전트가 실행할 때는
+`--timeout <밀리초>`로 실행 시간을 제한합니다. 검증 명령은 실패 시 종료 코드
+1을 반환하므로 스크립트에서 그대로 게이트로 사용할 수 있습니다.
 
 ```bash
 give-me-job jobs list --workspace . --format json
