@@ -59,19 +59,19 @@ function usage() {
   return `Usage:
 node tools/fetch-jobs.mjs --source ${sourceList} [flags...]
 node tools/fetch-jobs.mjs --source <source> --fixture <path> --dry-run
-node tools/fetch-jobs.mjs --source url --url <posting-url>
+node tools/fetch-jobs.mjs --source url --url <public-posting-url>
 
 Common options:
   --source <name>          One of: ${sources.length > 0 ? sources.join(", ") : "no sources registered yet"}
-  --url <posting-url>      Public JobKorea, Linkareer, SK Careers, or LG Careers detail URL
+  --url <posting-url>      Public HTTPS job posting page
   --fixture <path>         Read a fixture instead of calling a live API
   --out <dir>              Default: data/jobs
   --date <YYYY-MM-DD>      Output date folder
   --dry-run                Print normalized jobs without writing files
   --param.<name> <value>   Pass source-specific query parameters
 
-Automated job discovery is still a TODO. The url source handles one public
-posting URL supplied by the user without credentials.
+Automated job discovery is still a TODO. The url source extracts one public
+posting page supplied by the user without credentials.
 `;
 }
 

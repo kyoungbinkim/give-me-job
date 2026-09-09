@@ -130,8 +130,9 @@ Example command the Claude Code tool skill can run from the installed user bundl
 node ~/.claude/give-me-job/tools/fetch-jobs.mjs --source url --url "<posting-url>"
 ```
 
-This normalizes a user-supplied public JobKorea, Linkareer, SK Careers, or LG
-Careers detail URL. Automated discovery remains a TODO.
+This normalizes one user-supplied public HTTPS job page. JobKorea, Linkareer,
+SK Careers, and LG Careers have dedicated extraction; other pages use generic
+structured-data extraction. Automated discovery remains a TODO.
 
 Project-scope install paths:
 

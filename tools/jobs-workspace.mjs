@@ -7,6 +7,10 @@ import { fetchManualUrlJobs } from "./job-sources/manual-url.mjs";
 import { getProfile, writeWorkspaceJson } from "./profile.mjs";
 import { getAssessment } from "./job-assessment.mjs";
 
+const MAX_URL_IMPORTS = 20;
+const MAX_URL_INPUT_CHARS = 20_000;
+const MAX_URL_IMPORT_TEXT_CHARS = 2_000_000;
+
 export function parseCsv(text) {
   const rows = [];
   let cells = [], value = "", quoted = false, closed = false, line = 1, start = 1;
@@ -34,6 +38,49 @@ export function parseCsv(text) {
   return rows.filter((row) => row.cells.some((cell) => cell.trim()));
 }
 
+function seoulDateStamp(now) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const value = Object.fromEntries(parts.map(({ type, value: part }) => [type, part]));
+  return `${value.year}-${value.month}-${value.day}`;
+}
+
+export function isExpiredJob(job, now = new Date()) {
+  const deadline = String(job.deadline ?? "").trim();
+  if (!deadline) return false;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(deadline)) return deadline < seoulDateStamp(now);
+  const timestamp = Date.parse(deadline);
+  return Number.isFinite(timestamp) && seoulDateStamp(new Date(timestamp)) < seoulDateStamp(now);
+}
+
+function removeExpiredJobs(jobs, now = new Date()) {
+  const active = [];
+  const expiredRemoved = [];
+  for (const job of jobs) {
+    if (isExpiredJob(job, now)) expiredRemoved.push({ jobId: job.id, company: job.company, title: job.title, deadline: job.deadline });
+    else active.push(job);
+  }
+  return { active, expiredRemoved };
+}
+
+async function pruneWorkspaceJobs(root, now = new Date()) {
+  const target = path.join(root, "data/jobs/workspace.json");
+  let jobs;
+  try { jobs = JSON.parse(await readFile(target, "utf8")); }
+  catch (error) {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  }
+  if (!Array.isArray(jobs)) return [];
+  const { active, expiredRemoved } = removeExpiredJobs(jobs, now);
+  if (expiredRemoved.length) await writeWorkspaceJson(target, active);
+  return expiredRemoved;
+}
+
 async function inputRows(options) {
   if (options.retry) {
     if (!/^[a-zA-Z0-9-]+$/.test(options.retry)) throw new Error("Invalid import report ID.");
@@ -51,15 +98,22 @@ async function inputRows(options) {
     for (const column of Object.values(mapping)) if (!header.cells.includes(column)) throw new Error(`Missing CSV column: ${column}`);
     return rows.map(({ row, cells }) => ({ row, input: Object.fromEntries(Object.entries(mapping).map(([field, column]) => [field, cells[header.cells.indexOf(column)] ?? ""])), error: cells.length === header.cells.length ? "" : "CSV column count differs from header." }));
   }
-  if (options.kind === "urls") return text.split(/\r?\n/).map((url, index) => ({ row: index + 1, input: { url: url.trim() } })).filter(({ input }) => input.url);
+  if (options.kind === "urls") {
+    if (text.length > MAX_URL_INPUT_CHARS) throw new Error(`URL input must be at most ${MAX_URL_INPUT_CHARS} characters.`);
+    const rows = text.split(/\r?\n/).map((url, index) => ({ row: index + 1, input: { url: url.trim() } })).filter(({ input }) => input.url);
+    if (rows.length > MAX_URL_IMPORTS) throw new Error(`Import at most ${MAX_URL_IMPORTS} URLs at a time.`);
+    return rows;
+  }
   if (options.kind !== "text") throw new Error("Import kind must be csv, urls, or text.");
   return [{ row: 1, input: { ...options.metadata, postingText: text } }];
 }
 
 export async function listWorkspaceJobs({ root = process.cwd(), role, location, status, search, query, sort } = {}) {
+  const now = new Date();
+  await pruneWorkspaceJobs(root, now);
   const jobs = await readJobs([path.join(root, "data/jobs")]);
   const term = search ?? query;
-  const filtered = jobs.filter((job) => (!role || `${job.role} ${job.title}`.includes(role)) && (!location || String(job.location ?? "").includes(location)) && (!status || job.availability === status) && (!term || `${job.company} ${job.title} ${job.role}`.toLowerCase().includes(term.toLowerCase())));
+  const filtered = jobs.filter((job) => !isExpiredJob(job, now) && (!role || `${job.role} ${job.title}`.includes(role)) && (!location || String(job.location ?? "").includes(location)) && (!status || job.availability === status) && (!term || `${job.company} ${job.title} ${job.role}`.toLowerCase().includes(term.toLowerCase())));
   if (sort === "company") filtered.sort((a, b) => String(a.company).localeCompare(String(b.company), "ko"));
   else if (sort === "updated") filtered.sort((a, b) => String(b.lastCheckedAt ?? "").localeCompare(String(a.lastCheckedAt ?? "")));
   else if (sort === "deadline") filtered.sort((a, b) => String(a.deadline || "9999").localeCompare(String(b.deadline || "9999")));
@@ -90,6 +144,7 @@ export async function importJobs(options = {}) {
   const rows = await inputRows({ ...options, root });
   const jobs = await listWorkspaceJobs({ root });
   const report = { id: randomUUID(), createdAt: new Date().toISOString(), counts: { new: 0, updated: 0, duplicate: 0, "needs-confirmation": 0, failed: 0 }, results: [] };
+  let importedTextChars = 0;
   for (const item of rows) {
     try {
       if (item.error) throw new Error(item.error);
@@ -109,6 +164,10 @@ export async function importJobs(options = {}) {
           continue;
         }
       }
+      if (options.kind === "urls") {
+        importedTextChars += String(input.raw?.postingText ?? input.postingText ?? "").length;
+        if (importedTextChars > MAX_URL_IMPORT_TEXT_CHARS) throw new Error("Imported posting text exceeds the 2,000,000 character batch limit.");
+      }
       if (!input.company || !input.title) throw new Error("Company and title are required for supplied JD content.");
       if (typeof input.active === "string") {
         if (!["true", "false", "1", "0", ""].includes(input.active)) throw new Error("active must be true, false, 1, or 0.");
@@ -120,7 +179,9 @@ export async function importJobs(options = {}) {
     } catch (error) { report.results.push({ ...item, status: "failed", message: error.message }); }
   }
   for (const item of report.results) report.counts[item.status] += 1;
-  await writeWorkspaceJson(path.join(root, "data/jobs/workspace.json"), jobs.map(({ file, ...job }) => job));
+  const { active, expiredRemoved } = removeExpiredJobs(jobs);
+  report.expiredRemoved = expiredRemoved;
+  await writeWorkspaceJson(path.join(root, "data/jobs/workspace.json"), active.map(({ file, ...job }) => job));
   await writeWorkspaceJson(path.join(root, "data/job-imports", `${report.id}.json`), report);
   return report;
 }
@@ -157,8 +218,9 @@ export async function refreshJobs({ root = process.cwd(), ids, fetcher = fetchMa
     }
   }
   await Promise.all([worker(), worker()]);
-  await writeWorkspaceJson(path.join(root, "data/jobs/workspace.json"), jobs.map(({ file, ...job }) => job));
-  return { results };
+  const { active, expiredRemoved } = removeExpiredJobs(jobs);
+  await writeWorkspaceJson(path.join(root, "data/jobs/workspace.json"), active.map(({ file, ...job }) => job));
+  return { results, expiredRemoved };
 }
 
 export async function rankWorkspaceJobs({ root = process.cwd() } = {}) {

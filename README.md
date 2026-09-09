@@ -43,11 +43,11 @@ Use [`agent.md`](agent.md) as the orchestrator for the full workflow. Repository
 - HR review: check exaggeration, unsupported claims, company-name residue, wrong sub-role targeting, and pre-submission blockers.
 - Interview preparation: generate follow-up questions and evidence-backed answer points for interview defense.
 - Application packaging: create one `applications/<company-role>/` package with a manual checklist.
-- Job operations: import CSV, URL lists, or pasted JD text; track observations, changes, duplicate candidates, deadlines, and preferences.
+- Job operations: paste multiple posting URLs (one per line), import CSV or JD text, and keep active lists clean by removing jobs after their Seoul-time deadline.
 - Resumable validation: separate template structure checks from readiness checks tied to resume, JD, question, answer, evidence, final-text, and HR-review hashes.
 - Recruitment tracking: record user-confirmed submissions, arbitrary stages, Seoul-time schedules, interview debriefs, and confirmed outcomes.
 - Shared surfaces: operate the same local data and validation through the agent, CLI, keyboard TUI, or a `127.0.0.1` web dashboard.
-- Job-source tools: normalize user-supplied public JobKorea, Linkareer, SK Careers, and LG Careers URLs. Automated discovery remains outside the product scope.
+- Job-source tools: normalize a user-supplied public HTTPS job page, with dedicated extraction for JobKorea, Linkareer, SK Careers, and LG Careers. Automated discovery remains outside the product scope.
 - No credentials: nothing here needs an API key, access token, or approved API access.
 
 ## Documentation
@@ -354,10 +354,13 @@ be normalized without credentials:
 node tools/fetch-jobs.mjs --source url --url "https://careers.lg.com/apply/detail?id=1002029"
 ```
 
-The URL source supports JobKorea, Linkareer, SK Careers, and LG Careers detail
-pages. It saves the normalized record under `data/jobs/YYYY-MM-DD/`. Public
-pages often omit application questions or put detailed duties in an attachment;
-the agent stops and asks for those missing inputs instead of guessing.
+The URL source has dedicated extractors for JobKorea, Linkareer, SK Careers,
+and LG Careers, and also accepts a user-supplied public HTTPS job page. Generic
+pages use `JobPosting` structured data when available and otherwise extract only
+public page metadata and readable content. It saves the normalized record under
+`data/jobs/YYYY-MM-DD/`. Public pages often omit application questions or put
+detailed duties in an attachment; the agent stops and asks for those missing
+inputs instead of guessing.
 
 `give-me-job` requires no API key, access token, or other issued credential, and
 none of its tools read one. Any future job source must work the same way.

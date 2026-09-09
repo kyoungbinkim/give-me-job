@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [0.9.1] - 2026-09-09
+
+### Added
+
+- Accept multiple user-supplied public HTTPS job pages with generic structured-data or readable-content extraction, and remove postings whose Seoul calendar deadline has passed from active job lists.
+
+### Changed
+
+- Improve the keyboard TUI with grouped navigation, contextual help, formatted results, narrow-terminal layout, and result scrolling.
+
+### Security
+
+- Bind each validated public DNS address to the corresponding HTTPS connection so user-supplied posting URLs cannot switch to a private address between validation and connection.
 
 ## [0.9.0] - 2026-09-09
 

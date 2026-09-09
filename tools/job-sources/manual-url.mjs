@@ -1,7 +1,25 @@
 import { readFile } from "node:fs/promises";
+import { lookup } from "node:dns/promises";
+import { request as httpsRequest } from "node:https";
+import { BlockList, isIP } from "node:net";
 import { cleanText, normalizeJob } from "../normalize-job.mjs";
 
 const MAX_RESPONSE_BYTES = 10 * 1024 * 1024;
+const NON_PUBLIC_ADDRESSES = new BlockList();
+const GLOBAL_IPV6_ADDRESSES = new BlockList();
+GLOBAL_IPV6_ADDRESSES.addSubnet("2000::", 3, "ipv6");
+for (const [network, prefix] of [
+  ["0.0.0.0", 8], ["10.0.0.0", 8], ["100.64.0.0", 10], ["127.0.0.0", 8],
+  ["169.254.0.0", 16], ["172.16.0.0", 12], ["192.0.0.0", 24], ["192.0.2.0", 24],
+  ["192.88.99.0", 24], ["192.168.0.0", 16], ["198.18.0.0", 15], ["198.51.100.0", 24],
+  ["203.0.113.0", 24], ["224.0.0.0", 4], ["240.0.0.0", 4],
+]) NON_PUBLIC_ADDRESSES.addSubnet(network, prefix, "ipv4");
+for (const [network, prefix] of [
+  ["::", 96], ["64:ff9b::", 96],
+  ["64:ff9b:1::", 48], ["100::", 64], ["2001::", 23], ["2001:db8::", 32],
+  ["2002::", 16], ["3fff::", 20], ["fc00::", 7], ["fe80::", 10],
+  ["fec0::", 10], ["ff00::", 8],
+]) NON_PUBLIC_ADDRESSES.addSubnet(network, prefix, "ipv6");
 const SUPPORTED_HOSTS = new Map([
   ["jobkorea.co.kr", "jobkorea"],
   ["www.jobkorea.co.kr", "jobkorea"],
@@ -74,6 +92,18 @@ function parseJsonLd(html) {
     }
   }
   return {};
+}
+
+function tagAttribute(tag, name) {
+  return decodeHtml(String(tag).match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, "i"))?.[1] ?? "");
+}
+
+function metaContent(html, name) {
+  for (const match of String(html).matchAll(/<meta\b[^>]*>/gi)) {
+    const key = tagAttribute(match[0], "property") || tagAttribute(match[0], "name");
+    if (key.toLowerCase() === name.toLowerCase()) return cleanText(tagAttribute(match[0], "content"));
+  }
+  return "";
 }
 
 function organizationName(value) {
@@ -337,6 +367,97 @@ export function parseLgCareers(payload, url) {
   });
 }
 
+function genericSourceId(url, identifier = "") {
+  const parsed = new URL(url);
+  for (const key of [...parsed.searchParams.keys()]) if (/^utm_|^(fbclid|gclid)$/i.test(key)) parsed.searchParams.delete(key);
+  parsed.searchParams.sort();
+  const location = parsed.search ? `${parsed.pathname}${parsed.search}` : sourceIdFromUrl(url) || parsed.pathname;
+  return `${parsed.hostname.toLowerCase()}:${cleanText(identifier) || location}`;
+}
+
+export function parseGenericPosting(html, url) {
+  const structured = parseJsonLd(html);
+  if (Object.keys(structured).length) {
+    const job = baseJsonLdJob({ ...structured, url }, "web", url, {
+      postingText: stripHtml(structured.description),
+      applyUrl: url,
+      extractionWarnings: ["Generic public-page extraction; verify the role, deadline, and application questions against the source page."],
+    });
+    job.sourceId = genericSourceId(url, identifierValue(structured.identifier));
+    return job;
+  }
+  const title = metaContent(html, "og:title") || stripHtml(String(html).match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "");
+  const company = metaContent(html, "og:site_name") || metaContent(html, "application-name");
+  const content = String(html).match(/<(?:main|article)\b[^>]*>([\s\S]*?)<\/(?:main|article)>/i)?.[1]
+    ?? String(html).match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1]
+    ?? "";
+  return normalizeJob({
+    source: "web",
+    sourceId: genericSourceId(url),
+    url,
+    company,
+    title,
+    active: true,
+    raw: {
+      postingText: stripHtml(content), positions: [], questions: [], attachments: [], applyUrl: url,
+      extractionWarnings: [
+        "This page has no JobPosting structured metadata; verify every extracted field against the source page.",
+        "Application questions and character limits may be missing.",
+      ],
+    },
+  });
+}
+
+export function isPublicAddress(address) {
+  const family = isIP(address);
+  if (family === 0 || address.toLowerCase().startsWith("::ffff:")) return false;
+  if (family === 6 && !GLOBAL_IPV6_ADDRESSES.check(address, "ipv6")) return false;
+  return !NON_PUBLIC_ADDRESSES.check(address, family === 4 ? "ipv4" : "ipv6");
+}
+
+async function resolvePublicAddress(hostname) {
+  const clean = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  if (isPrivateHostname(clean)) {
+    throw new Error("Posting URLs must use a public hostname.");
+  }
+  const addresses = await lookup(clean, { all: true, verbatim: true });
+  if (!addresses.length || addresses.some(({ address }) => !isPublicAddress(address))) {
+    throw new Error("Posting hostname resolves to a non-public address.");
+  }
+  return addresses[0];
+}
+
+export function createPinnedLookup({ address, family }) {
+  return (_hostname, options, callback) => {
+    if (options?.all) callback(null, [{ address, family }]);
+    else callback(null, address, family);
+  };
+}
+
+export async function readLimitedResponse(response) {
+  const contentLength = Number(response.headers["content-length"] ?? 0);
+  if (contentLength > MAX_RESPONSE_BYTES) {
+    response.destroy();
+    throw new Error("Posting response is larger than 10 MB; paste the relevant JD text manually.");
+  }
+  const chunks = [];
+  let received = 0;
+  for await (const chunk of response) {
+    received += chunk.byteLength;
+    if (received > MAX_RESPONSE_BYTES) {
+      response.destroy();
+      throw new Error("Posting response is larger than 10 MB; paste the relevant JD text manually.");
+    }
+    chunks.push(Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+function isPrivateHostname(hostname) {
+  const clean = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  return Boolean(isIP(clean) || clean === "localhost" || clean.endsWith(".localhost") || clean.endsWith(".local") || clean.endsWith(".internal"));
+}
+
 export function validatePostingUrl(value) {
   let url;
   try {
@@ -347,15 +468,15 @@ export function validatePostingUrl(value) {
   if (url.protocol !== "https:" || url.username || url.password || url.port) {
     throw new Error("Posting URLs must use HTTPS with the default port and must not include credentials.");
   }
-  const source = SUPPORTED_HOSTS.get(url.hostname.toLowerCase());
-  if (!source) throw new Error(`Unsupported posting host: ${url.hostname}. Paste the JD text manually instead.`);
-  const validPath = {
+  if (isPrivateHostname(url.hostname)) throw new Error("Posting URLs must use a public hostname.");
+  const source = SUPPORTED_HOSTS.get(url.hostname.toLowerCase()) ?? "web";
+  const validPath = source === "web" ? null : {
     jobkorea: /^\/Recruit\/GI_Read(?:\/\d+)?\/?$/i,
     linkareer: /^\/activity\/\d+\/?$/i,
     skcareers: /^\/Recruit\/Detail\/R[\dA-Za-z]+\/?$/i,
     lgcareers: /^\/apply\/detail\/?$/i,
   }[source];
-  if (!validPath.test(url.pathname)) throw new Error(`Unsupported ${source} posting path: ${url.pathname}`);
+  if (validPath && !validPath.test(url.pathname)) throw new Error(`Unsupported ${source} posting path: ${url.pathname}`);
   url.hash = "";
   return { source, url };
 }
@@ -366,46 +487,54 @@ async function fetchResponse(url, options = {}) {
   let requestOptions = { ...fetchOptions };
   let response;
   for (let redirects = 0; redirects <= 5; redirects += 1) {
-    response = await fetch(currentUrl, {
-      ...requestOptions,
-      headers: {
-        "User-Agent": "give-me-job manual-url-intake",
-        ...(requestOptions.headers ?? {}),
-      },
-      redirect: "manual",
-      signal: AbortSignal.timeout(timeoutMs),
+    const address = await resolvePublicAddress(currentUrl.hostname);
+    response = await new Promise((resolve, reject) => {
+      const request = httpsRequest(currentUrl, {
+        ...requestOptions,
+        headers: { "User-Agent": "give-me-job manual-url-intake", ...(requestOptions.headers ?? {}) },
+        lookup: createPinnedLookup(address),
+        signal: AbortSignal.timeout(timeoutMs),
+      }, resolve);
+      request.on("error", reject);
+      if (requestOptions.body !== undefined) request.write(requestOptions.body);
+      request.end();
     });
-    if (![301, 302, 303, 307, 308].includes(response.status)) break;
-    if (redirects === 5) throw new Error("Posting request exceeded 5 redirects.");
-    const location = response.headers.get("location");
-    if (!location) throw new Error("Posting redirect did not include a location.");
-    const nextUrl = new URL(location, currentUrl);
+    if (![301, 302, 303, 307, 308].includes(response.statusCode)) break;
+    if (redirects === 5) {
+      response.resume();
+      throw new Error("Posting request exceeded 5 redirects.");
+    }
+    const location = response.headers.location;
+    if (!location) {
+      response.resume();
+      throw new Error("Posting redirect did not include a location.");
+    }
+    let nextUrl;
+    try { nextUrl = new URL(location, currentUrl); }
+    catch {
+      response.resume();
+      throw new Error("Posting redirect location is invalid.");
+    }
     const currentSource = SUPPORTED_HOSTS.get(currentUrl.hostname.toLowerCase());
     const nextSource = SUPPORTED_HOSTS.get(nextUrl.hostname.toLowerCase());
     const sameHost = currentUrl.hostname.toLowerCase() === nextUrl.hostname.toLowerCase();
     if (nextUrl.protocol !== "https:" || nextUrl.username || nextUrl.password || nextUrl.port || (!sameHost && (!currentSource || currentSource !== nextSource))) {
+      response.resume();
       throw new Error(`Posting redirected to an unsupported host: ${nextUrl.hostname}`);
     }
-    if (response.status === 303 || ([301, 302].includes(response.status) && String(requestOptions.method ?? "GET").toUpperCase() === "POST")) {
+    response.resume();
+    if (response.statusCode === 303 || ([301, 302].includes(response.statusCode) && String(requestOptions.method ?? "GET").toUpperCase() === "POST")) {
       const headers = { ...(requestOptions.headers ?? {}) };
       delete headers["Content-Type"];
       requestOptions = { ...requestOptions, method: "GET", body: undefined, headers };
     }
     currentUrl = nextUrl;
   }
-  if (!response.ok) throw new Error(`Posting request failed: ${response.status} ${response.statusText}`);
-  const contentLength = Number(response.headers.get("content-length") ?? 0);
-  if (contentLength > MAX_RESPONSE_BYTES) throw new Error("Posting response is larger than 10 MB; paste the relevant JD text manually.");
-  const chunks = [];
-  let received = 0;
-  for await (const chunk of response.body) {
-    received += chunk.byteLength;
-    if (received > MAX_RESPONSE_BYTES) {
-      throw new Error("Posting response is larger than 10 MB; paste the relevant JD text manually.");
-    }
-    chunks.push(Buffer.from(chunk));
+  if (response.statusCode < 200 || response.statusCode >= 300) {
+    response.resume();
+    throw new Error(`Posting request failed: ${response.statusCode} ${response.statusMessage}`);
   }
-  return Buffer.concat(chunks).toString("utf8");
+  return readLimitedResponse(response);
 }
 
 function usableJob(job) {
@@ -434,6 +563,7 @@ export async function fetchManualUrlJobs(options = {}) {
   }
 
   const html = options.fixture ? await readFile(options.fixture, "utf8") : await fetchResponse(url, { timeoutMs: options.timeout ?? 30_000 });
+  if (source === "web") return [usableJob(parseGenericPosting(html, url.href))];
   if (source === "linkareer") return [usableJob(parseLinkareer(html, url.href))];
   if (source === "skcareers") return [usableJob(parseSkCareers(html, url.href))];
 

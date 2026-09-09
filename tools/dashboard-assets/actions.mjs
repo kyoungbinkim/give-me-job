@@ -1,7 +1,7 @@
 export const operations = [
   { action: "digest", label: "오늘의 작업", fields: [] },
   { action: "jobs.list", label: "공고 목록", fields: [["query", "회사·직무 검색"], ["sort", "정렬", "select", ["deadline", "updated", "company"]]] },
-  { action: "jobs.import", label: "공고 등록", fields: [["kind", "입력 형식", "select", ["text", "urls", "csv"]], ["input", "JD 본문 · URL 목록 · CSV", "textarea"], ["metadata", "공고 정보", "json", '{"company":"", "role":"", "title":"", "url":""}'], ["encoding", "문자 인코딩", "select", ["utf-8", "euc-kr"]], ["mapping", "CSV 열 매핑", "json", "{}"]] },
+  { action: "jobs.import", label: "공고 등록", fields: [["kind", "입력 형식", "select", ["urls", "text", "csv"]], ["input", "URL 목록 · JD 본문 · CSV", "textarea"], ["metadata", "공고 정보", "json", '{"company":"", "role":"", "title":"", "url":""}'], ["encoding", "문자 인코딩", "select", ["utf-8", "euc-kr"]], ["mapping", "CSV 열 매핑", "json", "{}"]] },
   { action: "jobs.refresh", label: "관심 공고 재확인", fields: [] },
   { action: "jobs.rank", label: "지원 우선순위", fields: [] },
   { action: "application.prepare", label: "패키지 준비", fields: [["jobId", "공고 ID"], ["role", "선택한 지원 직무"]] },

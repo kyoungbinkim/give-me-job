@@ -319,8 +319,10 @@ applications/
 ## 채용공고 연동
 
 채용 공고 자동 검색(job-source 연동)은 아직 준비 중(TODO)입니다.
-다만 사용자가 직접 제공한 잡코리아, 링커리어, SK Careers, LG Careers의
-공개 상세 URL은 자격증명 없이 정규화할 수 있습니다.
+다만 사용자가 직접 제공한 공개 HTTPS 채용 페이지 한 건은 자격증명 없이
+정규화할 수 있습니다. 잡코리아, 링커리어, SK Careers, LG Careers에는 전용
+추출기를 사용하고, 다른 페이지는 `JobPosting` 구조화 데이터와 공개 본문을
+보수적으로 추출합니다.
 
 ```bash
 node tools/fetch-jobs.mjs --source url --url "https://careers.lg.com/apply/detail?id=1002029"

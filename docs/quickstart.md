@@ -145,15 +145,16 @@ use the same data and validation logic as the CLI.
 
 ## Optional: Normalize A Posting URL
 
-Automated discovery is a TODO, but a supported public posting URL can be saved
+Automated discovery is a TODO, but a user-supplied public HTTPS job page can be saved
 without credentials:
 
 ```bash
 node tools/fetch-jobs.mjs --source url --url "<posting-url>"
 ```
 
-JobKorea, Linkareer, SK Careers, and LG Careers detail URLs are supported. See
-[integrations/job-sources.md](integrations/job-sources.md).
+JobKorea, Linkareer, SK Careers, and LG Careers have dedicated extraction.
+Other pages use `JobPosting` structured data or conservative page metadata
+extraction. See [integrations/job-sources.md](integrations/job-sources.md).
 
 ## Optional: Prioritize Jobs
 

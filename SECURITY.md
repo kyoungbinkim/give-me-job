@@ -22,9 +22,11 @@ fixtures under `tests/fixtures/` or invented data.
 
 ## Threat Model
 
-This project is a local CLI and a set of agent skill files. It has no server,
-no runtime npm dependencies, and no account system. The realistic risks are
-about the local filesystem and about personal data.
+This project is a local CLI and a set of agent skill files. It has no account
+system or runtime npm dependencies. Its dashboard listens only on loopback, and
+URL intake can request a public HTTPS job page supplied by the user. The
+realistic risks are about the local filesystem, outbound URL handling, and
+personal data.
 
 In scope:
 
@@ -38,6 +40,8 @@ In scope:
   git-ignored.
 - Anything that would cause a credential to be required, read, or stored. This
   project deliberately uses none.
+- Public posting URL handling that could reach loopback, private, link-local,
+  reserved, or proxy-routed network services.
 
 Out of scope:
 
@@ -51,7 +55,8 @@ Out of scope:
 `give-me-job` processes resumes, job postings, and application drafts. All of
 it stays on the local machine.
 
-- Nothing is transmitted. The tools make no network requests.
+- Resumes, application packages, and drafts are not transmitted. URL intake
+  requests only the public HTTPS job page explicitly supplied by the user.
 - No API key, access token, or other issued credential is used or read, and
   `.env.example` and `tools/env.mjs` are blocked from returning by
   `tests/validate/validate-skills.mjs`.

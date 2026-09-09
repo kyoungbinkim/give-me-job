@@ -5,15 +5,47 @@ import { PassThrough } from "node:stream";
 import os from "node:os";
 import path from "node:path";
 import { executeAction } from "../../tools/workspace-service.mjs";
-import { importJobs, parseCsv } from "../../tools/jobs-workspace.mjs";
+import { importJobs, isExpiredJob, listWorkspaceJobs, parseCsv } from "../../tools/jobs-workspace.mjs";
 import { startDashboard } from "../../tools/dashboard.mjs";
-import { runTui } from "../../tools/tui.mjs";
+import { formatTuiResult, runTui } from "../../tools/tui.mjs";
 
 const root = await mkdtemp(path.join(os.tmpdir(), "gmj-workspace-"));
 try {
   await writeFile(path.join(root, "resume.md"), "# Resume\n## Projects\n### EXP-001 예약 API\n- 동시성 문제를 해결했다.\n");
   const csv = 'source,sourceId,company,title,role,location,postingText\nmanual,demo-1,"예시, 주식회사","백엔드\n개발자",백엔드,서울,"API를 개발합니다."\n불완전\n';
   assert.equal(parseCsv(csv)[1].row, 2);
+  const boundary = new Date("2026-09-09T00:00:00+09:00");
+  assert.equal(isExpiredJob({ deadline: "2026-09-08" }, boundary), true);
+  assert.equal(isExpiredJob({ deadline: "2026-09-09" }, boundary), false);
+  assert.equal(isExpiredJob({ deadline: "2026-09-09T09:00:00+09:00" }, new Date("2026-09-09T16:00:00+09:00")), false);
+  assert.equal(isExpiredJob({ deadline: "확인 필요" }, boundary), false);
+  await assert.rejects(importJobs({
+    root,
+    kind: "urls",
+    input: Array.from({ length: 21 }, (_, index) => `https://careers.example.com/jobs/${index}`).join("\n"),
+    fetcher: async () => { throw new Error("should not fetch an oversized URL batch"); },
+  }), /20 URLs/);
+
+  const multiRoot = path.join(root, "multi-url");
+  const multiple = await importJobs({
+    root: multiRoot,
+    kind: "urls",
+    input: "https://careers.example.com/jobs/active\nhttps://careers.example.com/jobs/expired",
+    fetcher: async ({ url }) => [{
+      source: "web",
+      sourceId: new URL(url).pathname.split("/").at(-1),
+      url,
+      company: "예시회사",
+      title: url.endsWith("expired") ? "지난 공고" : "진행 공고",
+      deadline: url.endsWith("expired") ? "2000-01-01" : "2099-12-31",
+      active: true,
+      raw: { postingText: "업무", positions: [], questions: [] },
+    }],
+  });
+  assert.equal(multiple.counts.new, 2);
+  assert.equal(multiple.expiredRemoved.length, 1);
+  assert.equal((await listWorkspaceJobs({ root: multiRoot })).length, 1);
+  assert.equal(JSON.parse(await readFile(path.join(multiRoot, "data/jobs/workspace.json"), "utf8")).length, 1);
   const imported = await importJobs({ root, kind: "csv", input: csv, mapping: { source: "source", sourceId: "sourceId", company: "company", title: "title", role: "role", location: "location", postingText: "postingText" } });
   assert.deepEqual(imported.counts, { new: 1, updated: 0, duplicate: 0, "needs-confirmation": 0, failed: 1 });
   assert.equal(imported.results[0].row, 2);
@@ -65,9 +97,48 @@ try {
   process.nextTick(() => ttyInput.write("q"));
   await runTui(root, { input: ttyInput, output: ttyOutput });
   assert.match(ttyText, /지원 작업공간/);
+  assert.match(ttyText, /오늘/);
+  assert.match(ttyText, /마감·재검토·예정 일정/);
   assert.deepEqual((await import("../../tools/tui.mjs")).terminalLines("👩‍💻개발", 4), ["👩‍💻개", "발"]);
+  assert.match(formatTuiResult("jobs.list", [imported.results[0]])[0], /\[공고\]/);
+  assert.doesNotMatch(formatTuiResult("digest", await executeAction(root, "digest", {})).join("\n"), /"newJobs"/);
   const plainTty = ttyText.replace(/\x1b\[[0-9;?]*[A-Za-z]/g, "");
   assert(plainTty.split(/\r?\n/).every((line) => [...line].reduce((width, char) => width + (/\p{Mark}/u.test(char) ? 0 : char.codePointAt(0) >= 0x1100 ? 2 : 1), 0) <= 80));
+
+  const narrowMenuInput = new PassThrough(); const narrowMenuOutput = new PassThrough();
+  narrowMenuInput.isTTY = true; narrowMenuInput.isRaw = false; narrowMenuInput.setRawMode = () => {}; narrowMenuOutput.isTTY = true; narrowMenuOutput.columns = 40; narrowMenuOutput.rows = 24;
+  let narrowMenuText = ""; narrowMenuOutput.on("data", (chunk) => { narrowMenuText += chunk; });
+  process.nextTick(() => narrowMenuInput.write("q"));
+  await runTui(root, { input: narrowMenuInput, output: narrowMenuOutput });
+  assert.match(narrowMenuText.replace(/\r?\n/g, ""), /마감·재검토·예정 일정을 한번에 확인합니다/);
+
+  const narrowFormInput = new PassThrough(); const narrowFormOutput = new PassThrough();
+  narrowFormInput.isTTY = true; narrowFormInput.isRaw = false; narrowFormInput.setRawMode = () => {}; narrowFormOutput.isTTY = true; narrowFormOutput.columns = 40; narrowFormOutput.rows = 12; narrowFormOutput.getColorDepth = () => 8;
+  let narrowFormText = ""; narrowFormOutput.on("data", (chunk) => { narrowFormText += chunk; });
+  const previousNoColor = process.env.NO_COLOR;
+  delete process.env.NO_COLOR;
+  process.nextTick(() => {
+    narrowFormInput.write("\x1b[B\r");
+    setTimeout(() => narrowFormInput.write("\x03"), 20);
+  });
+  try { await runTui(root, { input: narrowFormInput, output: narrowFormOutput }); }
+  finally {
+    if (previousNoColor === undefined) delete process.env.NO_COLOR;
+    else process.env.NO_COLOR = previousNoColor;
+  }
+  assert.match(narrowFormText, /s 실행/);
+  assert.match(narrowFormText, /\x1b\[1;7m/);
+
+  await writeFile(path.join(root, "long.md"), Array.from({ length: 30 }, (_, index) => `줄 ${index + 1}`).join("\n"));
+  const scrollInput = new PassThrough(); const scrollOutput = new PassThrough();
+  scrollInput.isTTY = true; scrollInput.isRaw = false; scrollInput.setRawMode = () => {}; scrollOutput.isTTY = true; scrollOutput.columns = 40; scrollOutput.rows = 12;
+  let scrollText = ""; scrollOutput.on("data", (chunk) => { scrollText += chunk; });
+  process.nextTick(() => {
+    scrollInput.write("\x1b[B".repeat(7) + "\r\rlong.md\rs");
+    setTimeout(() => scrollInput.write("\x1b[B".repeat(30) + "q"), 50);
+  });
+  await runTui(root, { input: scrollInput, output: scrollOutput });
+  assert.match(scrollText, /줄 30/);
 
   const cliPath = path.resolve("bin/give-me-job.js");
   const runCli = (...args) => spawnSync(process.execPath, [cliPath, ...args, "--workspace", root, "--format", "json"], { encoding: "utf8" });

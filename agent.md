@@ -82,8 +82,8 @@ Collect or infer:
 
 If the company or role is unknown, ask before creating the package directory.
 
-When the input is a public JobKorea, Linkareer, SK Careers, or LG Careers
-posting URL, run the installed `fetch-jobs` workflow tool with:
+When the input is a user-supplied public HTTPS job page, run the installed
+`fetch-jobs` workflow tool with:
 
 ```txt
 --source url --url <posting-url>
@@ -92,6 +92,8 @@ posting URL, run the installed `fetch-jobs` workflow tool with:
 Read the normalized JSON written under `data/jobs/` and use its `raw` fields as
 the JD source. In particular, inspect `postingText`, `positions`, `questions`,
 `attachments`, `applyUrl`, and `extractionWarnings` before continuing.
+JobKorea, Linkareer, SK Careers, and LG Careers have dedicated extraction;
+generic pages require verification before analysis.
 
 - If `positions` contains multiple roles or `role` is empty, ask the user to
   choose the exact role before creating an application package.
