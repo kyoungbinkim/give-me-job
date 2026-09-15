@@ -17,12 +17,39 @@ export async function prepareApplication(root, { job, role } = {}) {
   let state;
   try { state = JSON.parse(await readFile(path.join(packageDir, "state.json"), "utf8")); }
   catch (error) { if (error.code !== "ENOENT") throw error; }
-  if (state) return { packageDir, state, reused: true };
-  await initializeApplication({ company, role: selectedRole, out: packageDir, exactDirectory: true });
-  state = { ...createApplicationState(), jobId: job.id, selectedRole, sourceUpdatedAt: job.updatedAt ?? job.lastCheckedAt ?? null };
-  await writeFile(path.join(packageDir, "source-jd.md"), String(job.raw?.postingText ?? job.body ?? job.description ?? job.rawText ?? job.title ?? ""));
+  const source = String(job.raw?.postingText ?? job.body ?? job.description ?? job.rawText ?? job.title ?? "");
   const questions = job.raw?.questions ?? job.questions;
-  if (Array.isArray(questions)) await writeFile(path.join(packageDir, "questions.json"), `${JSON.stringify({ questions }, null, 2)}\n`);
+  const questionSource = `${JSON.stringify({ questions: Array.isArray(questions) ? questions : [] }, null, 2)}\n`;
+  const sourceHash = createHash("sha256").update(`${source}\n${questionSource}`).digest("hex");
+  const sourceUpdatedAt = job.updatedAt ?? job.lastCheckedAt ?? null;
+  if (state) {
+    const sourceFile = path.join(packageDir, "source-jd.md");
+    const questionsFile = path.join(packageDir, "questions.json");
+    const previousSource = await readFile(sourceFile, "utf8").catch((error) => error.code === "ENOENT" ? "" : Promise.reject(error));
+    const sourceChanged = state.sourceHash
+      ? state.sourceHash !== sourceHash
+      : previousSource !== source || (state.sourceUpdatedAt !== sourceUpdatedAt && (job.changedFields ?? []).includes("raw"));
+    if (sourceChanged) {
+      await Promise.all([writeFile(sourceFile, source), writeFile(questionsFile, questionSource)]);
+      state = {
+        ...state,
+        status: "review-blocked",
+        sourceHash,
+        sourceUpdatedAt,
+        stopReasons: [...new Set([...(state.stopReasons ?? []), "Posting source changed: review the current JD and questions"])],
+        nextAction: "Review changed posting fields and repeat affected steps",
+      };
+      await saveApplicationState(packageDir, state);
+    } else if (!state.sourceHash) {
+      state = { ...state, sourceHash };
+      await saveApplicationState(packageDir, state);
+    }
+    return { packageDir, state, reused: true };
+  }
+  await initializeApplication({ company, role: selectedRole, out: packageDir, exactDirectory: true });
+  state = { ...createApplicationState(), jobId: job.id, selectedRole, sourceHash, sourceUpdatedAt };
+  await writeFile(path.join(packageDir, "source-jd.md"), source);
+  if (Array.isArray(questions)) await writeFile(path.join(packageDir, "questions.json"), questionSource);
   await saveApplicationState(packageDir, state);
   return { packageDir, state, reused: false };
 }
